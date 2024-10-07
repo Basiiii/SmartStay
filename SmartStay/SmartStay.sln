@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay", "SmartStay.csproj", "{14143060-6BF0-49DC-A995-EA901BB2BD12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0EC51D61-E50A-403D-832B-64D8DC796892}
+	EndGlobalSection
+EndGlobal
