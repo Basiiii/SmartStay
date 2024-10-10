@@ -28,42 +28,48 @@ internal static class Program
     /// <summary>
     /// The Main
     /// </summary>
-    /// <param name="args">The args<see cref="string[]"/></param>
-    internal static void Main(string[] args)
+    internal static void Main()
     {
         // TODO: test everything thoroughly
         // later on add reports etc
         // add ability to edit and remove/delete clients, accommodations etc
 
-        BookingManager bookingManager = new BookingManager();
+        BookingManager bookingManager = new();
 
         // 1. Add Clients
-        Client client1 = new Client(1, "John", "Doe", "john.doe@example.com", "123-456-7890", "123 Elm Street");
+        Client client1 = new(1, "John", "Doe", "john.doe@example.com", "123-456-7890", "123 Elm Street");
         bookingManager.AddClient(client1);
+        Console.WriteLine(client1.ToString());
+        Client? clientTest = bookingManager.GetClient(client1.Id);
+        if (clientTest != null)
+        {
+            Console.WriteLine($"Client found: {clientTest.FirstName}");
+        }
+        else
+        {
+            Console.WriteLine("Client not found.");
+        }
+        // bookingManager.RemoveClient(client1.Id);
+        //   Console.WriteLine(client1.ToString());
 
         // 2. Add Accommodations
-        Accommodation room1 =
-            new Accommodation(101, AccommodationType.DoubleRoom, "Sea View Room", "Example Address", 5, 150m);
+        Accommodation room1 = new(101, AccommodationType.DoubleRoom, "Sea View Room", "Example Address", 5, 150m);
         bookingManager.AddAccommodation(room1);
+        bookingManager.RemoveAccommodation(room1.Id);
 
-        // 3. Make a Reservation
-        Reservation reservation1 =
-            new Reservation(1, client1.Id, room1.Id, DateTime.Now.AddDays(1), DateTime.Now.AddDays(5), 600m);
-        bookingManager.MakeReservation(reservation1);
+        //// 3. Make a Reservation
+        // Reservation reservation1 = new(1, client1.Id, room1.Id, DateTime.Now.AddDays(1), DateTime.Now.AddDays(5),
+        // 600m); bookingManager.MakeReservation(reservation1);
 
-        // 4. Check-In
-        bookingManager.CheckIn(reservation1.ReservationId);
+        //// 4. Check-In
+        // bookingManager.CheckIn(reservation1.ReservationId);
 
-        // 5. Process Payment
-        Payment payment1 = new Payment(1, reservation1.ReservationId, 600m, DateTime.Now, "Credit Card");
-        bookingManager.ProcessPayment(payment1);
+        //// 5. Process Payment
+        // Payment payment1 = new(1, reservation1.ReservationId, 600m, DateTime.Now, "Credit Card");
+        // bookingManager.ProcessPayment(payment1);
 
-        // 6. Check-Out
-        bookingManager.CheckOut(reservation1.ReservationId);
-
-        //// 7. Export Report
-        // string filePath = @"D:\reservations_report.csv";
-        // ReportGenerator.ExportReservationsToCSV(bookingManager.GetReservations(), filePath);
+        //// 6. Check-Out
+        // bookingManager.CheckOut(reservation1.ReservationId);
     }
 }
 }
