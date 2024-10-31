@@ -1,128 +1,165 @@
-﻿/// <copyright file="Clients.cs">
-/// Copyright (c) 2024 All Rights Reserved
+﻿/// <copyright file="Client.cs">
+/// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains...
+/// This file contains the definition of the Client class used in the SmartStay application.
 /// </file>
 /// <summary>
-/// Defines ...
+/// Represents the <see cref="Client"/> class, which stores information about individual clients,
+/// including their personal details and payment preferences. This class provides methods to validate
+/// and manage client data effectively while ensuring data integrity through input validation.
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
-using System.Text.Json;
 
 namespace SmartStay
 {
 /// <summary>
-/// Defines the <see cref="Client" />
+/// Defines the <see cref="Client"/> class, which encapsulates the details of a client including
+/// personal information such as name, email, phone number, address, and preferred payment method.
 /// </summary>
 internal class Client
 {
-    /// <summary>
-    /// Gets or sets the Id
-    /// </summary>
-    public int Id { get; set; }
+    private readonly int _Id;                                           // ID of the client
+    private string _FirstName;                                          // First name of the client
+    private string _LastName;                                           // Last name of the client
+    private string _Email;                                              // Email address of the client
+    private string _PhoneNumber = string.Empty;                         // Phone number of the client
+    private string _Address = string.Empty;                             // Address of the client
+    private PaymentMethod _PreferredPaymentMethod = PaymentMethod.None; // Preferred payment method of the client
 
     /// <summary>
-    /// Gets or sets the FirstName
+    /// Constructor with only basic information (ID, First Name, Last Name, Email).
     /// </summary>
-    public string FirstName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the LastName
-    /// </summary>
-    public string LastName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Email
-    /// </summary>
-    public string Email { get; set; }
-
-    /// <summary>
-    /// Gets or sets the PhoneNumber
-    /// </summary>
-    public string PhoneNumber { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Address
-    /// </summary>
-    public string Address { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Client"/> class.
-    /// </summary>
-    /// <param name="id">The id<see cref="int"/></param>
-    /// <param name="firstName">The firstName<see cref="string"/></param>
-    /// <param name="lastName">The lastName<see cref="string"/></param>
-    /// <param name="email">The email<see cref="string"/></param>
-    /// <param name="phoneNumber">The phoneNumber<see cref="string"/></param>
-    /// <param name="address">The address<see cref="string"/></param>
-    public Client(int id, string firstName, string lastName, string email, string phoneNumber, string address)
+    /// <param name="id">The unique identifier for the client.</param>
+    /// <param name="firstName">The first name of the client.</param>
+    /// <param name="lastName">The last name of the client.</param>
+    /// <param name="email">The email address of the client.</param>
+    public Client(int id, string firstName, string lastName, string email)
     {
-        this.Id = id;
-        this.FirstName = firstName;
-        this.LastName = lastName;
-        this.Email = email;
-        this.PhoneNumber = phoneNumber;
-        this.Address = address;
+        Validator.ValidateId(id, nameof(id));
+        _Id = id;
+
+        Validator.ValidateName(firstName, nameof(firstName));
+        _FirstName = firstName;
+
+        Validator.ValidateName(lastName, nameof(lastName));
+        _LastName = lastName;
+
+        Validator.ValidateEmail(email, nameof(email));
+        _Email = email;
     }
 
     /// <summary>
-    /// Overriding the ToString method to display client information
+    /// Constructor with all information provided.
+    /// </summary>
+    /// <param name="id">The unique identifier for the client.</param>
+    /// <param name="firstName">The first name of the client.</param>
+    /// <param name="lastName">The last name of the client.</param>
+    /// <param name="email">The email address of the client.</param>
+    /// <param name="phoneNumber">The phone number of the client.</param>
+    /// <param name="address">The residential address of the client.</param>
+    /// <param name="preferredPaymentMethod">The preferred payment method of the client.</param>
+    public Client(int id, string firstName, string lastName, string email, string phoneNumber, string address,
+                  PaymentMethod preferredPaymentMethod)
+        : this(id, firstName, lastName, email)
+    {
+        Validator.ValidatePhoneNumber(phoneNumber, nameof(phoneNumber));
+        _PhoneNumber = phoneNumber;
+
+        Validator.ValidateAddress(address, nameof(address));
+        _Address = address;
+
+        Validator.ValidatePaymentMethod(preferredPaymentMethod, nameof(preferredPaymentMethod));
+        _PreferredPaymentMethod = preferredPaymentMethod;
+    }
+
+    /// <summary>
+    /// Public getter for the user Id.
+    /// </summary>
+    public int Id => _Id;
+
+    /// <summary>
+    /// Public getter and setter for the FirstName.
+    /// </summary>
+    public string FirstName
+    {
+        get => _FirstName;
+        set {
+            Validator.ValidateName(value, nameof(FirstName));
+            _FirstName = value;
+        }
+    }
+
+    /// <summary>
+    /// Public getter and setter for the LastName.
+    /// </summary>
+    public string LastName
+    {
+        get => _LastName;
+        set {
+            Validator.ValidateName(value, nameof(LastName));
+            _LastName = value;
+        }
+    }
+
+    /// <summary>
+    /// Public getter and setter for the Email.
+    /// </summary>
+    public string Email
+    {
+        get => _Email;
+        set {
+            Validator.ValidateEmail(value, nameof(Email));
+            _Email = value;
+        }
+    }
+
+    /// <summary>
+    /// Public getter and setter for the PhoneNumber.
+    /// </summary>
+    public string PhoneNumber
+    {
+        get => _PhoneNumber;
+        set {
+            Validator.ValidatePhoneNumber(value, nameof(PhoneNumber));
+            _PhoneNumber = value;
+        }
+    }
+
+    /// <summary>
+    /// Public getter and setter for the Address.
+    /// </summary>
+    public string Address
+    {
+        get => _Address;
+        set {
+            Validator.ValidateAddress(value, nameof(Address));
+            _Address = value;
+        }
+    }
+
+    /// <summary>
+    /// Public getter and setter for the PreferredPaymentMethod.
+    /// </summary>
+    public PaymentMethod PreferredPaymentMethod
+    {
+        get => _PreferredPaymentMethod;
+        set {
+            Validator.ValidatePaymentMethod(value, nameof(PreferredPaymentMethod));
+            _PreferredPaymentMethod = value;
+        }
+    }
+
+    /// <summary>
+    /// Overriding the ToString method to display client information in a JSON format.
     /// </summary>
     /// <returns>The <see cref="string"/></returns>
     public override string ToString()
     {
-        return $"Client [ID: {Id}, Name: {FirstName} {LastName}, Email: {Email}, Phone: {PhoneNumber}, Address: {Address}]";
-    }
-
-    /// <summary>
-    /// The SaveClientsToFile method serializes a dictionary of clients to JSON and saves to a file
-    /// </summary>
-    /// <param name="clients">The clients<see cref="Dictionary{int, Client}"/></param>
-    /// <param name="filePath">The filePath<see cref="string"/></param>
-    public static void SaveClientsToFile(Dictionary<int, Client> clients, string filePath)
-    {
-        // Convert dictionary values (clients) to a list for JSON serialization
-        List<Client> clientList = new List<Client>(clients.Values);
-        string jsonString = JsonSerializer.Serialize(clientList, new JsonSerializerOptions { WriteIndented = true });
-
-        // Write the JSON string to a file
-        File.WriteAllText(filePath, jsonString);
-    }
-
-    /// <summary>
-    /// The LoadClientsFromFile method loads a dictionary of clients from a JSON file
-    /// </summary>
-    /// <param name="filePath">The filePath<see cref="string"/></param>
-    /// <returns>The <see cref="Dictionary{int, Client}"/></returns>
-    public static Dictionary<int, Client> LoadClientsFromFile(string filePath)
-    {
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException($"File at {filePath} not found.");
-        }
-
-        // Read the JSON string from the file
-        string jsonString = File.ReadAllText(filePath);
-
-        // Deserialize the JSON string to a list of clients
-        // Ensure that we handle a potential null value returned by the deserialization
-        List<Client>? clientList = JsonSerializer.Deserialize<List<Client>>(jsonString);
-
-        // Create an empty dictionary to store the clients
-        Dictionary<int, Client> clientDictionary = new Dictionary<int, Client>();
-
-        // Check if the deserialized list is not null
-        if (clientList != null)
-        {
-            foreach (var client in clientList)
-            {
-                clientDictionary[client.Id] = client;
-            }
-        }
-
-        return clientDictionary;
+        return $"{{ \"ID\": {Id}, \"FirstName\": \"{FirstName}\", \"LastName\": \"{LastName}\", " +
+               $"\"Email\": \"{Email}\", \"Phone\": \"{PhoneNumber}\", " +
+               $"\"Address\": \"{Address}\", \"PreferredPaymentMethod\": \"{PreferredPaymentMethod}\" }}";
     }
 }
 }

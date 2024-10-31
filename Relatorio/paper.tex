@@ -1,0 +1,589 @@
+% This template has been tested with LLNCS DOCUMENT CLASS -- version 2.21 (12-Jan-2022)
+
+% !TeX spellcheck = pt_PT-Portuguese
+% !LTeX: language= pt_PT-Portuguese
+% !TeX encoding = utf8
+% !TeX program = pdflatex
+% !BIB program = bibtex
+% -*- coding:utf-8 mod:LaTeX -*-
+
+% "a4paper" enables:
+%
+%  - easy print out on DIN A4 paper size
+%
+% One can configure a4 vs. letter in the LaTeX installation. So it is configuration dependend, what the paper size will be.
+% This option  present, because the current word template offered by Springer is DIN A4.
+% We accept that DIN A4 cause WTFs at persons not used to A4 in USA.
+%
+% "runningheads" enables:
+%
+%  - page number on page 2 onwards
+%  - title/authors on even/odd pages
+%
+% This is good for other readers to enable proper archiving among other papers and pointing to
+% content. Even if the title page states the title, when printed and stored in a folder, when
+% blindly opening the folder, one could hit not the title page, but an arbitrary page. Therefore,
+% it is good to have title printed on the pages, too.
+%
+% To disable outputting page headers and footers, remove "runningheads"
+\documentclass[runningheads,a4paper,english]{llncs}[2022/01/12]
+
+% backticks (`) are rendered as such in verbatim environments.
+% See following links for details:
+%   - https://tex.stackexchange.com/a/341057/9075
+%   - https://tex.stackexchange.com/a/47451/9075
+%   - https://tex.stackexchange.com/a/166791/9075
+\usepackage{upquote}
+
+% Used to add images
+\usepackage{graphicx}
+
+% Set English as language and allow to write hyphenated"=words
+%
+% Even though `american`, `english` and `USenglish` are synonyms for babel package (according to https://tex.stackexchange.com/questions/12775/babel-english-american-usenglish), the llncs document class is prepared to avoid the overriding of certain names (such as "Abstract." -> "Abstract" or "Fig." -> "Figure") when using `english`, but not when using the other 2.
+% english has to go last to set it as default language
+\usepackage[ngerman,main=english]{babel}
+%
+% Hint by http://tex.stackexchange.com/a/321066/9075 -> enable "= as dashes
+\addto\extrasenglish{\languageshorthands{ngerman}\useshorthands{"}}
+%
+% Fix by https://tex.stackexchange.com/a/441701/9075
+\usepackage{regexpatch}
+\makeatletter
+\edef\switcht@albion{%
+  \relax\unexpanded\expandafter{\switcht@albion}%
+}
+\xpatchcmd*{\switcht@albion}{ \def}{\def}{}{}
+\xpatchcmd{\switcht@albion}{\relax}{}{}{}
+\edef\switcht@deutsch{%
+  \relax\unexpanded\expandafter{\switcht@deutsch}%
+}
+\xpatchcmd*{\switcht@deutsch}{ \def}{\def}{}{}
+\xpatchcmd{\switcht@deutsch}{\relax}{}{}{}
+\edef\switcht@francais{%
+  \relax\unexpanded\expandafter{\switcht@francais}%
+}
+\xpatchcmd*{\switcht@francais}{ \def}{\def}{}{}
+\xpatchcmd{\switcht@francais}{\relax}{}{}{}
+\makeatother
+
+% Links behave as they should. Enables "\url{...}" for URL typesettings.
+% Allow URL breaks also at a hyphen, even though it might be confusing: Is the "-" part of the address or just a hyphen?
+% See https://tex.stackexchange.com/a/3034/9075.
+\usepackage[hyphens]{url}
+
+% When activated, use text font as url font, not the monospaced one.
+% For all options see https://tex.stackexchange.com/a/261435/9075.
+% \urlstyle{same}
+
+% Improve wrapping of URLs - hint by http://tex.stackexchange.com/a/10419/9075
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+
+% nicer // - solution by http://tex.stackexchange.com/a/98470/9075
+% DO NOT ACTIVATE -> prevents line breaks
+%\makeatletter
+%\def\Url@twoslashes{\mathchar`\/\@ifnextchar/{\kern-.2em}{}}
+%\g@addto@macro\UrlSpecials{\do\/{\Url@twoslashes}}
+%\makeatother
+
+% This is the modern package for "Computer Modern".
+% In case this gets activated, one has to switch from cmap package to glyphtounicode (in the case of pdflatex)
+\usepackage[%
+    rm={oldstyle=false,proportional=true},%
+    sf={oldstyle=false,proportional=true},%
+    % By using 'variable=true' the monospaced font can be used as variable font (with differents widths per letter)
+    % However, this makes listings look ugly.
+    tt={oldstyle=false,proportional=true,variable=false},%
+    qt=false%
+]{cfr-lm}
+
+% Has to be loaded AFTER any font packages. See https://tex.stackexchange.com/a/2869/9075.
+\usepackage[T1]{fontenc}
+
+% Character protrusion and font expansion. See http://www.ctan.org/tex-archive/macros/latex/contrib/microtype/
+
+\usepackage[
+  babel=true, % Enable language-specific kerning. Take language-settings from the languge of the current document (see Section 6 of microtype.pdf)
+  expansion=alltext,
+  protrusion=alltext-nott, % Ensure that at listings, there is no change at the margin of the listing
+  final % Always enable microtype, even if in draft mode. This helps finding bad boxes quickly.
+        % In the standard configuration, this template is always in the final mode, so this option only makes a difference if "pros" use the draft mode
+]{microtype}
+
+% \texttt{test -- test} keeps the "--" as "--" (and does not convert it to an en dash)
+\DisableLigatures{encoding = T1, family = tt* }
+
+%\DeclareMicrotypeSet*[tracking]{my}{ font = */*/*/sc/* }%
+%\SetTracking{ encoding = *, shape = sc }{ 45 }
+% Source: http://homepage.ruhr-uni-bochum.de/Georg.Verweyen/pakete.html
+% Deactiviated, because does not look good
+
+\usepackage{graphicx}
+
+% Diagonal lines in a table - http://tex.stackexchange.com/questions/17745/diagonal-lines-in-table-cell
+% Slashbox is not available in texlive (due to licensing) and also gives bad results. Thus, we use diagbox
+\usepackage{diagbox}
+
+\usepackage{xcolor}
+
+% Code Listings
+\usepackage{listings}
+
+\definecolor{eclipseStrings}{RGB}{42,0.0,255}
+\definecolor{eclipseKeywords}{RGB}{127,0,85}
+\colorlet{numb}{magenta!60!black}
+
+% JSON definition
+% Source: https://tex.stackexchange.com/a/433961/9075
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily,
+    commentstyle=\color{eclipseStrings}, % style of comment
+    stringstyle=\color{eclipseKeywords}, % style of strings
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    % backgroundcolor=\color{gray}, %only if you like
+    string=[s]{"}{"},
+    comment=[l]{:\ "},
+    morecomment=[l]{:"},
+    literate=
+        *{0}{{{\color{numb}0}}}{1}
+         {1}{{{\color{numb}1}}}{1}
+         {2}{{{\color{numb}2}}}{1}
+         {3}{{{\color{numb}3}}}{1}
+         {4}{{{\color{numb}4}}}{1}
+         {5}{{{\color{numb}5}}}{1}
+         {6}{{{\color{numb}6}}}{1}
+         {7}{{{\color{numb}7}}}{1}
+         {8}{{{\color{numb}8}}}{1}
+         {9}{{{\color{numb}9}}}{1}
+}
+
+\lstset{
+  % everything between (* *) is a latex command
+  escapeinside={(*}{*)},
+  %
+  language=json,
+  %
+  showstringspaces=false,
+  %
+  extendedchars=true,
+  %
+  basicstyle=\footnotesize\ttfamily,
+  %
+  commentstyle=\slshape,
+  %
+  % default: \rmfamily
+  stringstyle=\ttfamily,
+  %
+  breaklines=true,
+  %
+  breakatwhitespace=true,
+  %
+  % alternative: fixed
+  columns=flexible,
+  %
+  numbers=left,
+  %
+  numberstyle=\tiny,
+  %
+  basewidth=.5em,
+  %
+  xleftmargin=.5cm,
+  %
+  % aboveskip=0mm,
+  %
+  % belowskip=0mm,
+  %
+  captionpos=b
+}
+
+% Enable Umlauts when using \lstinputputlisting.
+% See https://stackoverflow.com/a/29260603/873282 für details.
+% listingsutf8 did not work in June 2020.
+\lstset{literate=
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+  {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+  {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+  {Ã}{{\~A}}1 {ã}{{\~a}}1 {Õ}{{\~O}}1 {õ}{{\~o}}1
+  {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+  {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+  {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+}
+
+% For easy quotations: \enquote{text}
+% This package is very smart when nesting is applied, otherwise textcmds (see below) provides a shorter command
+\usepackage[autostyle=true]{csquotes}
+
+% Enable using "`quote"' - see https://tex.stackexchange.com/a/150954/9075
+\defineshorthand{"`}{\openautoquote}
+\defineshorthand{"'}{\closeautoquote}
+
+% Nicer tables (\toprule, \midrule, \bottomrule)
+\usepackage{booktabs}
+
+% Extended enumerate, such as \begin{compactenum}
+\usepackage{paralist}
+
+% Bibliopgraphy enhancements
+%  - enable \cite[prenote][]{ref}
+%  - enable \cite{ref1,ref2}
+% Alternative: \usepackage{cite}, which enables \cite{ref1, ref2} only (otherwise: Error message: "White space in argument")
+
+% Doc: http://texdoc.net/natbib
+\usepackage[%
+  square,        % for square brackets
+  comma,         % use commas as separators
+  numbers,       % for numerical citations;
+  %sort           % orders multiple citations into the sequence in which they appear in the list of references;
+  sort&compress  % as sort but in addition multiple numerical citations
+                 % are compressed if possible (as 3-6, 15);
+]{natbib}
+
+% In the bibliography, references have to be formatted as 1., 2., ... not [1], [2], ...
+\renewcommand{\bibnumfmt}[1]{#1.}
+
+% Enable hyperlinked author names in the case of \citet
+% Source: https://tex.stackexchange.com/a/76075/9075
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\NAT@test}{\else \NAT@nm}{\else \NAT@hyper@{\NAT@nm}}{}{}
+\makeatother
+
+% Prepare more space-saving rendering of the bibliography
+% Source: https://tex.stackexchange.com/a/280936/9075
+\SetExpansion
+[ context = sloppy,
+  stretch = 30,
+  shrink = 60,
+  step = 5 ]
+{ encoding = {OT1,T1,TS1} }
+{ }
+
+% Put figures aside a text
+\usepackage[rflt]{floatflt}
+
+% Enable nice comments
+\usepackage{pdfcomment}
+
+\newcommand{\commentontext}[2]{\colorbox{yellow!60}{#1}\pdfcomment[color={0.234 0.867 0.211},hoffset=-6pt,voffset=10pt,opacity=0.5]{#2}}
+\newcommand{\commentatside}[1]{\pdfcomment[color={0.045 0.278 0.643},icon=Note]{#1}}
+
+% Compatibality with packages todo, easy-todo, todonotes
+\newcommand{\todo}[1]{\commentatside{#1}}
+
+% Compatiblity with package fixmetodonotes
+\newcommand{\TODO}[1]{\commentatside{#1}}
+
+% Put footnotes below floats
+% Source: https://tex.stackexchange.com/a/32993/9075
+\usepackage{stfloats}
+\fnbelowfloat
+
+\usepackage[group-minimum-digits=4,per-mode=fraction]{siunitx}
+
+% Enable that parameters of \cref{}, \ref{}, \cite{}, ... are linked so that a reader can click on the number an jump to the target in the document
+\usepackage{hyperref}
+
+% Enable hyperref without colors and without bookmarks
+\hypersetup{
+  hidelinks,
+  colorlinks=true,
+  allcolors=black,
+  pdfstartview=Fit,
+  breaklinks=true
+}
+
+% Enable correct jumping to figures when referencing
+\usepackage[all]{hypcap}
+
+\usepackage[caption=false,font=footnotesize]{subfig}
+
+\usepackage{mindflow}
+
+% Extensions for references inside the document (\cref{fig:sample}, ...)
+% Enable usage \cref{...} and \Cref{...} instead of \ref: Type of reference included in the link
+% That means, "Figure 5" is a full link instead of just "5".
+\usepackage[capitalise,nameinlink]{cleveref}
+
+\crefname{section}{Sec.}{Sec.}
+\Crefname{section}{Section}{Sections}
+\crefname{listing}{List.}{List.}
+\crefname{listing}{Listing}{Listings}
+\Crefname{listing}{Listing}{Listings}
+\crefname{lstlisting}{Listing}{Listings}
+\Crefname{lstlisting}{Listing}{Listings}
+
+\usepackage{lipsum}
+
+% For demonstration purposes only
+% These packages can be removed when all examples have been deleted
+\usepackage[math]{blindtext}
+\usepackage{mwe}
+\usepackage[realmainfile]{currfile}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings}
+
+%introduce \powerset - hint by http://matheplanet.com/matheplanet/nuke/html/viewtopic.php?topic=136492&post_id=997377
+\DeclareFontFamily{U}{MnSymbolC}{}
+\DeclareSymbolFont{MnSyC}{U}{MnSymbolC}{m}{n}
+\DeclareFontShape{U}{MnSymbolC}{m}{n}{
+  <-6>    MnSymbolC5
+  <6-7>   MnSymbolC6
+  <7-8>   MnSymbolC7
+  <8-9>   MnSymbolC8
+  <9-10>  MnSymbolC9
+  <10-12> MnSymbolC10
+  <12->   MnSymbolC12%
+}{}
+\DeclareMathSymbol{\powerset}{\mathord}{MnSyC}{180}
+
+\usepackage{xspace}
+\newcommand{\eg}{e.g.,\ }
+\newcommand{\ie}{i.e.,\ }
+
+% Enable hyphenation at other places as the dash.
+% Example: applicaiton\hydash specific
+\makeatletter
+\newcommand{\hydash}{\penalty\@M-\hskip\z@skip}
+% Definition of "= taken from http://mirror.ctan.org/macros/latex/contrib/babel-contrib/german/ngermanb.dtx
+\makeatother
+
+% Add manual adapted hyphenation of English words
+% See https://ctan.org/pkg/hyphenex and https://tex.stackexchange.com/a/22892/9075 for details
+% Does not work on MiKTeX, therefore disabled - issue reported at https://github.com/MiKTeX/miktex-packaging/issues/271
+% \input{ushyphex}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+% Add copyright
+%
+% This is recommended if you intend to send the version to colleagues
+% See https://ctan.org/pkg/llncsconf for details
+\iffalse
+  % state: intended | submitted | llncs
+  % you can add "crop" if the paper should be cropped to the format Springer is publishing
+  \usepackage[intended]{llncsconf}
+
+  \conference{name of the conference}
+
+  % in case of "proceedings" (final version!)
+  % example: \llncs{Anonymous et al. (eds). \emph{Proceedings of the International Conference on \LaTeX-Hacks}, LNCS~42. Some Publisher, 2016.}{0042}
+  % 0042 denotes an example start page
+  \llncs{book editors and title}{0042}
+\fi
+
+% Enable copy and paste of text from the PDF
+% Only required for pdflatex. It "just works" in the case of lualatex.
+% Alternative: cmap or mmap package
+% mmap enables mathematical symbols, but does not work with the newtx font set
+% See: https://tex.stackexchange.com/a/64457/9075
+% Other solutions outlined at http://goemonx.blogspot.de/2012/01/pdflatex-ligaturen-und-copynpaste.html and http://tex.stackexchange.com/questions/4397/make-ligatures-in-linux-libertine-copyable-and-searchable
+% Trouble shooting outlined at https://tex.stackexchange.com/a/100618/9075
+%
+% According to https://tex.stackexchange.com/q/451235/9075 this is the way to go
+\input glyphtounicode
+\pdfgentounicode=1
+
+\begin{document}
+
+\title{Gestão de Alojamentos Turísticos}
+% If Title is too long, use \titlerunning
+%\titlerunning{Short Title}
+\subtitle{Programação Orientada a Objetos}
+
+% Single insitute
+\author{Enrique George Rodrigues Nº 28602}
+
+% If there are too many authors, use \authorrunning
+%\authorrunning{First Author et al.}
+
+\institute{Instituto Politécnico do Cávado e do Ave\\
+	Licenciatura Engenharia de Sistemas Informáticos\\
+	\vspace{6pt}
+	16 de Outubro de 2024}
+
+
+%% Multiple insitutes - ALTERNATIVE to the above
+% \author{%
+%     Firstname Lastname\inst{1} \and
+%     Firstname Lastname\inst{2}
+% }
+%
+%If there are too many authors, use \authorrunning
+%  \authorrunning{First Author et al.}
+%
+%  \institute{
+%      Insitute 1\\
+%      \email{...}\and
+%      Insitute 2\\
+%      \email{...}
+%}
+
+\maketitle
+
+\renewcommand{\abstractname}{Resumo.} % Change the abstract title to "Resumo"
+\begin{abstract}
+	
+Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gestão de alojamentos turísticos, permitindo a administração eficiente de registos, reservas e consultas relacionadas com clientes e alojamentos. A solução foi implementada em C\#, utilizando o paradigma de programação orientada a objetos, de forma a garantir uma estrutura modular e escalável. As principais funcionalidades incluem o registo de clientes, a gestão de reservas, o processamento de check-ins e check-outs, bem como o controlo de pagamentos. A aplicação destaca-se pelo uso de dicionários como estruturas de dados eficientes, permitindo um acesso rápido e otimizado a registos de clientes, reservas e alojamentos, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. A persistência de dados é gerida em formato JSON, proporcionando uma solução leve e prática para operadores turísticos.
+
+\renewcommand{\abstractname}{Resumo}
+
+% Redefine keywords manually since llncs doesn't define \keywordsname
+\def\keywords{\vspace{.5em}
+	{\textbf{Palavras-chave:}}\,\relax%
+}
+
+\keywords{registos, consultas, reservas, check-in, clientes, alojamentos}
+\end{abstract}
+
+
+\section{Introdução}
+\label{sec:introduction}
+
+O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamentos, exigindo soluções que garantam agilidade, precisão e uma experiência satisfatória para os clientes. Este projeto visa desenvolver um sistema de gestão de alojamentos turísticos que permita a administração eficaz de registos de clientes, reservas e alojamentos. A implementação foi realizada em C\#, uma linguagem reconhecida pela sua robustez e flexibilidade, permitindo o desenvolvimento de aplicações escaláveis e eficientes.
+
+Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a persistência de dados é gerida em formato JSON, facilitando a integração e manipulação das informações. Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
+
+Este documento descreve o trabalho prático da unidade curricular de Programação Orientada a Objetos, parte integrante da Licenciatura em Engenharia de Sistemas Informáticos no Instituto Politécnico do Cávado e do Ave. 
+
+O enunciado deste trabalho prático pode ser encontrado no anexo titulado ``Trabalho\_POO\_ESI\_2024\_2025``. O código fonte está disponível no Github, veja \href[]{LINK}.
+
+\section{Padrões e Práticas de Programação}
+\label{sec:codingstyle}
+
+Para garantir a consistência, legibilidade e manutenção da base de código, este projeto segue os padrões de programação estabelecidos. Estes padrões estão alinhados com o Guia de Estilo da Microsoft para C\# \cite{microsoftcsharpstyle}, promovendo uniformidade em todo o projeto.
+
+\subsection{Convenções de Nomeação}
+
+A adoção de uma convenção de nomeação clara melhora a clareza do código. As seguintes convenções foram utilizadas ao longo do projeto:
+
+\begin{itemize}
+	\item \textbf{Classes e Structs}: \texttt{ClassName}
+	\item \textbf{Métodos}: \texttt{MethodName()}
+	\item \textbf{Propriedades}: \texttt{PropertyName}
+	\item \textbf{Variáveis de Instância e Locais}: \texttt{variableName}
+	\item \textbf{Constantes}: \texttt{CONSTANT\_NAME}
+	\item \textbf{Parâmetros}: \texttt{parameterName}
+	\item \textbf{Enums}: \texttt{EnumName}
+\end{itemize}
+
+Evita-se o uso de abreviações excessivas e nomes confusos, promovendo a clareza no código.
+
+\subsection{Regras de Formatação}
+
+A formatação consistente é fundamental para a legibilidade:
+
+\begin{itemize}
+	\item \textbf{Indentação}: 4 espaços por nível de indentação, evitando tabs.
+	\item \textbf{Comprimento da Linha}: Linhas limitadas a um máximo de 120 caracteres.
+	\item \textbf{Chaves}: As chaves de abertura são colocadas na próxima linha da declaração de controle.
+	\item \textbf{Espaçamento}: Espaços em branco são usados para separar operadores e ao redor de chaves.
+	\item \textbf{Comentários}: Comentários descritivos são utilizados para explicar seções complexas do código, seguindo um estilo consistente.
+\end{itemize}
+
+\subsection{Práticas de Programação}
+
+Seguir as melhores práticas garante a qualidade do código:
+
+\begin{itemize}
+	\item Utilizam-se nomes claros para variáveis e métodos, tornando o código autoexplicativo.
+	\item Escreve-se código claro e conciso, evitando complexidade desnecessária.
+	\item Segue-se o Guia de Estilo da Microsoft para C\# \cite{microsoftcsharpstyle} para formatação e estilo gerais, garantindo a conformidade com os padrões da indústria.
+\end{itemize}
+
+\subsection{Controlo de Versões}
+
+Utiliza-se Git para o controle de versões, facilitando a gestão eficaz da base de código:
+
+\begin{itemize}
+	\item Cria-se uma nova branch para cada funcionalidade ou correção de erro.
+	\item As branches são criadas a partir da branch principal para desenvolvimento, com nomes descritivos que refletem a funcionalidade ou erro abordado.
+	\item Evita-se fazer commits diretamente na branch principal, garantindo a estabilidade.
+	\item As branches de funcionalidade são regularmente fundidas de volta na branch principal após testes completos.
+\end{itemize}
+
+\subsection{Documentação}
+
+Utiliza-se \textit{XML Documentation Comments} para documentar o código, permitindo a geração automática de documentação da API:
+
+\begin{itemize}
+	\item Segue-se a sintaxe do XML para comentários, documentando métodos, propriedades e classes.
+	\item A documentação inclui descrições breves, descrições de parâmetros, descrições de valores de retorno e exemplos de uso.
+	\item Utilizam-se tags como \texttt{<summary>}, \texttt{<param>}, \texttt{<returns>} e \texttt{<example>} para estruturar corretamente os comentários.
+	\item Define-se o autor nos comentários de cabeçalho de classes para novos ficheiros ou seções significativas de código.
+\end{itemize}
+
+\section{Estrutura de Classes}
+\label{sec:classes}
+
+O diagrama de classes apresentado descreve a estrutura lógica do sistema de gestão de reservas para alojamentos turísticos, com uma arquitetura desenhada para centralizar e organizar informações essenciais sobre clientes, reservas, alojamentos e pagamentos. Este modelo, por além de otimizar o fluxo de trabalho, promove a extensibilidade e modularidade, facilitando tanto as expansões futuras como a manutenção do sistema.
+
+No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) armazena informações sobre cada utilizador, incluindo dados pessoais como nome, e-mail e endereço. A classe \textit{Accommodation} (alojamento) representa as propriedades ou quartos disponíveis para reserva, contendo informações como o tipo de alojamento, capacidade e preço por noite. A classe \textit{Reservation} (reserva) liga os clientes aos alojamentos, registando os detalhes da estadia, incluindo as datas de check-in e check-out, o custo total e o estado do pagamento.
+
+Para processar pagamentos, a classe \textit{Payment} (pagamento) regista os dados de cada transação associada a uma reserva, como o montante pago, a data de pagamento e o método utilizado. A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para adicionar e remover clientes, criar e cancelar reservas, gerir alojamentos e processar pagamentos.
+
+O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. Desta forma, o \textit{BookingManager} atua como a face do sistema, permitindo direcionar chamadas para a classe apropriada com base no tipo de entidade a ser manipulada.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\textwidth]{Images/POO_Class_Diagram.png}
+	\caption{Diagrama de Classes do Sistema de Gestão de Alojamentos Turísticos}
+	\label{fig:diagrama_classes}
+\end{figure}
+
+\section{Conclusão}
+\label{sec:conclusion}
+
+w
+
+\subsubsection*{Agradecimentos}
+
+Gostaria de expressar o meu sincero agradecimento ao Professor Luís Ferreira, pela sua orientação, apoio e \textit{feedback} valiosos ao longo do desenvolvimento deste projeto. A sua ajuda foi fundamental no desenvolvimento desta solução informática.
+
+%%% ===============================================================================
+%%% Bibliography
+%%% ===============================================================================
+
+\renewcommand{\bibsection}{\section*{Referências}} % requried for natbib to have "References" printed and as section*, not chapter*
+% Use natbib compatbile splncs04nat style.
+% It does provide all features of splncs04.bst, but is developed in a clean way.
+% Source: https://github.com/tpavlic/splncs04nat
+\bibliographystyle{splncs04nat}
+\begingroup
+  \microtypecontext{expansion=sloppy}
+  \small % ensure correct font size for the bibliography
+  \bibliography{paper}
+\endgroup
+
+% Enfore empty line after bibliography
+\ \\
+%
+Todas as ligações foram consultadas pela última vez no dia 25 de outubro de 2024.
+
+
+%%% ===============================================================================
+%\appendix
+%\addcontentsline{toc}{chapter}{APPENDICES}
+
+%\listoffigures
+%\listoftables
+%%% ===============================================================================
+
+%%% ===============================================================================
+%\section{My first appendix}\label{sec:appendix1}
+%%% ===============================================================================
+\end{document}
