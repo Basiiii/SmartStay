@@ -37,17 +37,24 @@ internal class Client
     /// <param name="email">The email address of the client.</param>
     public Client(int id, string firstName, string lastName, string email)
     {
-        Validator.ValidateId(id, nameof(id));
-        _Id = id;
+        try
+        {
+            Validator.ValidateId(id, nameof(id));
+            _Id = id;
 
-        Validator.ValidateName(firstName, nameof(firstName));
-        _FirstName = firstName;
+            Validator.ValidateName(firstName, nameof(firstName));
+            _FirstName = firstName;
 
-        Validator.ValidateName(lastName, nameof(lastName));
-        _LastName = lastName;
+            Validator.ValidateName(lastName, nameof(lastName));
+            _LastName = lastName;
 
-        Validator.ValidateEmail(email, nameof(email));
-        _Email = email;
+            Validator.ValidateEmail(email, nameof(email));
+            _Email = email;
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Failed to create object due to invalid input", ex);
+        }
     }
 
     /// <summary>
@@ -64,14 +71,21 @@ internal class Client
                   PaymentMethod preferredPaymentMethod)
         : this(id, firstName, lastName, email)
     {
-        Validator.ValidatePhoneNumber(phoneNumber, nameof(phoneNumber));
-        _PhoneNumber = phoneNumber;
+        try
+        {
+            Validator.ValidatePhoneNumber(phoneNumber, nameof(phoneNumber));
+            _PhoneNumber = phoneNumber;
 
-        Validator.ValidateAddress(address, nameof(address));
-        _Address = address;
+            Validator.ValidateAddress(address, nameof(address));
+            _Address = address;
 
-        Validator.ValidatePaymentMethod(preferredPaymentMethod, nameof(preferredPaymentMethod));
-        _PreferredPaymentMethod = preferredPaymentMethod;
+            Validator.ValidatePaymentMethod(preferredPaymentMethod, nameof(preferredPaymentMethod));
+            _PreferredPaymentMethod = preferredPaymentMethod;
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Failed to create object due to invalid input", ex);
+        }
     }
 
     /// <summary>
