@@ -30,6 +30,7 @@ internal static class Program
     /// </summary>
     internal static void Main()
     {
+        // TODO: implement the accommodation class
     }
 }
 }

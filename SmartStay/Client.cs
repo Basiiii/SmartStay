@@ -6,174 +6,188 @@
 /// </file>
 /// <summary>
 /// Represents the <see cref="Client"/> class, which stores information about individual clients,
-/// including their personal details and payment preferences. This class provides methods to validate
-/// and manage client data effectively while ensuring data integrity through input validation.
+/// including their personal details and payment preferences. This class manages client data effectively
+/// while ensuring data integrity through input validation.
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
+using System.Text.Json;
 
 namespace SmartStay
 {
 /// <summary>
 /// Defines the <see cref="Client"/> class, which encapsulates the details of a client including
-/// personal information such as name, email, phone number, address, and preferred payment method.
+/// personal information such as first name, last name, email address, phone number, residential address,
+/// and preferred payment method.
+/// This class validates the provided data upon creation or when modifying specific properties,
+/// ensuring that all data is consistent and correct.
 /// </summary>
 internal class Client
 {
-    private readonly int _Id;                                           // ID of the client
-    private string _FirstName;                                          // First name of the client
-    private string _LastName;                                           // Last name of the client
-    private string _Email;                                              // Email address of the client
-    private string _PhoneNumber = string.Empty;                         // Phone number of the client
-    private string _Address = string.Empty;                             // Address of the client
-    private PaymentMethod _PreferredPaymentMethod = PaymentMethod.None; // Preferred payment method of the client
+    static int _lastClientId = 0;                                                        // Last assigned client ID
+    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
+
+    readonly int _id;                                           // ID of the client
+    string _firstName;                                          // First name of the client
+    string _lastName;                                           // Last name of the client
+    string _email;                                              // Email address of the client
+    string _phoneNumber = string.Empty;                         // Phone number of the client
+    string _address = string.Empty;                             // Address of the client
+    PaymentMethod _preferredPaymentMethod = PaymentMethod.None; // Preferred payment method of the client
 
     /// <summary>
-    /// Constructor with only basic information (ID, First Name, Last Name, Email).
+    /// Constructor to initialize a new client with basic details: first name, last name, and email.
+    /// Validates the input parameters.
     /// </summary>
-    /// <param name="id">The unique identifier for the client.</param>
     /// <param name="firstName">The first name of the client.</param>
     /// <param name="lastName">The last name of the client.</param>
     /// <param name="email">The email address of the client.</param>
-    public Client(int id, string firstName, string lastName, string email)
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    public Client(string firstName, string lastName, string email)
     {
-        try
-        {
-            Validator.ValidateId(id, nameof(id));
-            _Id = id;
+        if (!Validator.IsValidName(firstName))
+            throw new ValidationException(ValidationErrorCode.InvalidName);
+        if (!Validator.IsValidName(lastName))
+            throw new ValidationException(ValidationErrorCode.InvalidName);
+        if (!Validator.IsValidEmail(email))
+            throw new ValidationException(ValidationErrorCode.InvalidEmail);
 
-            Validator.ValidateName(firstName, nameof(firstName));
-            _FirstName = firstName;
-
-            Validator.ValidateName(lastName, nameof(lastName));
-            _LastName = lastName;
-
-            Validator.ValidateEmail(email, nameof(email));
-            _Email = email;
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Failed to create object due to invalid input", ex);
-        }
+        _id = GenerateClientId();
+        _firstName = firstName;
+        _lastName = lastName;
+        _email = email;
     }
 
     /// <summary>
-    /// Constructor with all information provided.
+    /// Constructor to initialize a new client with basic details (first name, last name, email)
+    /// and additional details (phone number and address).
     /// </summary>
-    /// <param name="id">The unique identifier for the client.</param>
+    /// <param name="firstName">The first name of the client.</param>
+    /// <param name="lastName">The last name of the client.</param>
+    /// <param name="email">The email address of the client.</param>
+    /// <param name="phoneNumber">The phone number of the client.</param>
+    /// <param name="address">The residential address of the client.</param>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    public Client(string firstName, string lastName, string email, string phoneNumber, string address)
+        : this(firstName, lastName, email)
+    {
+        if (!Validator.IsValidPhoneNumber(phoneNumber))
+            throw new ValidationException(ValidationErrorCode.InvalidPhoneNumber);
+        if (!Validator.IsValidAddress(address))
+            throw new ValidationException(ValidationErrorCode.InvalidAddress);
+
+        _phoneNumber = phoneNumber;
+        _address = address;
+    }
+
+    /// <summary>
+    /// Constructor to initialize a new client with all details including the preferred payment method.
+    /// </summary>
     /// <param name="firstName">The first name of the client.</param>
     /// <param name="lastName">The last name of the client.</param>
     /// <param name="email">The email address of the client.</param>
     /// <param name="phoneNumber">The phone number of the client.</param>
     /// <param name="address">The residential address of the client.</param>
     /// <param name="preferredPaymentMethod">The preferred payment method of the client.</param>
-    public Client(int id, string firstName, string lastName, string email, string phoneNumber, string address,
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    public Client(string firstName, string lastName, string email, string phoneNumber, string address,
                   PaymentMethod preferredPaymentMethod)
-        : this(id, firstName, lastName, email)
+        : this(firstName, lastName, email, phoneNumber, address)
     {
-        try
-        {
-            Validator.ValidatePhoneNumber(phoneNumber, nameof(phoneNumber));
-            _PhoneNumber = phoneNumber;
+        if (!Validator.IsValidPaymentMethod(preferredPaymentMethod))
+            throw new ValidationException(ValidationErrorCode.InvalidPaymentMethod);
 
-            Validator.ValidateAddress(address, nameof(address));
-            _Address = address;
-
-            Validator.ValidatePaymentMethod(preferredPaymentMethod, nameof(preferredPaymentMethod));
-            _PreferredPaymentMethod = preferredPaymentMethod;
-        }
-        catch (Exception ex)
-        {
-            throw new ArgumentException("Failed to create object due to invalid input", ex);
-        }
+        _preferredPaymentMethod = preferredPaymentMethod;
     }
 
     /// <summary>
     /// Public getter for the user Id.
     /// </summary>
-    public int Id => _Id;
+    public int Id => _id;
 
     /// <summary>
     /// Public getter and setter for the FirstName.
+    /// Sets the value after validating it.
     /// </summary>
     public string FirstName
     {
-        get => _FirstName;
-        set {
-            Validator.ValidateName(value, nameof(FirstName));
-            _FirstName = value;
-        }
+        get => _firstName;
+        set => _firstName = Validator.ValidateName(value);
     }
 
     /// <summary>
     /// Public getter and setter for the LastName.
+    /// Sets the value after validating it.
     /// </summary>
     public string LastName
     {
-        get => _LastName;
-        set {
-            Validator.ValidateName(value, nameof(LastName));
-            _LastName = value;
-        }
+        get => _lastName;
+        set => _lastName = Validator.ValidateName(value);
     }
 
     /// <summary>
     /// Public getter and setter for the Email.
+    /// Sets the value after validating it.
     /// </summary>
     public string Email
     {
-        get => _Email;
-        set {
-            Validator.ValidateEmail(value, nameof(Email));
-            _Email = value;
-        }
+        get => _email;
+        set => _email = Validator.ValidateEmail(value);
     }
 
     /// <summary>
     /// Public getter and setter for the PhoneNumber.
+    /// Sets the value after validating it.
     /// </summary>
     public string PhoneNumber
     {
-        get => _PhoneNumber;
-        set {
-            Validator.ValidatePhoneNumber(value, nameof(PhoneNumber));
-            _PhoneNumber = value;
-        }
+        get => _phoneNumber;
+        set => _phoneNumber = Validator.ValidatePhoneNumber(value);
     }
 
     /// <summary>
     /// Public getter and setter for the Address.
+    /// Sets the value after validating it.
     /// </summary>
     public string Address
     {
-        get => _Address;
-        set {
-            Validator.ValidateAddress(value, nameof(Address));
-            _Address = value;
-        }
+        get => _address;
+        set => _address = Validator.ValidateAddress(value);
     }
 
     /// <summary>
     /// Public getter and setter for the PreferredPaymentMethod.
+    /// Sets the value after validating it.
     /// </summary>
     public PaymentMethod PreferredPaymentMethod
     {
-        get => _PreferredPaymentMethod;
-        set {
-            Validator.ValidatePaymentMethod(value, nameof(PreferredPaymentMethod));
-            _PreferredPaymentMethod = value;
-        }
+        get => _preferredPaymentMethod;
+        set => _preferredPaymentMethod = Validator.ValidatePaymentMethod(value);
     }
 
     /// <summary>
-    /// Overriding the ToString method to display client information in a JSON format.
+    /// Generates a unique client ID in a thread-safe manner using Interlocked.Increment.
     /// </summary>
-    /// <returns>The <see cref="string"/></returns>
+    /// <returns>A unique client ID.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when max limit of int is reached.</exception>
+    private static int GenerateClientId()
+    {
+        // Check if the current value exceeds the max limit of int (2,147,483,647)
+        if (_lastClientId >= int.MaxValue)
+        {
+            throw new InvalidOperationException("Client ID limit exceeded.");
+        }
+
+        return Interlocked.Increment(ref _lastClientId);
+    }
+
+    /// <summary>
+    /// Overridden ToString method to provide client information in a readable JSON format.
+    /// </summary>
+    /// <returns>A JSON string representation of the client object.</returns>
     public override string ToString()
     {
-        return $"{{ \"ID\": {Id}, \"FirstName\": \"{FirstName}\", \"LastName\": \"{LastName}\", " +
-               $"\"Email\": \"{Email}\", \"Phone\": \"{PhoneNumber}\", " +
-               $"\"Address\": \"{Address}\", \"PreferredPaymentMethod\": \"{PreferredPaymentMethod}\" }}";
+        return JsonSerializer.Serialize(this, _jsonOptions);
     }
 }
 }
