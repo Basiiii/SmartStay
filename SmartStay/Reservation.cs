@@ -33,7 +33,7 @@ internal class Reservation
     DateTime _checkInDate;                                 // Check-in date for the reservation
     DateTime _checkOutDate;                                // Check-out date for the reservation
     ReservationStatus _status = ReservationStatus.Pending; // Current reservation status
-    int _totalCost;                                        // Total cost of the reservation
+    decimal _totalCost;                                    // Total cost of the reservation
     int _amountPaid = 0;                                   // Amount paid towards the reservation
     PaymentMethod _paymentMethodUsed = PaymentMethod.None; // Payment method used
 
@@ -49,7 +49,7 @@ internal class Reservation
     /// <param name="totalCost">The total cost of the reservation.</param>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
     public Reservation(int clientId, int accommodationId, AccommodationType accommodationType, DateTime checkInDate,
-                       DateTime checkOutDate, int totalCost)
+                       DateTime checkOutDate, decimal totalCost)
     {
         if (clientId <= 0)
             throw new ValidationException(ValidationErrorCode.InvalidId);
@@ -140,7 +140,7 @@ internal class Reservation
     /// <summary>
     /// Gets or sets the Total Cost.
     /// </summary>
-    public int TotalCost
+    public decimal TotalCost
     {
         get => _totalCost;
         set => _totalCost = Validator.ValidateTotalCost(value);

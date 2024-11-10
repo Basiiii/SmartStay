@@ -47,6 +47,21 @@ public static class Validator
     }
 
     /// <summary>
+    /// Validates an accommodation name, throwing an exception if invalid.
+    /// </summary>
+    /// <param name="name">The accommodation name to validate.</param>
+    /// <returns>The validated name if valid.</returns>
+    /// <exception cref="ValidationException">Thrown if the name is invalid.</exception>
+    public static string ValidateAccommodationName(string name)
+    {
+        if (!IsValidName(name))
+        {
+            throw new ValidationException(ValidationErrorCode.InvalidAccommodationName);
+        }
+        return name;
+    }
+
+    /// <summary>
     /// Validates an email address, throwing an exception if invalid.
     /// </summary>
     /// <param name="email">The email address to validate.</param>
@@ -89,6 +104,21 @@ public static class Validator
             throw new ValidationException(ValidationErrorCode.InvalidAddress);
         }
         return address;
+    }
+
+    /// <summary>
+    /// Validates a price, throwing an exception if invalid.
+    /// </summary>
+    /// <param name="price">The price to validate.</param>
+    /// <returns>The validated price if valid.</returns>
+    /// <exception cref="ValidationException">Thrown if the price is invalid.</exception>
+    public static decimal ValidatePrice(decimal price)
+    {
+        if (!IsValidPrice(price))
+        {
+            throw new ValidationException(ValidationErrorCode.InvalidPrice);
+        }
+        return price;
     }
 
     /// <summary>
@@ -158,7 +188,7 @@ public static class Validator
     /// <param name="totalCost">The total cost to validate.</param>
     /// <returns>The validated total cost if valid.</returns>
     /// <exception cref="ValidationException">Thrown if the total cost is invalid.</exception>
-    public static int ValidateTotalCost(int totalCost)
+    public static decimal ValidateTotalCost(decimal totalCost)
     {
         if (totalCost < 0)
         {
@@ -203,6 +233,14 @@ public static class Validator
     /// <param name="name">The name to check.</param>
     /// <returns><c>true</c> if the name is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValidName(string name) => !string.IsNullOrWhiteSpace(name) && name.Length <= 50;
+
+    /// <summary>
+    /// Checks if an accommodation name is valid.
+    /// </summary>
+    /// <param name="name">The name to check.</param>
+    /// <returns><c>true</c> if the name is valid; otherwise, <c>false</c>.</returns>
+    public static bool IsValidAccommodationName(string name) => !string.IsNullOrWhiteSpace(name) && name.Length <= 100;
+
     /// <summary>
     /// Checks if an email address is valid based on the defined <see cref="EmailPattern"/>.
     /// </summary>
@@ -217,6 +255,13 @@ public static class Validator
     /// <param name="phoneNumber">The phone number to check.</param>
     /// <returns><c>true</c> if the phone number is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValidPhoneNumber(string phoneNumber) => !string.IsNullOrWhiteSpace(phoneNumber);
+
+    /// <summary>
+    /// Checks if a price is valid.
+    /// </summary>
+    /// <param name="price">The price to check.</param>
+    /// <returns><c>true</c> if the price is valid; otherwise, <c>false</c>.</returns>
+    public static bool IsValidPrice(decimal price) => price > 0;
 
     /// <summary>
     /// Checks if an address is valid.

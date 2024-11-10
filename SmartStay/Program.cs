@@ -20,17 +20,10 @@
 
 namespace SmartStay
 {
-/// <summary>
-/// Defines the <see cref="Program" />
-/// </summary>
 internal static class Program
 {
-    /// <summary>
-    /// The Main
-    /// </summary>
     internal static void Main()
     {
-        // TODO: implement the accommodation class
     }
 }
 }

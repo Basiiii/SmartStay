@@ -34,7 +34,18 @@ public static class ValidationErrorMessages
         { ValidationErrorCode.InvalidEmail, "The email address is invalid or does not match the required format." },
         { ValidationErrorCode.InvalidPhoneNumber, "The phone number is invalid or empty." },
         { ValidationErrorCode.InvalidAddress, "The address is invalid or empty." },
-        { ValidationErrorCode.InvalidPaymentMethod, "The selected payment method is not valid." }
+        { ValidationErrorCode.InvalidPaymentMethod, "The selected payment method is not valid." },
+        { ValidationErrorCode.InvalidAccommodationType, "The accommodation type is invalid or not recognized." },
+        { ValidationErrorCode.InvalidId, "The provided ID is invalid or does not exist." },
+        { ValidationErrorCode.InvalidDateRange,
+          "The date range is invalid. Ensure the check-out date is later than the check-in date." },
+        { ValidationErrorCode.InvalidDate, "The date provided is invalid. It must be a valid date in the future." },
+        { ValidationErrorCode.InvalidTotalCost, "The total cost is invalid. It cannot be negative." },
+        { ValidationErrorCode.InvalidPaymentValue,
+          "The payment value is invalid. It cannot be negative or greater than the total cost." },
+        { ValidationErrorCode.InvalidReservationStatus, "The reservation status is invalid or unrecognized." },
+        { ValidationErrorCode.InvalidAccommodationName, "The accommodation name is invalid or empty." },
+        { ValidationErrorCode.InvalidPrice, "The price is invalid. It must be a positive value." }
     };
 
     /// <summary>
@@ -50,5 +61,4 @@ public static class ValidationErrorMessages
         return ErrorMessages.TryGetValue(errorCode, out var message) ? message : "Unknown validation error.";
     }
 }
-
 }

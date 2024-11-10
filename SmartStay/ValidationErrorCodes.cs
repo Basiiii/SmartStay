@@ -88,5 +88,15 @@ public enum ValidationErrorCode
     /// defined status in the ReservationStatus enumeration.
     /// </summary>
     InvalidReservationStatus = 1012,
+
+    /// <summary>
+    /// Error code indicating that the provided accommodation name is invalid.
+    /// </summary>
+    InvalidAccommodationName = 1013,
+
+    /// <summary>
+    /// Error code indicating that the provided price is invalid.
+    /// </summary>
+    InvalidPrice = 1014,
 }
 }
