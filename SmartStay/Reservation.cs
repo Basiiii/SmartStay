@@ -1,7 +1,4 @@
-﻿using System.Net;
-using System.Text.Json;
-
-/// <copyright file="Reservation.cs">
+﻿/// <copyright file="Reservation.cs">
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
@@ -14,6 +11,8 @@ using System.Text.Json;
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
+
+using System.Text.Json;
 namespace SmartStay
 {
 /// <summary>
@@ -34,8 +33,8 @@ internal class Reservation
     DateTime _checkOutDate;                                // Check-out date for the reservation
     ReservationStatus _status = ReservationStatus.Pending; // Current reservation status
     decimal _totalCost;                                    // Total cost of the reservation
-    int _amountPaid = 0;                                   // Amount paid towards the reservation
-    PaymentMethod _paymentMethodUsed = PaymentMethod.None; // Payment method used
+    decimal _amountPaid = 0;                               // Amount paid towards the reservation
+    readonly List<Payment> _payments = [];                 // List of payments made for the reservation
 
     /// <summary>
     /// Constructor to initialize a new reservation with essential details.
@@ -70,30 +69,9 @@ internal class Reservation
     }
 
     /// <summary>
-    /// Constructor to initialize a new reservation with essential details and payment information.
-    /// Validates the input parameters.
+    /// Gets the list of payments made towards the reservation.
     /// </summary>
-    /// <param name="clientId">The ID of the client.</param>
-    /// <param name="accommodationId">The ID of the accommodation.</param>
-    /// <param name="accommodationType">The type of accommodation.</param>
-    /// <param name="checkInDate">The check-in date.</param>
-    /// <param name="checkOutDate">The check-out date.</param>
-    /// <param name="totalCost">The total cost of the reservation.</param>
-    /// <param name="amountPaid">The amount paid towards the reservation.</param>
-    /// <param name="paymentMethod">The payment method used.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public Reservation(int clientId, int accommodationId, AccommodationType accommodationType, DateTime checkInDate,
-                       DateTime checkOutDate, int totalCost, int amountPaid, PaymentMethod paymentMethod)
-        : this(clientId, accommodationId, accommodationType, checkInDate, checkOutDate, totalCost)
-    {
-        if (amountPaid < 0 || amountPaid > totalCost)
-            throw new ValidationException(ValidationErrorCode.InvalidPaymentValue);
-        if (!Validator.IsValidPaymentMethod(paymentMethod))
-            throw new ValidationException(ValidationErrorCode.InvalidPaymentMethod);
-
-        _amountPaid = amountPaid;
-        _paymentMethodUsed = paymentMethod;
-    }
+    public IReadOnlyList<Payment> Payments => _payments.AsReadOnly();
 
     /// <summary>
     /// Gets the Reservation ID.
@@ -158,19 +136,10 @@ internal class Reservation
     /// <summary>
     /// Gets or sets the Amount Paid towards the reservation.
     /// </summary>
-    public int AmountPaid
+    public decimal AmountPaid
     {
         get => _amountPaid;
         set => _amountPaid = Validator.ValidatePayment(value);
-    }
-
-    /// <summary>
-    /// Gets or sets the Payment Method used in the reservation.
-    /// </summary>
-    public PaymentMethod PaymentMethodUsed
-    {
-        get => _paymentMethodUsed;
-        set => _paymentMethodUsed = Validator.ValidatePaymentMethod(value);
     }
 
     /// <summary>
@@ -214,35 +183,28 @@ internal class Reservation
     }
 
     /// <summary>
-    /// Makes a payment towards the reservation and updates the amount paid.
+    /// Makes a payment towards the reservation and adds a new Payment object to the payment list.
     /// </summary>
-    /// <param name="paymentAmount">The amount to be paid.</param>
-    /// <param name="paymentMethod">The payment method used.</param>
-    /// <exception cref="InvalidOperationException">Thrown if the payment amount is less than or equal to zero, if
-    /// the reservation is already fully paid, or if the payment amount is more than total required.</exception>
-    /// <exception cref="ValidationException">Thrown if the payment method is invalid.</exception>
-    public void MakePayment(int paymentAmount, PaymentMethod paymentMethod)
+    public void MakePayment(decimal paymentAmount, PaymentMethod paymentMethod)
     {
         if (paymentAmount <= 0)
-        {
             throw new InvalidOperationException("Payment amount must be greater than zero.");
-        }
-
         if (IsFullyPaid())
-        {
             throw new InvalidOperationException("Reservation is already fully paid.");
-        }
-
         if (paymentAmount > (_totalCost - _amountPaid))
-        {
             throw new InvalidOperationException("Payment is more than total required.");
-        }
 
+        // Validate the payment method
         if (!Validator.IsValidPaymentMethod(paymentMethod))
         {
             throw new ValidationException(ValidationErrorCode.InvalidPaymentMethod);
         }
 
+        // Create a new Payment instance and add it to the list
+        var payment = new Payment(_reservationId, paymentAmount, DateTime.Now, paymentMethod, PaymentStatus.Completed);
+        _payments.Add(payment);
+
+        // Update the amount paid
         _amountPaid += paymentAmount;
     }
 

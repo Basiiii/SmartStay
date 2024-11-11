@@ -122,6 +122,36 @@ public static class Validator
     }
 
     /// <summary>
+    /// Validates a payment amount, throwing an exception if invalid.
+    /// </summary>
+    /// <param name="amount">The payment amount to validate.</param>
+    /// <returns>The validated payment amount if valid.</returns>
+    /// <exception cref="ValidationException">Thrown if the payment amount is invalid.</exception>
+    public static decimal ValidatePaymentAmount(decimal amount)
+    {
+        if (!IsValidPaymentAmount(amount))
+        {
+            throw new ValidationException(ValidationErrorCode.InvalidPaymentValue);
+        }
+        return amount;
+    }
+
+    /// <summary>
+    /// Validates a payment status, throwing an exception if invalid.
+    /// </summary>
+    /// <param name="status">The payment status to validate.</param>
+    /// <returns>The validated payment status if valid.</returns>
+    /// <exception cref="ValidationException">Thrown if the payment status is invalid.</exception>
+    public static PaymentStatus ValidatePaymentStatus(PaymentStatus status)
+    {
+        if (!IsValidPaymentStatus(status))
+        {
+            throw new ValidationException(ValidationErrorCode.InvalidPaymentStatus);
+        }
+        return status;
+    }
+
+    /// <summary>
     /// Validates a payment method, throwing an exception if invalid.
     /// </summary>
     /// <param name="paymentMethod">The payment method to validate.</param>
@@ -200,10 +230,10 @@ public static class Validator
     /// <summary>
     /// Validates a new payment value, throwing an exception if invalid.
     /// </summary>
-    /// <param name="totalCost">The payment value to validate.</param>
+    /// <param name="paymentValue">The payment value to validate.</param>
     /// <returns>The validated payment value if valid.</returns>
     /// <exception cref="ValidationException">Thrown if the payment value is invalid.</exception>
-    public static int ValidatePayment(int paymentValue)
+    public static decimal ValidatePayment(decimal paymentValue)
     {
         if (paymentValue < 0)
         {
@@ -264,6 +294,13 @@ public static class Validator
     public static bool IsValidPrice(decimal price) => price > 0;
 
     /// <summary>
+    /// Checks if a payment amount is valid.
+    /// </summary>
+    /// <param name="amount">The payment amount to check.</param>
+    /// <returns><c>true</c> if the payment amount is valid; otherwise, <c>false</c>.</returns>
+    public static bool IsValidPaymentAmount(decimal amount) => amount > 0;
+
+    /// <summary>
     /// Checks if an address is valid.
     /// </summary>
     /// <param name="address">The address to check.</param>
@@ -277,6 +314,14 @@ public static class Validator
     /// <returns><c>true</c> if the payment method is valid; otherwise, <c>false</c>.</returns>
     public static bool IsValidPaymentMethod(PaymentMethod paymentMethod) => Enum.IsDefined(typeof(PaymentMethod),
                                                                                            paymentMethod);
+
+    /// <summary>
+    /// Checks if a payment status is valid by confirming it is a defined enum value.
+    /// </summary>
+    /// <param name="paymentStatus">The payment status to check.</param>
+    /// <returns><c>true</c> if the payment status is valid; otherwise, <c>false</c>.</returns>
+    public static bool IsValidPaymentStatus(PaymentStatus paymentStatus) => Enum.IsDefined(typeof(PaymentStatus),
+                                                                                           paymentStatus);
 
     /// <summary>
     /// Checks if the accommodation type is valid by verifying it is defined in the <see cref="AccommodationType"/>

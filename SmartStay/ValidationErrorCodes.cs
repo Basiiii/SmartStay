@@ -98,5 +98,10 @@ public enum ValidationErrorCode
     /// Error code indicating that the provided price is invalid.
     /// </summary>
     InvalidPrice = 1014,
+
+    /// <summary>
+    /// Error code indicating that the provided status is invalid.
+    /// </summary>
+    InvalidPaymentStatus = 1015,
 }
 }
