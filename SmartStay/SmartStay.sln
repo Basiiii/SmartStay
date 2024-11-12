@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay", "SmartStay.csproj", "{14143060-6BF0-49DC-A995-EA901BB2BD12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartStay", "SmartStay.csproj", "{14143060-6BF0-49DC-A995-EA901BB2BD12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Tests", "..\SmartStay.Tests\SmartStay.Tests.csproj", "{B9865E40-4322-42E0-963D-2144BCDB9A24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14143060-6BF0-49DC-A995-EA901BB2BD12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9865E40-4322-42E0-963D-2144BCDB9A24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9865E40-4322-42E0-963D-2144BCDB9A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9865E40-4322-42E0-963D-2144BCDB9A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9865E40-4322-42E0-963D-2144BCDB9A24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

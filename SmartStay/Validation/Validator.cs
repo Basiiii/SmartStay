@@ -32,6 +32,11 @@ public static class Validator
     private static readonly string EmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
     /// <summary>
+    /// Regular expression pattern for validating phone numbers. Follows European format.
+    /// </summary>
+    private static readonly string PhoneNumberPattern = @"^\+(\d{1,3})\d{7,15}$";
+
+    /// <summary>
     /// Validates a name, throwing an exception if invalid.
     /// </summary>
     /// <param name="name">The name to validate.</param>
@@ -284,7 +289,8 @@ public static class Validator
     /// </summary>
     /// <param name="phoneNumber">The phone number to check.</param>
     /// <returns><c>true</c> if the phone number is valid; otherwise, <c>false</c>.</returns>
-    public static bool IsValidPhoneNumber(string phoneNumber) => !string.IsNullOrWhiteSpace(phoneNumber);
+    public static bool IsValidPhoneNumber(string phoneNumber) =>
+        !string.IsNullOrWhiteSpace(phoneNumber) && Regex.IsMatch(phoneNumber, PhoneNumberPattern);
 
     /// <summary>
     /// Checks if a price is valid.
