@@ -9,8 +9,7 @@
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
-
-namespace SmartStay
+namespace SmartStay.Models.Enums
 {
 /// <summary>
 /// Enumerator representing payment status.

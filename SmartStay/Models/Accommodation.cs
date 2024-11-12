@@ -13,8 +13,11 @@
 /// <date>10/11/2024</date>
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using SmartStay.Models.Enums;
+using SmartStay.Utilities;
+using SmartStay.Validation;
 
-namespace SmartStay
+namespace SmartStay.Models
 {
 /// <summary>
 /// Defines the <see cref="Accommodation"/> class, which encapsulates the details of an accommodation,
@@ -204,7 +207,7 @@ public class Accommodation
             throw new InvalidOperationException("Accommodation ID limit exceeded.");
         }
 
-        return System.Threading.Interlocked.Increment(ref _lastAccommodationId);
+        return Interlocked.Increment(ref _lastAccommodationId);
     }
 
     /// <summary>

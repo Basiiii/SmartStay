@@ -17,7 +17,7 @@
 /// associated <see cref="ValidationErrorCode"/> helping identify the nature of the issue.
 /// </remarks>
 
-namespace SmartStay
+namespace SmartStay.Validation
 {
 using System;
 

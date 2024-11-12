@@ -17,8 +17,7 @@
 /// are returned to the user or logged during validation failures, ensuring that error reporting
 /// is consistent and meaningful.
 /// </remarks>
-
-namespace SmartStay
+namespace SmartStay.Validation
 {
 /// <summary>
 /// Provides error messages corresponding to each <see cref="ValidationErrorCode"/> value

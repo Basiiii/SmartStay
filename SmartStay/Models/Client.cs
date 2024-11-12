@@ -12,8 +12,10 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
 using System.Text.Json;
+using SmartStay.Models.Enums;
+using SmartStay.Validation;
 
-namespace SmartStay
+namespace SmartStay.Models
 {
 /// <summary>
 /// Defines the <see cref="Client"/> class, which encapsulates the details of a client including
@@ -22,7 +24,7 @@ namespace SmartStay
 /// This class validates the provided data upon creation or when modifying specific properties,
 /// ensuring that all data is consistent and correct.
 /// </summary>
-internal class Client
+public class Client
 {
     static int _lastClientId = 0;                                                        // Last assigned client ID
     static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options

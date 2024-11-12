@@ -15,10 +15,10 @@
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
-
-namespace SmartStay
+namespace SmartStay.Validation
 {
 using System.Text.RegularExpressions;
+using SmartStay.Models.Enums;
 
 /// <summary>
 /// Provides a set of static methods for validating input data in the SmartStay application,
