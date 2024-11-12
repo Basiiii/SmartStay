@@ -19,13 +19,15 @@
 /// JSON serialization and uses validation to ensure valid input values for all properties.
 /// </remarks>
 using System.Text.Json;
+using SmartStay.Models.Enums;
+using SmartStay.Validation;
 
-namespace SmartStay
+namespace SmartStay.Models
 {
 /// <summary>
 /// Represents a payment made in the SmartStay system, with details such as amount, date, method, and status.
 /// </summary>
-internal class Payment
+public class Payment
 {
     static int _lastPaymentId = 0;                                                       // Last assigned payment ID
     static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options

@@ -11,16 +11,18 @@
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
-
 using System.Text.Json;
-namespace SmartStay
+using SmartStay.Models.Enums;
+using SmartStay.Validation;
+
+namespace SmartStay.Models
 {
 /// <summary>
 /// Defines the <see cref="Reservation"/> class, which encapsulates reservation details such as client ID,
 /// accommodation type, dates, and payment information. This class ensures data consistency by validating
 /// input parameters upon creation or when modifying specific properties.
 /// </summary>
-internal class Reservation
+public class Reservation
 {
     static int _lastReservationId = 0;                                                   // Last assigned reservation ID
     static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
@@ -191,7 +193,7 @@ internal class Reservation
             throw new InvalidOperationException("Payment amount must be greater than zero.");
         if (IsFullyPaid())
             throw new InvalidOperationException("Reservation is already fully paid.");
-        if (paymentAmount > (_totalCost - _amountPaid))
+        if (paymentAmount > _totalCost - _amountPaid)
             throw new InvalidOperationException("Payment is more than total required.");
 
         // Validate the payment method

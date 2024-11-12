@@ -17,8 +17,7 @@
 /// in the SmartStay application, enabling precise identification of validation issues and improved error handling.
 /// Each enum value is associated with a unique code, which simplifies debugging and error logging.
 /// </remarks>
-
-namespace SmartStay
+namespace SmartStay.Validation
 {
 /// <summary>
 /// Defines error codes for validation failures within the SmartStay application.

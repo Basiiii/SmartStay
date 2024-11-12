@@ -19,8 +19,9 @@
 /// </remarks>
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using SmartStay.Models;
 
-namespace SmartStay
+namespace SmartStay.Utilities
 {
 /// <summary>
 /// Custom JSON converter for <see cref="Accommodation"/> objects, used to serialize and deserialize accommodations

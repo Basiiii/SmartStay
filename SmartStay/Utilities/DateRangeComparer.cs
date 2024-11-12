@@ -15,8 +15,7 @@
 /// This comparer is intended to be used for sorting or performing operations on lists of date ranges,
 /// where the sorting order is determined by the start date of each range.
 /// </remarks>
-
-namespace SmartStay
+namespace SmartStay.Utilities
 {
 using System;
 using System.Collections.Generic;
