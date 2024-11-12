@@ -9,6 +9,7 @@
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
+
 namespace SmartStay.Models.Enums
 {
 /// <summary>

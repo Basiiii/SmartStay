@@ -46,6 +46,9 @@ public class Reservations : IManageableEntity<Reservation>
     /// <c>true</c> if the reservation was successfully added to the collection;
     /// <c>false</c> if a reservation with the same ID already exists in the collection.
     /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="reservation"/> is <c>null</c>.
+    /// </exception>
     public bool Add(Reservation reservation)
     {
         if (reservation == null)
@@ -63,7 +66,7 @@ public class Reservations : IManageableEntity<Reservation>
     }
 
     /// <summary>
-    /// Removes a reservation from the collection by the reservation object.
+    /// Removes a reservation from the collection.
     /// </summary>
     /// <param name="reservation">The <see cref="Reservation"/> to remove from the collection.</param>
     /// <returns>
@@ -83,10 +86,12 @@ public class Reservations : IManageableEntity<Reservation>
     }
 
     /// <summary>
-    /// Imports reservations from a JSON string into the collection.
+    /// Imports reservations from a JSON string into the collection, replacing any existing reservations with the same
+    /// ID.
     /// </summary>
     /// <param name="data">The JSON string containing the list of reservations.</param>
     /// <exception cref="ArgumentException">Thrown if the data is null or empty.</exception>
+    /// <exception cref="ArgumentException">Thrown if deserialization of the data fails.</exception>
     public void Import(string data)
     {
         if (string.IsNullOrEmpty(data))
@@ -116,7 +121,9 @@ public class Reservations : IManageableEntity<Reservation>
     /// Finds a reservation by its unique ID.
     /// </summary>
     /// <param name="reservationId">The unique ID of the reservation to find.</param>
-    /// <returns>Returns the <see cref="Reservation"/> object if found; otherwise, <c>null</c>.</returns>
+    /// <returns>
+    /// Returns the <see cref="Reservation"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
     public Reservation? FindReservationById(int reservationId)
     {
       _reservationDictionary.TryGetValue(reservationId, out Reservation? reservation);
@@ -137,7 +144,10 @@ public class Reservations : IManageableEntity<Reservation>
     /// Finds all reservations associated with an accommodation by its unique accommodation ID.
     /// </summary>
     /// <param name="accommodationId">The unique ID of the accommodation whose reservations to find.</param>
-    /// <returns>A list of <see cref="Reservation"/> objects for the given accommodation.</returns>
+    /// <returns>
+    /// A list of <see cref="Reservation"/> objects for the given accommodation. Returns an empty list if no
+    /// reservations are found.
+    /// </returns>
     public IEnumerable<Reservation> FindReservationsByAccommodationId(int accommodationId)
     {
         return _reservationDictionary.Values.Where(r => r.AccommodationId == accommodationId);
@@ -149,6 +159,9 @@ public class Reservations : IManageableEntity<Reservation>
     /// <returns>
     /// A read-only collection of <see cref="Reservation"/> objects.
     /// </returns>
+    /// <remarks>
+    /// Returns a copy of the internal dictionary's values as a list to prevent external modification.
+    /// </remarks>
     public IReadOnlyCollection<Reservation> GetAllReservations()
     {
         return _reservationDictionary.Values.ToList(); // Returns a copy of the reservation collection.

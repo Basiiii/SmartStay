@@ -17,444 +17,280 @@
 /// This class serves as the primary interface for interacting with the booking system's key entities.
 /// It encapsulates all client, reservation, and accommodation operations in a single class.
 /// </remarks>
-namespace SmartStay.Services
-{
 using SmartStay.Models;
 using SmartStay.Repositories;
 
+namespace SmartStay.Services
+{
 /// <summary>
-/// Defines the <see cref="BookingManager" />
+/// Provides a static facade for managing clients, reservations, and accommodations in the booking system.
+/// This class centralizes all operations for adding, removing, importing, and exporting data for these entities.
+/// It interacts with internal repositories to simplify the main API and ensure a standardized approach.
 /// </summary>
+/// <remarks>
+/// This class offers a unified interface for handling key booking operations and data entities, facilitating
+/// integrations with other system components or external applications.
+/// </remarks>
 public static class BookingManager
 {
-    /// <summary>
-    /// Defines the <see cref="_clients"/> field, which holds the collection of all clients in the system.
-    /// This static readonly field is initialized at the time of declaration and represents the collection
-    /// that stores all client information.
-    /// </summary>
-    static readonly Clients _clients = new();
+#region Collections
 
     /// <summary>
-    /// Defines the <see cref="_reservations"/> field, which holds the collection of all reservations in the system.
-    /// This static readonly field is initialized at the time of declaration and represents the collection
-    /// that stores all reservation records.
+    /// Holds the collection of all clients in the system, stored in the <see cref="Clients"/> repository.
     /// </summary>
-    static readonly Reservations _reservations = new();
+    internal static readonly Clients _clients = new();
 
     /// <summary>
-    /// Defines the <see cref="_accommodations"/> field, which holds the collection of all accommodations in the system.
-    /// This static readonly field is initialized at the time of declaration and represents the collection
-    /// that stores all accommodation details.
+    /// Holds the collection of all reservations in the system, stored in the <see cref="Reservations"/> repository.
     /// </summary>
-    static readonly Accommodations _accommodations = new();
+    internal static readonly Reservations _reservations = new();
 
     /// <summary>
-    /// Adds a new client to the collection
+    /// Holds the collection of all accommodations in the system, stored in the <see cref="Accommodations"/> repository.
     /// </summary>
-    /// <param name="client">The <see cref="Client"/> to add to the collection</param>
-    /// <returns>Returns <c>true</c> if the client was successfully added; otherwise, <c>false</c></returns>
-    public static bool AddClient(Client client)
-    {
-        try
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), "Client cannot be null");
-            }
+    internal static readonly Accommodations _accommodations = new();
 
-            return _clients.Add(client);
-        }
-        catch (ArgumentNullException ex)
-        {
-            // TODO: Log the exception for null client
-            return false;
-        }
-        catch (Exception ex)
-        {
-            // TODO: Log any other unexpected exception
-            return false;
-        }
-    }
+#endregion
+
+#region Client Operations
 
     /// <summary>
-    /// Removes a client from the collection
+    /// Adds a new client to the system.
     /// </summary>
-    /// <param name="client">The <see cref="Client"/> to remove from the collection</param>
-    /// <returns>Returns <c>true</c> if the client was successfully removed; otherwise, <c>false</c></returns>
-    public static bool RemoveClient(Client client)
-    {
-        try
-        {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client), "Client cannot be null");
-            }
-
-            return _clients.Remove(client);
-        }
-        catch (ArgumentNullException ex)
-        {
-            // TODO: Log the exception for null client
-            return false;
-        }
-        catch (Exception ex)
-        {
-            // TODO: Log any other unexpected exception
-            return false;
-        }
-    }
+    /// <param name="client">The <see cref="Client"/> object to add.</param>
+    /// <returns>
+    /// <c>true</c> if the client was successfully added; <c>false</c> if a client with the same ID already exists.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="client"/> is <c>null</c>.
+    /// </exception>
+    public static bool AddClient(Client client) => _clients.Add(client);
 
     /// <summary>
-    /// Imports clients from a JSON string
+    /// Removes an existing client from the system.
     /// </summary>
-    /// <param name="data">The serialized string containing client data</param>
-    public static void ImportClients(string data)
-    {
-        try
-        {
-            // Check if the data is null or empty
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new ArgumentException("Data cannot be null or empty", nameof(data));
-            }
-
-            // Call the Import method on the _clients object
-            _clients.Import(data);
-        }
-        catch (ArgumentException ex)
-        {
-            // Argument exception is explicitly thrown if data is invalid
-            throw new ArgumentException("Invalid data provided for import", ex);
-        }
-        catch (Exception ex)
-        {
-            // General unexpected exception
-            throw new InvalidOperationException("An error occurred while importing clients", ex);
-        }
-    }
+    /// <param name="client">The <see cref="Client"/> object to remove.</param>
+    /// <returns>
+    /// <c>true</c> if the client was successfully removed; <c>false</c> if the client was not found.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="client"/> is <c>null</c>.
+    /// </exception>
+    public static bool RemoveClient(Client client) => _clients.Remove(client);
 
     /// <summary>
-    /// Exports the current list of clients to a JSON file
+    /// Imports a list of clients from a JSON string.
     /// </summary>
-    /// <param name="filePath">The path where the JSON file should be saved</param>
-    public static void ExportClients(string filePath)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(filePath))
-            {
-                throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
-            }
-
-            string jsonData = _clients.Export();
-
-            // Check if the directory exists; throw an exception if it does not
-            var directory = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(directory))
-            {
-                throw new DirectoryNotFoundException($"Directory '{directory}' not found.");
-            }
-
-            // Write the JSON data to the specified file
-            File.WriteAllText(filePath, jsonData);
-        }
-        catch (ArgumentException ex)
-        {
-            // TODO: Log the exception
-            throw new ArgumentException($"Invalid file path: {ex.Message}", ex);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            // TODO: Log the exception
-            throw new UnauthorizedAccessException($"Permission error: {ex.Message}", ex);
-        }
-        catch (IOException ex)
-        {
-            // TODO: Log the exception
-            throw new IOException($"File operation error: {ex.Message}", ex);
-        }
-    }
+    /// <param name="data">A JSON string containing client data to import.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="data"/> is <c>null</c> or an empty string.
+    /// </exception>
+    public static void ImportClients(string data) => _clients.Import(data);
 
     /// <summary>
-    /// Adds a new reservation to the collection
+    /// Exports the list of all clients to a specified file as a JSON string.
     /// </summary>
-    /// <param name="reservation">The <see cref="Reservation"/> to add to the collection</param>
-    /// <returns>Returns <c>true</c> if the reservation was successfully added; otherwise, <c>false</c></returns>
-    public static bool AddReservation(Reservation reservation)
-    {
-        try
-        {
-            if (reservation == null)
-            {
-                throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null");
-            }
-
-            return _reservations.Add(reservation);
-        }
-        catch (ArgumentNullException ex)
-        {
-            // TODO: Log the exception for null reservation
-            return false;
-        }
-        catch (Exception ex)
-        {
-            // TODO: Log any other unexpected exception
-            return false;
-        }
-    }
+    /// <param name="filePath">The file path where the client data will be saved.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="filePath"/> is <c>null</c> or an empty string.
+    /// </exception>
+    /// <exception cref="IOException">
+    /// Thrown when an I/O error occurs while writing to <paramref name="filePath"/>.
+    /// </exception>
+    public static void ExportClients(string filePath) => File.WriteAllText(filePath, _clients.Export());
 
     /// <summary>
-    /// Removes a reservation from the collection
+    /// Retrieves all clients in the system.
     /// </summary>
-    /// <param name="reservation">The <see cref="Reservation"/> to remove from the collection</param>
-    /// <returns>Returns <c>true</c> if the reservation was successfully removed; otherwise, <c>false</c></returns>
-    public static bool RemoveReservation(Reservation reservation)
-    {
-        try
-        {
-            if (reservation == null)
-            {
-                throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null");
-            }
-
-            return _reservations.Remove(reservation);
-        }
-        catch (ArgumentNullException ex)
-        {
-            // TODO: Log the exception for null reservation
-            return false;
-        }
-        catch (Exception ex)
-        {
-            // TODO: Log any other unexpected exception
-            return false;
-        }
-    }
+    /// <returns>A read-only collection of <see cref="Client"/> objects.</returns>
+    public static IReadOnlyCollection<Client> GetAllClients() => _clients.GetAllClients();
 
     /// <summary>
-    /// Imports reservations from a JSON string
+    /// Finds a client by their unique ID.
     /// </summary>
-    /// <param name="data">The serialized string containing reservation data</param>
-    public static void ImportReservations(string data)
-    {
-        try
-        {
-            // Check if the data is null or empty
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new ArgumentException("Data cannot be null or empty", nameof(data));
-            }
-
-            // Call the Import method on the _reservations object
-            _reservations.Import(data);
-        }
-        catch (ArgumentException ex)
-        {
-            // Argument exception is explicitly thrown if data is invalid
-            throw new ArgumentException("Invalid data provided for import", ex);
-        }
-        catch (Exception ex)
-        {
-            // General unexpected exception
-            throw new InvalidOperationException("An error occurred while importing reservations", ex);
-        }
-    }
+    /// <param name="id">The unique ID of the client to find.</param>
+    /// <returns>
+    /// The <see cref="Client"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="id"/> is less than zero.
+    /// </exception>
+    public static Client? FindClientById(int id) => _clients.FindClientById(id);
 
     /// <summary>
-    /// Exports the current list of reservations to a JSON file
+    /// Counts the total number of clients in the system.
     /// </summary>
-    /// <param name="filePath">The path where the JSON file should be saved</param>
-    public static void ExportReservations(string filePath)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(filePath))
-            {
-                throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
-            }
+    /// <returns>The number of clients.</returns>
+    public static int CountClients() => _clients.CountClients();
 
-            string jsonData = _reservations.Export();
+#endregion
 
-            // Check if the directory exists; throw an exception if it does not
-            var directory = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(directory))
-            {
-                throw new DirectoryNotFoundException($"Directory '{directory}' not found.");
-            }
-
-            // Write the JSON data to the specified file
-            File.WriteAllText(filePath, jsonData);
-        }
-        catch (ArgumentException ex)
-        {
-            // TODO: Log the exception
-            throw new ArgumentException($"Invalid file path: {ex.Message}", ex);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            // TODO: Log the exception
-            throw new UnauthorizedAccessException($"Permission error: {ex.Message}", ex);
-        }
-        catch (IOException ex)
-        {
-            // TODO: Log the exception
-            throw new IOException($"File operation error: {ex.Message}", ex);
-        }
-    }
+#region Reservation Operations
 
     /// <summary>
-    /// Adds a new accommodation to the collection
+    /// Adds a new reservation to the system.
     /// </summary>
-    /// <param name="accommodation">The <see cref="Accommodation"/> to add to the collection</param>
-    /// <returns>Returns <c>true</c> if the accommodation was successfully added; otherwise, <c>false</c></returns>
-    public static bool AddAccommodation(Accommodation accommodation)
-    {
-        try
-        {
-            if (accommodation == null)
-            {
-                throw new ArgumentNullException(nameof(accommodation), "Accommodation cannot be null");
-            }
-
-            return _accommodations.Add(accommodation);
-        }
-        catch (ArgumentNullException ex)
-        {
-            // TODO: Log the exception for null accommodation
-            return false;
-        }
-        catch (Exception ex)
-        {
-            // TODO: Log any other unexpected exception
-            return false;
-        }
-    }
+    /// <param name="reservation">The <see cref="Reservation"/> object to add.</param>
+    /// <returns>
+    /// <c>true</c> if the reservation was successfully added; <c>false</c> if a reservation with the same ID exists.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="reservation"/> is <c>null</c>.
+    /// </exception>
+    public static bool AddReservation(Reservation reservation) => _reservations.Add(reservation);
 
     /// <summary>
-    /// Removes an accommodation from the collection
+    /// Removes an existing reservation from the system.
     /// </summary>
-    /// <param name="accommodation">The <see cref="Accommodation"/> to remove from the collection</param>
-    /// <returns>Returns <c>true</c> if the accommodation was successfully removed; otherwise, <c>false</c></returns>
-    public static bool RemoveAccommodation(Accommodation accommodation)
-    {
-        try
-        {
-            if (accommodation == null)
-            {
-                throw new ArgumentNullException(nameof(accommodation), "Accommodation cannot be null");
-            }
-
-            return _accommodations.Remove(accommodation);
-        }
-        catch (ArgumentNullException ex)
-        {
-            // TODO: Log the exception for null accommodation
-            return false;
-        }
-        catch (Exception ex)
-        {
-            // TODO: Log any other unexpected exception
-            return false;
-        }
-    }
+    /// <param name="reservation">The <see cref="Reservation"/> object to remove.</param>
+    /// <returns>
+    /// <c>true</c> if the reservation was removed; <c>false</c> if the reservation was not found.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="reservation"/> is <c>null</c>.
+    /// </exception>
+    public static bool RemoveReservation(Reservation reservation) => _reservations.Remove(reservation);
 
     /// <summary>
-    /// Imports accommodations from a JSON string
+    /// Imports reservations from a JSON string.
     /// </summary>
-    /// <param name="data">The serialized string containing accommodation data</param>
-    public static void ImportAccommodations(string data)
-    {
-        try
-        {
-            // Check if the data is null or empty
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new ArgumentException("Data cannot be null or empty", nameof(data));
-            }
-
-            // Call the Import method on the _accommodations object
-            _accommodations.Import(data);
-        }
-        catch (ArgumentException ex)
-        {
-            // Argument exception is explicitly thrown if data is invalid
-            throw new ArgumentException("Invalid data provided for import", ex);
-        }
-        catch (Exception ex)
-        {
-            // General unexpected exception
-            throw new InvalidOperationException("An error occurred while importing accommodations", ex);
-        }
-    }
+    /// <param name="data">A JSON string containing reservation data to import.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="data"/> is <c>null</c> or an empty string.
+    /// </exception>
+    public static void ImportReservations(string data) => _reservations.Import(data);
 
     /// <summary>
-    /// Exports the current list of accommodations to a JSON file
+    /// Exports all reservations to a specified file as a JSON string.
     /// </summary>
-    /// <param name="filePath">The path where the JSON file should be saved</param>
-    public static void ExportAccommodations(string filePath)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(filePath))
-            {
-                throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
-            }
-
-            string jsonData = _accommodations.Export();
-
-            // Check if the directory exists; throw an exception if it does not
-            var directory = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(directory))
-            {
-                throw new DirectoryNotFoundException($"Directory '{directory}' not found.");
-            }
-
-            // Write the JSON data to the specified file
-            File.WriteAllText(filePath, jsonData);
-        }
-        catch (ArgumentException ex)
-        {
-            // TODO: Log the exception
-            throw new ArgumentException($"Invalid file path: {ex.Message}", ex);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            // TODO: Log the exception
-            throw new UnauthorizedAccessException($"Permission error: {ex.Message}", ex);
-        }
-        catch (IOException ex)
-        {
-            // TODO: Log the exception
-            throw new IOException($"File operation error: {ex.Message}", ex);
-        }
-    }
+    /// <param name="filePath">The file path where reservation data will be saved.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="filePath"/> is <c>null</c> or an empty string.
+    /// </exception>
+    /// <exception cref="IOException">
+    /// Thrown when an I/O error occurs while writing to <paramref name="filePath"/>.
+    /// </exception>
+    public static void ExportReservations(string filePath) => File.WriteAllText(filePath, _reservations.Export());
 
     /// <summary>
-    /// The GetAllClients
+    /// Retrieves all reservations in the system.
     /// </summary>
-    /// <returns>The <see cref="IReadOnlyCollection{Client}"/></returns>
-    public static IReadOnlyCollection<Client> GetAllClients()
-    {
-        return _clients.GetAllClients();
-    }
+    /// <returns>A read-only collection of <see cref="Reservation"/> objects.</returns>
+    public static IReadOnlyCollection<Reservation> GetAllReservations() => _reservations.GetAllReservations();
 
     /// <summary>
-    /// The GetAllReservations
+    /// Finds a reservation by its unique ID.
     /// </summary>
-    /// <returns>The <see cref="IReadOnlyCollection{Reservation}"/></returns>
-    public static IReadOnlyCollection<Reservation> GetAllReservations()
-    {
-        return _reservations.GetAllReservations();
-    }
+    /// <param name="id">The unique ID of the reservation to find.</param>
+    /// <returns>
+    /// The <see cref="Reservation"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="id"/> is less than zero.
+    /// </exception>
+    public static Reservation? FindReservationById(int id) => _reservations.FindReservationById(id);
 
     /// <summary>
-    /// The GetAllAccommodations
+    /// Finds all reservations associated with a specific client by their ID.
     /// </summary>
-    /// <returns>The <see cref="IReadOnlyCollection{Accommodation}"/></returns>
-    public static IReadOnlyCollection<Accommodation> GetAllAccommodations()
-    {
-        return _accommodations.GetAllAccommodations();
-    }
+    /// <param name="id">The unique ID of the client.</param>
+    /// <returns>A collection of <see cref="Reservation"/> objects for the specified client.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="id"/> is less than zero.
+    /// </exception>
+    public static IEnumerable<Reservation> FindReservationsByClientId(int id) =>
+        _reservations.FindReservationsByClientId(id);
+
+    /// <summary>
+    /// Finds all reservations associated with a specific accommodation by its ID.
+    /// </summary>
+    /// <param name="id">The unique ID of the accommodation.</param>
+    /// <returns>A collection of <see cref="Reservation"/> objects for the specified accommodation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="id"/> is less than zero.
+    /// </exception>
+    public static IEnumerable<Reservation> FindReservationsByAccommodationId(int id) =>
+        _reservations.FindReservationsByAccommodationId(id);
+
+    /// <summary>
+    /// Counts the total number of reservations in the system.
+    /// </summary>
+    /// <returns>The number of reservations.</returns>
+    public static int CountReservations() => _reservations.CountReservations();
+
+#endregion
+
+#region Accommodation Operations
+
+    /// <summary>
+    /// Adds a new accommodation to the system.
+    /// </summary>
+    /// <param name="accommodation">The <see cref="Accommodation"/> object to add.</param>
+    /// <returns>
+    /// <c>true</c> if the accommodation was added; <c>false</c> if an accommodation with the same ID exists.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="accommodation"/> is <c>null</c>.
+    /// </exception>
+    public static bool AddAccommodation(Accommodation accommodation) => _accommodations.Add(accommodation);
+
+    /// <summary>
+    /// Removes an existing accommodation from the system.
+    /// </summary>
+    /// <param name="accommodation">The <see cref="Accommodation"/> object to remove.</param>
+    /// <returns>
+    /// <c>true</c> if the accommodation was removed; <c>false</c> if the accommodation was not found.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="accommodation"/> is <c>null</c>.
+    /// </exception>
+    public static bool RemoveAccommodation(Accommodation accommodation) => _accommodations.Remove(accommodation);
+
+    /// <summary>
+    /// Imports accommodations from a JSON string.
+    /// </summary>
+    /// <param name="data">A JSON string containing accommodation data to import.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="data"/> is <c>null</c> or an empty string.
+    /// </exception>
+    public static void ImportAccommodations(string data) => _accommodations.Import(data);
+
+    /// <summary>
+    /// Exports all accommodations to a specified file as a JSON string.
+    /// </summary>
+    /// <param name="filePath">The file path where accommodation data will be saved.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="filePath"/> is <c>null</c> or an empty string.
+    /// </exception>
+    /// <exception cref="IOException">
+    /// Thrown when an I/O error occurs while writing to <paramref name="filePath"/>.
+    /// </exception>
+    public static void ExportAccommodations(string filePath) => File.WriteAllText(filePath, _accommodations.Export());
+
+    /// <summary>
+    /// Retrieves all accommodations in the system.
+    /// </summary>
+    /// <returns>A read-only collection of <see cref="Accommodation"/> objects.</returns>
+    public static IReadOnlyCollection<Accommodation> GetAllAccommodations() => _accommodations.GetAllAccommodations();
+
+    /// <summary>
+    /// Finds an accommodation by its unique ID.
+    /// </summary>
+    /// <param name="id">The unique ID of the accommodation to find.</param>
+    /// <returns>
+    /// The <see cref="Accommodation"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="id"/> is less than zero.
+    /// </exception>
+    public static Accommodation? FindAccommodationById(int id) => _accommodations.FindAccommodationById(id);
+
+    /// <summary>
+    /// Counts the total number of accommodations in the system.
+    /// </summary>
+    /// <returns>The number of accommodations.</returns>
+    public static int CountAccommodations() => _accommodations.CountAccommodations();
+
+#endregion
 }
-
 }

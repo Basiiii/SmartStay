@@ -15,11 +15,10 @@
 /// convert JSON strings back into collections of objects. It is designed to handle lists
 /// of objects and formats them in a human-readable way using indented formatting.
 /// </remarks>
+using System.Text.Json;
 
 namespace SmartStay.Utilities
 {
-using System.Text.Json;
-
 /// <summary>
 /// Provides static methods to serialize and deserialize objects to and from JSON format.
 /// </summary>

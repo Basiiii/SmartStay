@@ -15,11 +15,9 @@
 /// This comparer is intended to be used for sorting or performing operations on lists of date ranges,
 /// where the sorting order is determined by the start date of each range.
 /// </remarks>
+
 namespace SmartStay.Utilities
 {
-using System;
-using System.Collections.Generic;
-
 /// <summary>
 /// Implements <see cref="IComparer{T}"/> to provide comparison logic for tuples of <see cref="DateTime"/> values
 /// representing date ranges. The comparison is done based on the <see cref="Start"/> date of each range.

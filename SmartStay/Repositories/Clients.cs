@@ -48,9 +48,6 @@ public class Clients : IManageableEntity<Client>
     /// <exception cref="ArgumentNullException">
     /// Thrown if <paramref name="client"/> is <c>null</c>.
     /// </exception>
-    /// <exception cref="ArgumentException">
-    /// Thrown if a client with the same ID already exists in the collection.
-    /// </exception>
     public bool Add(Client client)
     {
         if (client == null)
@@ -68,14 +65,14 @@ public class Clients : IManageableEntity<Client>
     }
 
     /// <summary>
-    /// Removes a client from the collection by ID.
+    /// Removes a client from the collection.
     /// </summary>
-    /// <param name="clientId">The ID of the client to remove from.</param>
+    /// <param name="client">The <see cref="Client"/> object to remove from the collection.</param>
     /// <returns>
     /// <c>true</c> if the client was successfully removed from the collection;
     /// <c>false</c> if the client was not found.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="client"/> is <c>null</c>.</exception
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="client"/> is <c>null</c>.</exception>
     public bool Remove(Client client)
     {
         if (client == null)
@@ -87,10 +84,11 @@ public class Clients : IManageableEntity<Client>
     }
 
     /// <summary>
-    /// Imports a list of clients from a JSON string.
+    /// Imports a list of clients from a JSON string. Replaces any existing clients with the same ID in the collection.
     /// </summary>
     /// <param name="data">The JSON string containing the list of clients.</param>
     /// <exception cref="ArgumentException">Thrown if the data is null or empty.</exception>
+    /// <exception cref="ArgumentException">Thrown if deserialization of the data fails.</exception>
     public void Import(string data)
     {
         if (string.IsNullOrEmpty(data))
@@ -120,7 +118,9 @@ public class Clients : IManageableEntity<Client>
     /// Finds a client by their unique ID.
     /// </summary>
     /// <param name="id">The unique ID of the client to find.</param>
-    /// <returns>Returns the <see cref="Client"/> object if found; otherwise, <c>null</c>.</returns>
+    /// <returns>
+    /// Returns the <see cref="Client"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
     public Client? FindClientById(int id)
     {
         _clientDictionary.TryGetValue(id, out Client? client);

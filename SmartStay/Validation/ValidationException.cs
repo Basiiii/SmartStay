@@ -19,8 +19,6 @@
 
 namespace SmartStay.Validation
 {
-using System;
-
 /// <summary>
 /// Initializes a new instance of the <see cref="ValidationException"/> class with a specified
 /// validation error code. The error message is derived from <see cref="ValidationErrorMessages.GetErrorMessage"/>

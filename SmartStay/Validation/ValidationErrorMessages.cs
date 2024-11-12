@@ -17,6 +17,7 @@
 /// are returned to the user or logged during validation failures, ensuring that error reporting
 /// is consistent and meaningful.
 /// </remarks>
+
 namespace SmartStay.Validation
 {
 /// <summary>

@@ -46,6 +46,7 @@ public class Accommodations : IManageableEntity<Accommodation>
     /// <c>true</c> if the accommodation was successfully added to the collection;
     /// <c>false</c> if an accommodation with the same ID already exists in the collection.
     /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="accommodation"/> is <c>null</c>.</exception>
     public bool Add(Accommodation accommodation)
     {
         if (accommodation == null)
@@ -83,9 +84,11 @@ public class Accommodations : IManageableEntity<Accommodation>
 
     /// <summary>
     /// Imports accommodations from a JSON string into the collection.
+    /// Existing accommodations with the same ID are replaced.
     /// </summary>
     /// <param name="data">The JSON string containing the list of accommodations.</param>
     /// <exception cref="ArgumentException">Thrown if the data is null or empty.</exception>
+    /// <exception cref="ArgumentException">Thrown if deserialization of the data fails.</exception>
     public void Import(string data)
     {
         if (string.IsNullOrEmpty(data))
@@ -106,7 +109,7 @@ public class Accommodations : IManageableEntity<Accommodation>
     /// <summary>
     /// Exports the current list of accommodations to a JSON string.
     /// </summary>
-    /// <returns>A JSON string representation of the accommodations in the collection.</returns>
+    /// <returns>A JSON string representation of the accommodations in the collection.</returns
     public string Export()
     {
         return JsonHelper.SerializeToJson(_accommodationDictionary.Values);
@@ -116,7 +119,9 @@ public class Accommodations : IManageableEntity<Accommodation>
     /// Finds an accommodation by its unique ID.
     /// </summary>
     /// <param name="accommodationId">The unique ID of the accommodation to find.</param>
-    /// <returns>Returns the <see cref="Accommodation"/> object if found; otherwise, <c>null</c>.</returns>
+    /// <returns>
+    /// Returns the <see cref="Accommodation"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
     public Accommodation? FindAccommodationById(int accommodationId)
     {
       _accommodationDictionary.TryGetValue(accommodationId, out Accommodation? accommodation);
