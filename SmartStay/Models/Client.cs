@@ -11,6 +11,7 @@
 /// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using SmartStay.Models.Enums;
 using SmartStay.Validation;
@@ -26,8 +27,10 @@ namespace SmartStay.Models
 /// </summary>
 public class Client
 {
-    static int _lastClientId = 0;                                                        // Last assigned client ID
-    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
+    static int _lastClientId = 0; // Last assigned client ID
+    static readonly JsonSerializerOptions _jsonOptions =
+        new() { WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }; // JSON Serializer options
 
     readonly int _id;                                           // ID of the client
     string _firstName;                                          // First name of the client
