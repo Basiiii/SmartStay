@@ -38,6 +38,9 @@
 % Used to add images
 \usepackage{graphicx}
 
+% Used for figures
+\usepackage{float}
+
 % Set English as language and allow to write hyphenated"=words
 %
 % Even though `american`, `english` and `USenglish` are synonyms for babel package (according to https://tex.stackexchange.com/questions/12775/babel-english-american-usenglish), the llncs document class is prepared to avoid the overriding of certain names (such as "Abstract." -> "Abstract" or "Fig." -> "Figure") when using `english`, but not when using the other 2.
@@ -416,7 +419,6 @@
 	\vspace{6pt}
 	16 de Outubro de 2024}
 
-
 %% Multiple insitutes - ALTERNATIVE to the above
 % \author{%
 %     Firstname Lastname\inst{1} \and
@@ -450,7 +452,8 @@ Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gest�
 \keywords{registos, consultas, reservas, check-in, clientes, alojamentos}
 \end{abstract}
 
-
+\newpage
+\setcounter{page}{1}
 \section{Introdução}
 \label{sec:introduction}
 
@@ -530,29 +533,115 @@ Utiliza-se \textit{XML Documentation Comments} para documentar o código, permit
 \section{Estrutura de Classes}
 \label{sec:classes}
 
+\subsection{Introdução ao Sistema}
 O diagrama de classes apresentado descreve a estrutura lógica do sistema de gestão de reservas para alojamentos turísticos, com uma arquitetura desenhada para centralizar e organizar informações essenciais sobre clientes, reservas, alojamentos e pagamentos. Este modelo, por além de otimizar o fluxo de trabalho, promove a extensibilidade e modularidade, facilitando tanto as expansões futuras como a manutenção do sistema.
 
-No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) armazena informações sobre cada utilizador, incluindo dados pessoais como nome, e-mail e endereço. A classe \textit{Accommodation} (alojamento) representa as propriedades ou quartos disponíveis para reserva, contendo informações como o tipo de alojamento, capacidade e preço por noite. A classe \textit{Reservation} (reserva) liga os clientes aos alojamentos, registando os detalhes da estadia, incluindo as datas de check-in e check-out, o custo total e o estado do pagamento.
+\subsection{Classes Principais}
+No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) armazena informações sobre um cliente individual, como nome, e-mail e endereço. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para armazenar e organizar várias instâncias da classe \textit{Client}. Esta coleção é implementada através de um dicionário, permitindo o acesso eficiente e rápido aos dados dos clientes.
 
-Para processar pagamentos, a classe \textit{Payment} (pagamento) regista os dados de cada transação associada a uma reserva, como o montante pago, a data de pagamento e o método utilizado. A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para adicionar e remover clientes, criar e cancelar reservas, gerir alojamentos e processar pagamentos.
+A classe \textit{Accommodation} (alojamento) representa as propriedades ou quartos disponíveis para reserva, com informações como o tipo de alojamento, a capacidade e o preço por noite. Parecida à classe \textit{Clients}, o sistema utiliza a classe \textit{Accommodations}, que também serve como uma coleção para armazenar e gerir vários alojamentos, sendo implementada através de um dicionário para facilitar a consulta e a manipulação dos dados.
 
-O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. Desta forma, o \textit{BookingManager} atua como a face do sistema, permitindo direcionar chamadas para a classe apropriada com base no tipo de entidade a ser manipulada.
+A classe \textit{Reservation} (reserva) liga os clientes aos alojamentos, registando os detalhes da estadia, incluindo as datas de check-in e check-out, o custo total e o estado do pagamento. Tal como as classes \textit{Clients} e \textit{Accommodations}, o sistema utiliza a classe \textit{Reservations}, que guarda uma coleção de reservas, também gerida por um dicionário, permitindo a manipulação eficiente de múltiplas instâncias de reservas.
+
+\subsection{Processamento de Pagamentos}
+A classe \textit{Payment} (pagamento) tem como objetivo guardar informações detalhadas sobre cada transação associada a uma reserva, incluindo o montante pago, a data do pagamento e o método utilizado. A classe \textit{Reservation} mantém uma coleção de instâncias da classe \textit{Payment}, permitindo registar todos os pagamentos realizados para uma determinada reserva.
+
+\subsection{BookingManager e a Interface ManageableEntity}
+A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para adicionar e remover clientes, criar e cancelar reservas, gerir alojamentos e processar pagamentos.
+
+O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. 
+
+\subsection{Padrão Facade}
+O \textit{BookingManager} atua como a face do sistema, permitindo direcionar chamadas para a classe apropriada com base no tipo de entidade a ser manipulada. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que simplifica a interação com o sistema ao fornecer uma interface única e centralizada. Este padrão oculta as complexidades internas do sistema, como a gestão dos dados em várias coleções, e permite que o utilizador ou outros componentes do sistema façam operações de forma mais intuitiva e eficiente. Ao centralizar a lógica de interação, o \textit{Facade} promove uma maior modularidade e extensibilidade, uma vez que mudanças internas podem ser feitas sem impactar a interface externa. Desta forma, o \textit{BookingManager} oferece um ponto único de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.9\textwidth]{Images/POO_Class_Diagram.png}
+	\includegraphics[width=1.0\textwidth]{Images/POO_Class_Diagram.png}
 	\caption{Diagrama de Classes do Sistema de Gestão de Alojamentos Turísticos}
 	\label{fig:diagrama_classes}
 \end{figure}
+
+\section{Estruturas de Dados Utilizadas}
+\label{sec:estruturasdados}
+
+\subsection{Utilização de Dictionary}
+As estruturas de dados escolhidas para o sistema foram definidas com o objetivo de otimizar a eficiência e o desempenho, especialmente em operações de busca, inserção e remoção. A principal estrutura de dados utilizada foi o \textit{Dictionary} (dicionário), que oferece uma maneira eficiente de armazenar e aceder a entidades como clientes, reservas e alojamentos, por meio de chaves únicas. Esta estrutura garante um tempo de acesso quase constante para operações como inserção e busca, o que é essencial para o bom desempenho do sistema, especialmente à medida que o número de entidades cresce.
+
+\vspace*{15pt}
+\renewcommand{\lstlistingname}{Amostra de Código}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Uso de Dictionary}, 
+	label={lst:C}]
+readonly Dictionary<int, Client> _clientDictionary = new Dictionary<int, Client>();
+\end{lstlisting}
+
+O uso do \textit{Dictionary} garante que as operações de inserção e remoção de clientes sejam realizadas de forma rápida, com um tempo médio de execução constante $O(1)$, o que melhora a escalabilidade do sistema à medida que mais clientes são adicionados.
+
+\subsection{Utilização de List e Pesquisa Binária}
+
+Para a classe \textit{Reservation}, foi utilizada uma \textit{List} de tuplas para armazenar intervalos de datas de reservas, o que permite gerir as datas de forma eficiente. A lista é ordenada, e para verificar a disponibilidade de um alojamento, utiliza-se a técnica de \textit{pesquisa binária}, que permite encontrar rapidamente se há sobreposição de datas entre reservas. Abaixo está um exemplo de como o sistema verifica se existe disponibilidade:
+
+\vspace*{15pt}
+\renewcommand{\lstlistingname}{Amostra de Código}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Uso de Pesquisa Binária}, 
+	label={lst:C}]
+public bool IsAvailable(DateTime startDate, DateTime endDate)
+{
+	if (endDate <= startDate)
+	throw new ArgumentException("End date must be after the start date.");
+	
+	int index = _reservedDates.BinarySearch((startDate, endDate), new DateRangeComparer());
+	if (index < 0)
+	index = ~index; // A pesquisa binária retorna o complemento do índice de inserção
+	
+	if (index > 0 && _reservedDates[index - 1].End > startDate)
+	{
+		return false; // Sobreposição com a reserva anterior
+	}
+	if (index < _reservedDates.Count && _reservedDates[index].Start < endDate)
+	{
+		return false; // Sobreposição com a reserva seguinte
+	}
+	
+	return true; // Não há sobreposição, o alojamento está disponível
+}
+
+return true; // Não há sobreposição, o alojamento está disponível
+\end{lstlisting}
+
+Ao utilizar a \textit{List} de tuplas para armazenar intervalos de datas e a pesquisa binária para verificar a disponibilidade, o sistema é capaz de realizar verificações de disponibilidade de maneira muito mais eficiente do que uma busca linear. A \textit{pesquisa binária} reduz o tempo de busca de $O(n)$ para $O(\textit{log}(n))$, o que é um ganho significativo em termos de desempenho, principalmente em sistemas com muitas reservas.
+
+\subsection{Vantagens das Estruturas de Dados Escolhidas}
+
+As escolhas de \textit{Dictionary} e \textit{List} oferecem várias vantagens para o sistema:
+
+\begin{itemize}
+	\item \textbf{Eficiência de Acesso}: O \textit{Dictionary} permite acesso rápido às entidades, como clientes e reservas, através de suas chaves únicas. Isto melhora a performance, especialmente quando o sistema lida com um grande volume de dados.
+	\item \textbf{Organização e Escalabilidade}: O uso do \textit{Dictionary} para armazenar entidades e o \textit{List} para reservas garante que o sistema seja facilmente escalável. À medida que o número de clientes ou reservas cresce, o desempenho do sistema permanece estável devido à eficiência destas estruturas.
+	\item \textbf{Pesquisa Rápida de Intervalos de Datas}: A combinação de \textit{List} com pesquisa binária permite que a verificação de disponibilidade de um alojamento seja realizada de forma muito mais eficiente do que outras abordagens. A inserção das reservas na lista ordenada mantém a integridade dos dados e facilita a verificação de conflitos de datas.
+\end{itemize}
+
+Estas escolhas refletem uma consideração cuidadosa da necessidade de desempenho e eficiência, ao mesmo tempo que garantem uma implementação simples e direta, essencial para manter o sistema modular e fácil de manter.
+
+\section{Layout do Sistema}
+
+A arquitetura do sistema foi estruturada de acordo com um layout comum e amplamente utilizado em aplicações de software, que segue o padrão de separação de responsabilidades entre diferentes camadas. Esse padrão facilita a manutenção, escalabilidade e testabilidade do sistema. A divisão em \textit{Models}, \textit{Repositories}, \textit{Services} e \textit{Utilities} organiza a aplicação de maneira modular e coesa, garantindo que cada componente tenha uma função clara e bem definida.
+
+\subsection{Models} A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Esses modelos são frequentemente utilizados para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento e recuperação de dados. Além disso, os modelos podem incluir validações de dados e lógica de negócios específica, facilitando a comunicação entre as diferentes camadas.
+
+\subsection{Repositories} A camada de \textit{Repositories} atua como a interface entre o sistema e a base de dados ou outro armazenamento persistente. Os repositórios são responsáveis por realizar as operações de leitura e escrita nos dados. Esta camada encapsula as complexidades do acesso aos dados e oferece métodos que permitem que a camada de serviço trabalhe com abstrações em vez de se preocupar diretamente com a persistência. No nosso sistema, por exemplo, o repositório de clientes pode fornecer métodos como \textit{Add()}, \textit{Remove()} e \textit{GetById()}, permitindo que os dados dos clientes sejam manipulados de forma segura e eficiente.
+
+\subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois ele gerencia o processo de reserva, incluindo a criação, validação e processamento de pagamentos. Os serviços permitem que a lógica de negócios seja centralizada e desacoplada das camadas de persistência e apresentação, tornando o sistema mais fácil de testar e de manter.
+
+\subsection{Utilities} A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. Exemplos típicos incluem ferramentas de validação, manipulação de strings, loggers e geradores de relatórios. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação. Por exemplo, um validador de datas ou um utilitário de formatação de preços pode ser usado em diferentes componentes, como na criação de reservas e no processamento de pagamentos.
 
 \section{Conclusão}
 \label{sec:conclusion}
 
 w
-
-\subsubsection*{Agradecimentos}
-
-Gostaria de expressar o meu sincero agradecimento ao Professor Luís Ferreira, pela sua orientação, apoio e \textit{feedback} valiosos ao longo do desenvolvimento deste projeto. A sua ajuda foi fundamental no desenvolvimento desta solução informática.
 
 %%% ===============================================================================
 %%% Bibliography
@@ -572,7 +661,7 @@ Gostaria de expressar o meu sincero agradecimento ao Professor Luís Ferreira, p
 % Enfore empty line after bibliography
 \ \\
 %
-Todas as ligações foram consultadas pela última vez no dia 25 de outubro de 2024.
+Todas as ligações foram consultadas pela última vez no dia 13 de novembro de 2024.
 
 
 %%% ===============================================================================
