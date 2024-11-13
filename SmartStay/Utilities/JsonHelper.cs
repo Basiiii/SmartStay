@@ -4,19 +4,15 @@
 /// <file>
 /// This file contains helper methods for working with JSON serialization and deserialization.
 /// </file>
-/// <summary>
-/// Provides static methods for serializing and deserializing objects to and from JSON format.
-/// Utilizes <see cref="System.Text.Json.JsonSerializer"/> for serialization.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
-/// <remarks>
-/// This class is used to convert objects (especially collections) into JSON strings and to
-/// convert JSON strings back into collections of objects. It is designed to handle lists
-/// of objects and formats them in a human-readable way using indented formatting.
-/// </remarks>
 using System.Text.Json;
 
+/// <summary>
+/// The <c>SmartStay.Utilities</c> namespace provides helper functions and utility classes used throughout the SmartStay
+/// application. These utilities support common operations and enhance reusability across different components of the
+/// application.
+/// </summary>
 namespace SmartStay.Utilities
 {
 /// <summary>

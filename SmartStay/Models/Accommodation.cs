@@ -2,13 +2,10 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of the Accommodation class used in the SmartStay application.
-/// </file>
-/// <summary>
-/// Represents the <see cref="Accommodation"/> class, which stores information about individual accommodations,
+/// This file contains the <see cref="Accommodation"/> class, which stores information about individual accommodations,
 /// including their type, name, address, price per night, and availability status. This class also provides
 /// methods to calculate the total cost based on stay duration and manage availability status.
-/// </summary>
+/// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
 using System.Text.Json;
@@ -17,6 +14,10 @@ using SmartStay.Models.Enums;
 using SmartStay.Utilities;
 using SmartStay.Validation;
 
+/// <summary>
+/// The <c>SmartStay.Models</c> namespace contains the primary data models used within the SmartStay application.
+/// These models represent core entities and structures essential for managing application data.
+/// </summary>
 namespace SmartStay.Models
 {
 /// <summary>

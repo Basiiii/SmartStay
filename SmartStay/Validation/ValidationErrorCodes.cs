@@ -4,20 +4,19 @@
 /// <file>
 /// This file contains the definition of the <see cref="ValidationErrorCode"/> enum, which represents
 /// specific error codes related to validation failures within the SmartStay application.
-/// </file>
-/// <summary>
+///
 /// Contains the <see cref="ValidationErrorCode"/> enum, which defines error codes for validation
 /// errors that can occur when processing client data, such as invalid names, emails, phone numbers, addresses,
 /// and payment methods.
-/// </summary>
+/// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
-/// <remarks>
-/// The <see cref="ValidationErrorCode"/> enum provides consistent error codes for validation failures
-/// in the SmartStay application, enabling precise identification of validation issues and improved error handling.
-/// Each enum value is associated with a unique code, which simplifies debugging and error logging.
-/// </remarks>
 
+/// <summary>
+/// The <c>SmartStay.Validation</c> namespace contains classes and methods for validating data and enforcing business
+/// rules within the SmartStay application. These validations help ensure data integrity and compliance with application
+/// requirements.
+/// </summary>
 namespace SmartStay.Validation
 {
 /// <summary>

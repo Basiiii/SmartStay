@@ -2,14 +2,15 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of the PaymentStatus enumeration used in the SmartStay application.
+/// This file contains the definition of the <see cref="PaymentStatus"/> enumeration used in the SmartStay application
+/// representing various payment status.
 /// </file>
-/// <summary>
-/// The <see cref="PaymentStatus"/> enumeration defines the various payment status in the SmartStay application.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
 
+/// <summary>
+/// This namespace contains enumerations related to accommodation types used within the SmartStay application.
+/// </summary>
 namespace SmartStay.Models.Enums
 {
 /// <summary>

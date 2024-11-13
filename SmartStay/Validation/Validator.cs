@@ -2,22 +2,21 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of validation methods used in the SmartStay application.
-/// These methods validate various input parameters such as IDs, names, emails, phone numbers,
-/// addresses, and payment methods to ensure data integrity.
+/// This file contains the definition of the <see cref="Validator"/> class which provides static methods for validating
+/// input data related to the SmartStay application. It includes methods for checking the validity of names, emails,
+/// phone numbers, addresses, and payment methods. These validation functions help maintain data integrity and ensure
+/// that input values conform to expected formats and constraints.
 /// </file>
-/// <summary>
-/// The <see cref="Validator"/> class provides static methods for validating input data
-/// related to the SmartStay application. It includes methods for checking the validity of
-/// names, emails, phone numbers, addresses, and payment methods. These validation
-/// functions help maintain data integrity and ensure that input values conform to expected
-/// formats and constraints.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
 using System.Text.RegularExpressions;
 using SmartStay.Models.Enums;
 
+/// <summary>
+/// The <c>SmartStay.Validation</c> namespace contains classes and methods for validating data and enforcing business
+/// rules within the SmartStay application. These validations help ensure data integrity and compliance with application
+/// requirements.
+/// </summary>
 namespace SmartStay.Validation
 {
 /// <summary>

@@ -2,24 +2,19 @@
 /// Copyright (c) 2024 All Rights Reserved
 /// </copyright>
 /// <file>
-/// This file contains the definition of the BookingManager class,
+/// This file contains the definition of the <see cref="BookingManager"/> class,
 /// which manages client, reservation, and accommodation operations for the booking system.
 /// It provides static methods to add, remove, import, and export clients, reservations, and accommodations.
 /// </file>
-/// <summary>
-/// Defines the <see cref="BookingManager"/> class, responsible for managing various operations related to
-/// clients, reservations, and accommodations within the booking system.
-/// It provides a centralized interface for interacting with the system's core data structures and operations.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
-/// <remarks>
-/// This class serves as the primary interface for interacting with the booking system's key entities.
-/// It encapsulates all client, reservation, and accommodation operations in a single class.
-/// </remarks>
 using SmartStay.Models;
 using SmartStay.Repositories;
 
+/// <summary>
+/// The <c>SmartStay.Services</c> namespace contains service classes that implement business logic for the SmartStay
+/// application. These services coordinate actions between repositories and models to fulfill application requirements.
+/// </summary>
 namespace SmartStay.Services
 {
 /// <summary>

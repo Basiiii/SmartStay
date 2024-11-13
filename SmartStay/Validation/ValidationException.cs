@@ -6,17 +6,14 @@
 /// used for handling validation errors within the SmartStay application. The exception includes a
 /// specific error code and a descriptive message for easy identification of validation issues.
 /// </file>
-/// <summary>
-/// Defines the <see cref="ValidationException"/> class, a custom exception for validation errors,
-/// encapsulating both an error code and a descriptive message based on that code.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
-/// <remarks>
-/// This custom exception is thrown whenever validation fails for a particular field, with the
-/// associated <see cref="ValidationErrorCode"/> helping identify the nature of the issue.
-/// </remarks>
 
+/// <summary>
+/// The <c>SmartStay.Validation</c> namespace contains classes and methods for validating data and enforcing business
+/// rules within the SmartStay application. These validations help ensure data integrity and compliance with application
+/// requirements.
+/// </summary>
 namespace SmartStay.Validation
 {
 /// <summary>

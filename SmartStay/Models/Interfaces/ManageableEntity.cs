@@ -4,19 +4,17 @@
 /// <file>
 /// This file contains the definition of the IManageableEntity interface, which provides a standard
 /// structure for managing collections of entities within the SmartStay application.
-/// </file>
-/// <summary>
-/// Defines the IManageableEntity interface, a generic interface for managing collections of entities
-/// with common operations such as Add, Remove, Import, and Export.
-/// </summary>
-/// <author>Enrique Rodrigues</author>
-/// <date>11/11/2024</date>
-/// <remarks>
+///
 /// This interface can be implemented by any collection class to provide a consistent API for managing
 /// entities, facilitating code reuse and standardization across different types of entity collections
 /// (e.g., Clients, Reservations, Accommodations).
-/// </remarks>
+/// </file>
+/// <author>Enrique Rodrigues</author>
+/// <date>11/11/2024</date>
 
+/// <summary>
+/// This namespace contains interfaces used within the SmartStay application.
+/// </summary>
 namespace SmartStay.Models.Interfaces
 {
 /// <summary>

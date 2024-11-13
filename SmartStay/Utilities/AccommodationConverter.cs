@@ -5,22 +5,17 @@
 /// This file contains the definition of the <see cref="AccommodationConverter"/> class,
 /// a custom JSON converter for <see cref="Accommodation"/> objects.
 /// </file>
-/// <summary>
-/// Defines the <see cref="AccommodationConverter"/> class, which implements <see cref="JsonConverter{Accommodation}"/>
-/// to provide custom serialization and deserialization logic for <see cref="Accommodation"/> objects.
-/// This converter handles how an <see cref="Accommodation"/> object is represented as JSON and how it is read back from
-/// JSON.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
-/// <remarks>
-/// This converter is used for customizing the JSON representation of the <see cref="Accommodation"/> class,
-/// particularly for handling the reserved dates and the type field, which may need special formatting.
-/// </remarks>
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using SmartStay.Models;
 
+/// <summary>
+/// The <c>SmartStay.Utilities</c> namespace provides helper functions and utility classes used throughout the SmartStay
+/// application. These utilities support common operations and enhance reusability across different components of the
+/// application.
+/// </summary>
 namespace SmartStay.Utilities
 {
 /// <summary>

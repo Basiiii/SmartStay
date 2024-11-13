@@ -2,16 +2,15 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of the ReservationStatus enumeration used in the SmartStay application,
-/// representing the different statuses a reservation can have.
+/// This file contains the definition of the <see cref="ReservationStatus"/> enumeration used in the SmartStay
+/// application, representing the different statuses a reservation can have.
 /// </file>
-/// <summary>
-/// The <see cref="ReservationStatus"/> enumeration defines the various reservation status types available
-/// in the SmartStay application.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
 
+/// <summary>
+/// This namespace contains enumerations related to accommodation types used within the SmartStay application.
+/// </summary>
 namespace SmartStay.Models.Enums
 {
 /// <summary>

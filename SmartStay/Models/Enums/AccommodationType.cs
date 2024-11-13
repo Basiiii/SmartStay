@@ -2,16 +2,15 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of the AccommodationType enumeration used in the SmartStay application,
-/// representing different accommodation types available for booking.
+/// This file contains the definition of the <see cref="AccommodationType"/> enumeration used in the SmartStay
+/// application, representing different accommodation types available for booking.
 /// </file>
-/// <summary>
-/// The <see cref="AccommodationType"/> enumeration defines various types of accommodations
-/// available in the SmartStay application, providing flexibility for different lodging preferences.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
-  
+
+/// <summary>
+/// This namespace contains enumerations related to accommodation types used within the SmartStay application.
+/// </summary>
 namespace SmartStay.Models.Enums
 {
 /// <summary>

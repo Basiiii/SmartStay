@@ -6,22 +6,16 @@
 /// in the SmartStay application. The class includes details such as payment amount, date, method, and status,
 /// along with validation logic to ensure data integrity.
 /// </file>
-/// <summary>
-/// Defines the <see cref="Payment"/> class, encapsulating the essential details of a payment transaction
-/// within the SmartStay system. It includes properties for the payment ID, reservation ID, amount, date,
-/// payment method, and status, with methods to generate unique payment IDs and serialize the instance to JSON format.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
-/// <remarks>
-/// This class is intended for internal use within the SmartStay application to manage and track payment
-/// records associated with reservations. The <see cref="Payment"/> class provides a ToString method for
-/// JSON serialization and uses validation to ensure valid input values for all properties.
-/// </remarks>
 using System.Text.Json;
 using SmartStay.Models.Enums;
 using SmartStay.Validation;
 
+/// <summary>
+/// The <c>SmartStay.Models</c> namespace contains the primary data models used within the SmartStay application.
+/// These models represent core entities and structures essential for managing application data.
+/// </summary>
 namespace SmartStay.Models
 {
 /// <summary>

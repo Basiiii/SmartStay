@@ -2,16 +2,15 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of the PaymentMethod enumeration used in the SmartStay application,
+/// This file contains the definition of the <see cref="PaymentMethod"/> enumeration used in the SmartStay application,
 /// representing different payment methods available for bookings and transactions.
 /// </file>
-/// <summary>
-/// The <see cref="PaymentMethod"/> enumeration defines the various payment methods available
-/// in the SmartStay application.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>07/10/2024</date>
 
+/// <summary>
+/// This namespace contains enumerations related to accommodation types used within the SmartStay application.
+/// </summary>
 namespace SmartStay.Models.Enums
 {
 /// <summary>

@@ -2,19 +2,20 @@
 /// Copyright (c) 2024 Enrique Rodrigues. All Rights Reserved.
 /// </copyright>
 /// <file>
-/// This file contains the definition of the Reservation class used in the SmartStay application.
-/// </file>
-/// <summary>
-/// Represents the <see cref="Reservation"/> class, which stores information about client reservations,
+/// This file contains the <see cref="Reservation"/> class, which stores information about client reservations,
 /// including accommodation details, check-in and check-out dates, and payment status. This class manages
 /// reservation data effectively while ensuring data integrity through input validation.
-/// </summary>
+/// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
 using System.Text.Json;
 using SmartStay.Models.Enums;
 using SmartStay.Validation;
 
+/// <summary>
+/// The <c>SmartStay.Models</c> namespace contains the primary data models used within the SmartStay application.
+/// These models represent core entities and structures essential for managing application data.
+/// </summary>
 namespace SmartStay.Models
 {
 /// <summary>

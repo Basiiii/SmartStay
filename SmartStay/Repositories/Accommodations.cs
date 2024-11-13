@@ -2,30 +2,24 @@
 /// Copyright (c) 2024 All Rights Reserved
 /// </copyright>
 /// <file>
-/// This file contains the definition of the <see cref="Accommodations"/> class, which manages a collection of <see
-/// cref="Accommodation"/> objects. The class allows for adding, removing, importing, exporting, and searching
-/// accommodations by their unique ID.
+/// This file contains the definition of the <see cref="Accommodations"/> class, which represents a collection of <see
+/// cref="Accommodation"/> objects. The accommodations are stored in an internal dictionary for fast lookup by
+/// accommodation ID. This class implements the <see cref="IManageableEntity{Accommodation}"/> interface, providing a
+/// standardized approach for managing accommodations within the SmartStay application, including functionalities for
+/// adding, removing, importing, and exporting accommodations.
 /// </file>
-/// <summary>
-/// Defines the <see cref="Accommodations"/> class, which represents a collection of <see cref="Accommodation"/>
-/// objects. The accommodations are stored in an internal dictionary for fast lookup by accommodation ID. This class
-/// implements the <see cref="IManageableEntity{Accommodation}"/> interface, providing a standardized approach for
-/// managing accommodations within the SmartStay application, including functionalities for adding, removing, importing,
-/// and exporting accommodations.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
-/// <remarks>
-/// This class is designed to facilitate the management of accommodation data, with fast access to accommodations by
-/// their ID. It also provides import and export capabilities to handle serialized data, allowing for easy integration
-/// with other systems. The class is intended to be flexible for future changes in data formats (e.g., switching to XML
-/// or other serialization formats).
-/// </remarks>
 using SmartStay.Models;
 using SmartStay.Models.Interfaces;
 using SmartStay.Utilities;
 
+/// <summary>
+/// The <c>SmartStay.Repositories</c> namespace provides data access layers for retrieving and storing application data.
+/// It contains repositories that manage database interactions for various entities within the SmartStay application.
+/// </summary>
 namespace SmartStay.Repositories
+
 {
 /// <summary>
 /// Represents a collection of <see cref="Accommodation"/> objects, managed in a dictionary for fast lookup by

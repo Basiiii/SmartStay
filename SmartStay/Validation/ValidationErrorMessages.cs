@@ -5,19 +5,14 @@
 /// This file contains the <see cref="ValidationErrorMessages"/> static class, which provides
 /// human-readable error messages for validation error codes used in the SmartStay application.
 /// </file>
-/// <summary>
-/// Provides a centralized repository of error messages associated with specific validation error codes
-/// for use throughout the SmartStay application.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
-/// <remarks>
-/// The <see cref="ValidationErrorMessages"/> class simplifies error handling by linking each
-/// <see cref="ValidationErrorCode"/> with a detailed, user-friendly error message. These messages
-/// are returned to the user or logged during validation failures, ensuring that error reporting
-/// is consistent and meaningful.
-/// </remarks>
 
+/// <summary>
+/// The <c>SmartStay.Validation</c> namespace contains classes and methods for validating data and enforcing business
+/// rules within the SmartStay application. These validations help ensure data integrity and compliance with application
+/// requirements.
+/// </summary>
 namespace SmartStay.Validation
 {
 /// <summary>

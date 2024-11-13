@@ -2,20 +2,19 @@
 /// Copyright (c) 2024 All Rights Reserved
 /// </copyright>
 /// <file>
-/// This file contains the definition of the <see cref="DateRangeComparer"/> class.
+/// This file contains the <see cref="DateRangeComparer"/> class, which implements the <see cref="IComparer{T}"/>
+/// interface to provide custom comparison logic for date ranges (represented as tuples of <see cref="DateTime"/>
+/// values). The comparison is based on the start date of each range, used primarily for sorting or ordering date
+/// ranges.
 /// </file>
-/// <summary>
-/// Defines the <see cref="DateRangeComparer"/> class, which implements the <see cref="IComparer{T}"/> interface
-/// to provide custom comparison logic for date ranges (represented as tuples of <see cref="DateTime"/> values).
-/// The comparison is based on the start date of each range, used primarily for sorting or ordering date ranges.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
-/// <remarks>
-/// This comparer is intended to be used for sorting or performing operations on lists of date ranges,
-/// where the sorting order is determined by the start date of each range.
-/// </remarks>
 
+/// <summary>
+/// The <c>SmartStay.Utilities</c> namespace provides helper functions and utility classes used throughout the SmartStay
+/// application. These utilities support common operations and enhance reusability across different components of the
+/// application.
+/// </summary>
 namespace SmartStay.Utilities
 {
 /// <summary>

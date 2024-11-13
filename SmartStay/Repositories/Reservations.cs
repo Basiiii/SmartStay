@@ -6,25 +6,16 @@
 /// cref="Reservation"/> objects. The class allows for adding, removing, importing, exporting, and searching
 /// reservations by their unique ID.
 /// </file>
-/// <summary>
-/// Defines the <see cref="Reservations"/> class, which represents a collection of <see cref="Reservation"/> objects.
-/// The reservations are stored in an internal dictionary for fast lookup by reservation ID. This class implements the
-/// <see cref="IManageableEntity{Reservation}"/> interface, providing a standardized approach for managing reservations
-/// within the SmartStay application, including functionalities for adding, removing, importing, and exporting
-/// reservations.
-/// </summary>
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
-/// <remarks>
-/// This class is designed to facilitate the management of reservation data, with fast access to reservations by their
-/// ID. It also provides import and export capabilities to handle serialized data, allowing for easy integration with
-/// other systems. The class is intended to be flexible for future changes in data formats (e.g., switching to XML or
-/// other serialization formats).
-/// </remarks>
 using SmartStay.Models;
 using SmartStay.Models.Interfaces;
 using SmartStay.Utilities;
 
+/// <summary>
+/// The <c>SmartStay.Repositories</c> namespace provides data access layers for retrieving and storing application data.
+/// It contains repositories that manage database interactions for various entities within the SmartStay application.
+/// </summary>
 namespace SmartStay.Repositories
 {
 /// <summary>
