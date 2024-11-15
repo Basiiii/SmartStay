@@ -133,6 +133,7 @@
 
 % Code Listings
 \usepackage{listings}
+\usepackage{caption}
 
 \definecolor{eclipseStrings}{RGB}{42,0.0,255}
 \definecolor{eclipseKeywords}{RGB}{127,0,85}
@@ -453,18 +454,39 @@ Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gest�
 \end{abstract}
 
 \newpage
+\setcounter{tocdepth}{3}
+\renewcommand{\contentsname}{Índice}
+\tableofcontents
+
+%\listoffigures
+
+% Ensure figures are numbered sequentially (without chapter number)
+\renewcommand{\thefigure}{\arabic{figure}}
+% Ensure listings are numbered sequentially (without chapter number)
+\renewcommand{\thelstlisting}{\arabic{lstlisting}}
+% Re-name listing names
+\renewcommand\lstlistingname{Amostra de Código}
+\renewcommand\lstlistlistingname{Amostras de Código}
+\lstlistoflistings
+
+\newpage
 \setcounter{page}{1}
 \section{Introdução}
 \label{sec:introduction}
 
+\subsection{Contexto e Motivação}
 O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamentos, exigindo soluções que garantam agilidade, precisão e uma experiência satisfatória para os clientes. Este projeto visa desenvolver um sistema de gestão de alojamentos turísticos que permita a administração eficaz de registos de clientes, reservas e alojamentos. A implementação foi realizada em C\#, uma linguagem reconhecida pela sua robustez e flexibilidade, permitindo o desenvolvimento de aplicações escaláveis e eficientes.
 
-Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a persistência de dados é gerida em formato JSON, facilitando a integração e manipulação das informações. Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
+\subsection{Estrutura de Dados e Persistência}
+Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a persistência de dados é gerida em formato JSON, facilitando a integração e manipulação das informações.
 
-Este documento descreve o trabalho prático da unidade curricular de Programação Orientada a Objetos, parte integrante da Licenciatura em Engenharia de Sistemas Informáticos no Instituto Politécnico do Cávado e do Ave. 
+\subsection{Boas Práticas de Programação}
+Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
 
-O enunciado deste trabalho prático pode ser encontrado no anexo titulado ``Trabalho\_POO\_ESI\_2024\_2025``. O código fonte está disponível no Github, veja \href[]{LINK}.
+\subsection{Objetivos e Organização do Documento}
+Este documento descreve o trabalho prático da unidade curricular de Programação Orientada a Objetos, parte integrante da Licenciatura em Engenharia de Sistemas Informáticos no Instituto Politécnico do Cávado e do Ave. O enunciado deste trabalho prático pode ser encontrado no anexo titulado ``Trabalho\_POO\_ESI\_2024\_2025``. O código fonte está disponível no Github e pode ser consultado \href{https://github.com/Basiiii/SmartStay}{aqui}.
 
+\newpage
 \section{Padrões e Práticas de Programação}
 \label{sec:codingstyle}
 
@@ -530,7 +552,8 @@ Utiliza-se \textit{XML Documentation Comments} para documentar o código, permit
 	\item Define-se o autor nos comentários de cabeçalho de classes para novos ficheiros ou seções significativas de código.
 \end{itemize}
 
-\section{Estrutura de Classes}
+\newpage
+\section{Diagrama de Classes}
 \label{sec:classes}
 
 \subsection{Introdução ao Sistema}
@@ -561,6 +584,32 @@ O \textit{BookingManager} atua como a face do sistema, permitindo direcionar cha
 	\label{fig:diagrama_classes}
 \end{figure}
 
+\newpage
+\section{Organização do Código}
+\label{sec:organizacaocodigo}
+
+A arquitetura do sistema foi estruturada de acordo com um layout comum e amplamente utilizado em aplicações de software, que segue o padrão de separação de responsabilidades entre diferentes camadas. Este padrão facilita a manutenção, escalabilidade e testabilidade do sistema. A divisão em \textit{Models}, \textit{Repositories}, \textit{Services} e \textit{Utilities} organiza a aplicação de maneira modular e coesa, garantindo que cada componente tenha uma função clara e bem definida. Cada classe é guardada num ficheiro chamado de forma correspondente, reforçando a organização e facilitando a navegação no código.
+
+\subsection{Nomeação de Ficheiros}
+Para manter uma estrutura organizada e intuitiva, os ficheiros do sistema foram nomeados de acordo com as classes que eles contêm. Cada classe tem um ficheiro correspondente com o mesmo nome, garantindo uma correspondência direta entre a funcionalidade e o ficheiro onde ela está implementada. Esta abordagem facilita a localização de classes específicas e melhora a navegabilidade do projeto, uma vez que o nome de cada ficheiro reflete o conteúdo e a responsabilidade do mesmo. Por exemplo, a classe \textit{Client} está localizada no ficheiro \texttt{Client.cs}, enquanto a classe \textit{BookingManager} pode ser encontrada em \texttt{BookingManager.cs}.
+
+\subsection{Conformidade com a CLS}
+
+A \textit{Common Language Specification (CLS)} define um conjunto de regras e padrões para garantir a interoperabilidade entre as diferentes linguagens que compõem o ecossistema .NET. Ao desenvolver o sistema, foi dada atenção à conformidade com a CLS para assegurar que o código seja acessível e utilizável por outras linguagens compatíveis com o .NET.
+
+Dentro deste contexto, o tipo \texttt{decimal} foi escolhido para operações financeiras e monetárias devido à sua alta precisão e, também, por ser um tipo que segue as normas da CLS. Esta conformidade permite que o sistema mantenha uma representação exata de valores monetários e seja facilmente reutilizável em outros ambientes e linguagens que suportem .NET. 
+
+Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — por exemplo, tipos inteiros não-assinados como \texttt{uint} e \texttt{ulong} não são CLS-compliant e podem apresentar problemas de interoperabilidade em algumas linguagens. A escolha de tipos compatíveis com a CLS reforça o compromisso com a robustez e a acessibilidade do sistema em um ambiente .NET multi-linguagem.
+
+\subsection{Models} A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Esses modelos são frequentemente utilizados para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento e recuperação de dados. Além disso, os modelos podem incluir validações de dados e regras de negócio específicas, facilitando a comunicação entre as diferentes camadas.
+
+\subsection{Repositories} A camada de \textit{Repositories} atua como a interface entre o sistema e a base de dados ou outro armazenamento persistente. Os repositórios são responsáveis por realizar as operações de leitura e escrita nos dados. Esta camada encapsula as complexidades do acesso aos dados e oferece métodos que permitem que a camada de serviço trabalhe com abstrações em vez de se preocupar diretamente com a persistência. No nosso sistema, por exemplo, o repositório de clientes pode fornecer métodos como \textit{Add()}, \textit{Remove()} e \textit{GetById()}, permitindo que os dados dos clientes sejam manipulados de forma segura e eficiente.
+
+\subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois gerencia o processo de reservas, incluindo a criação, validação e processamento de pagamentos. Os serviços permitem que a lógica de negócios seja centralizada e desacoplada das camadas de persistência e apresentação, tornando o sistema mais fácil de testar e manter.
+
+\subsection{Utilities} A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. Exemplos típicos incluem ferramentas de validação, manipulação de strings, loggers e geradores de relatórios. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação. Por exemplo, um validador de datas ou um utilitário de formatação de preços pode ser usado em diferentes componentes, como na criação de reservas e no processamento de pagamentos.
+
+\newpage
 \section{Estruturas de Dados Utilizadas}
 \label{sec:estruturasdados}
 
@@ -568,7 +617,6 @@ O \textit{BookingManager} atua como a face do sistema, permitindo direcionar cha
 As estruturas de dados escolhidas para o sistema foram definidas com o objetivo de otimizar a eficiência e o desempenho, especialmente em operações de busca, inserção e remoção. A principal estrutura de dados utilizada foi o \textit{Dictionary} (dicionário), que oferece uma maneira eficiente de armazenar e aceder a entidades como clientes, reservas e alojamentos, por meio de chaves únicas. Esta estrutura garante um tempo de acesso quase constante para operações como inserção e busca, o que é essencial para o bom desempenho do sistema, especialmente à medida que o número de entidades cresce.
 
 \vspace*{15pt}
-\renewcommand{\lstlistingname}{Amostra de Código}
 \begin{lstlisting}[ 
 	language=csh, 
 	caption={Uso de Dictionary}, 
@@ -626,22 +674,311 @@ As escolhas de \textit{Dictionary} e \textit{List} oferecem várias vantagens pa
 
 Estas escolhas refletem uma consideração cuidadosa da necessidade de desempenho e eficiência, ao mesmo tempo que garantem uma implementação simples e direta, essencial para manter o sistema modular e fácil de manter.
 
-\section{Layout do Sistema}
+\newpage
+\section{Uso de LINQ}
+\label{sec:usodelinq}
 
-A arquitetura do sistema foi estruturada de acordo com um layout comum e amplamente utilizado em aplicações de software, que segue o padrão de separação de responsabilidades entre diferentes camadas. Esse padrão facilita a manutenção, escalabilidade e testabilidade do sistema. A divisão em \textit{Models}, \textit{Repositories}, \textit{Services} e \textit{Utilities} organiza a aplicação de maneira modular e coesa, garantindo que cada componente tenha uma função clara e bem definida.
+No desenvolvimento do sistema, foi utilizado o LINQ (Language Integrated Query) para facilitar a consulta e manipulação de coleções de dados, proporcionando uma forma mais concisa e legível de trabalhar com dados em memória. O LINQ integra-se diretamente no código C\#, permitindo escrever consultas diretamente nas coleções, sem necessidade de recorrer a linguagens de consulta externas ou a loops complicados.
 
-\subsection{Models} A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Esses modelos são frequentemente utilizados para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento e recuperação de dados. Além disso, os modelos podem incluir validações de dados e lógica de negócios específica, facilitando a comunicação entre as diferentes camadas.
+\subsection{Vantagens de LINQ}
 
-\subsection{Repositories} A camada de \textit{Repositories} atua como a interface entre o sistema e a base de dados ou outro armazenamento persistente. Os repositórios são responsáveis por realizar as operações de leitura e escrita nos dados. Esta camada encapsula as complexidades do acesso aos dados e oferece métodos que permitem que a camada de serviço trabalhe com abstrações em vez de se preocupar diretamente com a persistência. No nosso sistema, por exemplo, o repositório de clientes pode fornecer métodos como \textit{Add()}, \textit{Remove()} e \textit{GetById()}, permitindo que os dados dos clientes sejam manipulados de forma segura e eficiente.
+O LINQ oferece várias vantagens, entre as quais se destacam:
 
-\subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois ele gerencia o processo de reserva, incluindo a criação, validação e processamento de pagamentos. Os serviços permitem que a lógica de negócios seja centralizada e desacoplada das camadas de persistência e apresentação, tornando o sistema mais fácil de testar e de manter.
+\begin{itemize}
+	\item \textbf{Sintaxe Concisa e Legível}: Permite escrever consultas de forma mais direta e legível, o que resulta em um código mais limpo e fácil de entender.
+	\item \textbf{Integração com Coleções de Dados}: Pode ser utilizado diretamente sobre coleções de objetos como listas, arrays, e dicionários, o que facilita a manipulação de dados sem recorrer a ferramentas externas.
+	\item \textbf{Redução de Erros e Complexidade}: Ao abstrair a complexidade da consulta e manipulação de dados, o LINQ reduz as possibilidades de erros e torna o código mais modular e menos propenso a falhas.
+	\item \textbf{Execução Diferida}: O LINQ utiliza execução diferida, ou seja, a consulta só é executada quando necessário, o que pode melhorar o desempenho, especialmente quando se lida com um volume grande de dados.
+\end{itemize}
 
-\subsection{Utilities} A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. Exemplos típicos incluem ferramentas de validação, manipulação de strings, loggers e geradores de relatórios. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação. Por exemplo, um validador de datas ou um utilitário de formatação de preços pode ser usado em diferentes componentes, como na criação de reservas e no processamento de pagamentos.
+\subsection{Utilização de LINQ no Código}
 
+A seguir, são apresentados exemplos de como o LINQ foi utilizado no código para realizar operações de filtragem em coleções de dados.
+
+O primeiro exemplo mostra como o LINQ é usado para encontrar todas as reservas associadas a um cliente, dado o seu ID único. A função `\textit{FindReservationsByClientId()}` filtra o dicionário de reservas, retornando apenas as reservas que correspondem ao `\textit{clientId}` fornecido.
+
+
+\vspace*{15pt}
+\renewcommand{\lstlistingname}{Amostra de Código}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Encontra Reservas por ID de Cliente}, 
+	label={lst:C}],
+public IEnumerable<Reservation> FindReservationsByClientId(int clientId)
+{
+	return _reservationDictionary.Values.Where(r => r.ClientId == clientId);
+}
+\end{lstlisting}
+
+No segundo exemplo, o LINQ é utilizado para encontrar todas as reservas associadas a um alojamento específico, filtrando as reservas pelo `AccommodationId`. A função `FindReservationsByAccommodationId` realiza uma consulta parecida, mas com base no ID do alojamento.
+
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Encontra Reservas por ID de Alojamento}, 
+	label={lst:C}]
+public IEnumerable<Reservation> FindReservationsByAccommodationId(int accommodationId)
+{
+	return _reservationDictionary.Values.Where(r => r.AccommodationId == accommodationId);
+}
+\end{lstlisting}
+
+Estes exemplos demonstram como o LINQ simplifica a filtragem de dados nas coleções, tornando o código mais legível e eficiente.
+
+\newpage
+\section{Tratamento de Exceções}
+\label{sec:tratamentoexcecoes}
+
+A escolha de utilizar códigos de erro, ao invés de mensagens \textit{hardcoded}, proporciona maior flexibilidade, reutilização e facilita a manutenção do código. Além disso, permite uma melhor adaptação a mudanças nas regras de negócio, sem a necessidade de alteração direta nas mensagens de erro.
+
+\subsection{Estrutura das Exceções}
+A base para o tratamento de exceções no sistema é a classe \texttt{ValidationException}. Esta classe personalizada herda da classe base \texttt{Exception} e é usada para encapsular falhas de validação que ocorrem durante o processamento dos dados.
+
+A principal característica da \texttt{ValidationException} é que ela recebe um código de erro (do tipo \texttt{ValidationErrorCode}) e, ao ser instanciada, busca automaticamente a mensagem correspondente através da classe \texttt{ValidationErrorMessages}. O código abaixo apresenta a implementação básica desta exceção personalizada:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Classe ValidationException}, 
+	label={lst:C}]
+namespace SmartStay.Validation
+{
+	public class ValidationException : Exception
+	{
+		public ValidationException(ValidationErrorCode errorCode) 
+		: base(ValidationErrorMessages.GetErrorMessage(errorCode))
+		{
+			ErrorCode = errorCode;
+		}
+		
+		public ValidationErrorCode ErrorCode { get; }
+	}
+}
+\end{lstlisting}
+
+Como pode ser observado, ao receber um \texttt{ValidationErrorCode}, a classe \texttt{ValidationException} utiliza o método \texttt{GetErrorMessage} da classe \texttt{ValidationErrorMessages} para obter a mensagem correspondente ao erro, evitando a necessidade de codificar as mensagens diretamente na aplicação.
+
+\subsection{Definição dos Códigos de Erro}
+A enumeração \texttt{ValidationErrorCode} é responsável por definir os diferentes tipos de erros que podem ocorrer durante a validação dos dados. Cada valor desta enumeração é associado a um código numérico único, o que permite identificar de forma eficiente qual validação falhou.
+
+Abaixo, apresentamos um exemplo simplificado dessa enumeração:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Enumeração ValidationErrorCode}, 
+	label={lst:C}]
+namespace SmartStay.Validation
+{
+	public enum ValidationErrorCode
+	{
+		InvalidName = 1001,
+		InvalidEmail = 1002,
+		InvalidPhoneNumber = 1003
+	}
+}
+\end{lstlisting}
+
+Cada valor da enumeração representa um tipo específico de erro de validação, como por exemplo, nome inválido, e-mail inválido, ou número de telefone inválido. Esta enumeração é usada na classe \texttt{ValidationException} para determinar o erro que ocorreu.
+
+\subsection{Mensagens de Erro Dinâmicas}
+A classe \texttt{ValidationErrorMessages} é responsável por mapear cada código de erro para uma mensagem descritiva correspondente. Em vez de codificar as mensagens diretamente nas classes de validação ou nas exceções, as mensagens são armazenadas em um dicionário, o que facilita a manutenção e a atualização das mensagens de erro.
+
+Veja abaixo um exemplo simplificado dessa classe:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Classe ValidationErrorMessages}, 
+	label={lst:C}]
+namespace SmartStay.Validation
+{
+	public static class ValidationErrorMessages
+	{
+		private static readonly Dictionary<ValidationErrorCode, string> ErrorMessages = new() {
+			{ ValidationErrorCode.InvalidName, "O nome deve ser uma string não vazia e não exceder 50 caracteres." },
+			{ ValidationErrorCode.InvalidEmail, "O endereço de e-mail é inválido ou não corresponde ao formato exigido." }
+		};
+		
+		public static string GetErrorMessage(ValidationErrorCode errorCode)
+		{
+			return ErrorMessages.TryGetValue(errorCode, out var message) ? message : "Erro de validação desconhecido.";
+		}
+	}
+}
+\end{lstlisting}
+
+Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é buscada dinamicamente a partir do dicionário. Caso o código de erro não esteja mapeado, uma mensagem padrão de "Erro de validação desconhecido" será retornada, garantindo que todas as exceções sejam tratadas de forma consistente.
+
+\subsection{Benefícios da Abordagem}
+A utilização de códigos de erro e mensagens dinâmicas traz uma série de benefícios para o sistema:
+
+\begin{itemize}
+	\item \textbf{Facilidade de Manutenção}: A manutenção das mensagens de erro torna-se mais simples, uma vez que as mensagens estão centralizadas num único local e não espalhadas pelo código.
+	\item \textbf{Escalabilidade}: Novos erros podem ser facilmente adicionados à enumeração e ao dicionário de mensagens, sem a necessidade de reescrever as exceções ou a lógica de validação.
+	\item \textbf{Internacionalização}: Como as mensagens de erro estão centralizadas, é mais fácil adaptar o sistema para diferentes idiomas no futuro.
+	\item \textbf{Consistência}: Ao utilizar códigos de erro numéricos e associar cada um a uma mensagem específica, garantimos que o tratamento de exceções será consistente ao longo de toda a aplicação.
+\end{itemize}
+
+\subsection{Exemplo de Uso}
+Abaixo, é apresentado um exemplo de como as exceções de validação são utilizadas no código. Neste exemplo, caso o nome fornecido por um cliente seja inválido, uma exceção de validação é gerada e a mensagem correspondente é retornada:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Uso da Exceção de Validação}, 
+	label={lst:C}]
+try
+{
+	ValidateClientName(client.Name);
+}
+catch (ValidationException ex)
+{
+	Console.WriteLine($"Erro de validação: {ex.Message}");
+}
+\end{lstlisting}
+
+Neste exemplo, se o nome do cliente for inválido, a exceção \texttt{ValidationException} será lançada, e a mensagem de erro correspondente ao código de erro será mostrada ao utilizador.
+
+\newpage
+\section{Tratamento de Logs}
+\label{sec:tratamentologs}
+
+\subsection{Objetivo de Logs}
+
+\subsection{Exemplos de Logging no Código}
+
+\newpage
+\section{Persistência de Dados com Ficheiros}
+\label{sec:persistenciadados}
+
+A persistência de dados é um componente essencial para qualquer sistema de gestão de informações. No caso deste projeto, optei por utilizar ficheiros JSON para armazenar os dados do sistema, como clientes, acomodações e reservas. O formato JSON foi escolhido devido à sua popularidade em aplicações web e móveis, à facilidade de leitura e escrita e ao seu suporte em diversas linguagens de programação.
+
+\subsection{Escolha do Formato de Armazenamento}
+
+Optou-se pelo formato JSON para persistir os dados devido a vários fatores:
+
+\begin{itemize}
+	\item \textbf{Simplicidade e Legibilidade}: O JSON é um formato de texto simples, que pode ser facilmente lido por humanos e máquinas. Isso facilita tanto a depuração durante o desenvolvimento quanto a análise de dados.
+	\item \textbf{Compatibilidade Universal}: O JSON é amplamente suportado por diversas plataformas e frameworks, tornando-o ideal para integração com sistemas externos e APIs.
+	\item \textbf{Estrutura Flexível}: O JSON oferece uma estrutura de dados hierárquica e facilmente extensível, o que é vantajoso para representar dados complexos como clientes, reservas e acomodações de forma clara e eficiente.
+	\item \textbf{Desempenho}: As bibliotecas modernas de manipulação de JSON são muito eficientes, permitindo uma rápida serialização e desserialização dos dados.
+\end{itemize}
+
+\subsection{Importação e Exportação de Dados}
+
+Para garantir que os dados possam ser facilmente armazenados e recuperados de forma persistente, implementaram-se métodos para exportar e importar os dados para e a partir de JSON. A seguir, são apresentados os métodos utilizados para a importação e exportação da lista de clientes, com a mesma abordagem sendo aplicada para acomodações e reservas.
+
+\subsubsection{Importação de Dados}
+
+O método \texttt{Import} permite importar uma lista de clientes a partir de uma string JSON. Caso a string JSON seja inválida ou nula, são lançadas exceções específicas para garantir que os dados sejam válidos antes de serem inseridos na coleção. O código do método é o seguinte:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Método Import para Importar Clientes}, 
+	label={lst:C}]
+public void Import(string data)
+{
+	if (string.IsNullOrEmpty(data))
+	{
+		throw new ArgumentException("Data cannot be null or empty", nameof(data));
+	}
+	
+	var clients = JsonHelper.DeserializeFromJson<Client>(data) ??
+	throw new ArgumentException("Deserialized client data cannot be null", nameof(data));
+	
+	foreach (var client in clients)
+	{
+		_clientDictionary[client.Id] = client; // Inserção direta para maior eficiência
+	}
+}
+\end{lstlisting}
+
+No método \texttt{Import}, são realizadas as seguintes validações:
+\begin{itemize}
+	\item Se a string \texttt{data} for nula ou vazia, uma exceção \texttt{ArgumentException} é lançada.
+	\item A deserialização do JSON é realizada utilizando um método auxiliar (\texttt{DeserializeFromJson}), e, caso falhe, outra exceção \texttt{ArgumentException} é gerada.
+	\item Para cada cliente na lista importada, o cliente é adicionado ao dicionário \texttt{\_clientDictionary}, substituindo qualquer cliente existente com o mesmo ID.
+\end{itemize}
+
+\subsubsection{Exportação de Dados}
+
+O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada em um ficheiro ou enviada para outros sistemas. A implementação do método é simples:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Método Export para Exportar Clientes},
+	label={lst:C}]
+public string Export()
+{
+	return JsonHelper.SerializeToJson(_clientDictionary.Values ?? Enumerable.Empty<Client>());
+}
+\end{lstlisting}
+
+O método \texttt{Export} converte os valores armazenados no dicionário \texttt{\_clientDictionary} numa string JSON utilizando o método auxiliar \texttt{SerializeToJson}. Se o dicionário estiver vazio, é retornada uma coleção vazia para garantir que o formato JSON seja válido.
+
+\subsection{Validação e Exceções na Persistência de Dados}
+
+É importante garantir que os dados sejam consistentes e válidos antes de serem persistidos no formato JSON. Para isso, o sistema inclui verificações e exceções que asseguram que a importação e exportação dos dados sejam feitas corretamente.
+
+As exceções tratadas nas operações de importação e exportação incluem:
+\begin{itemize}
+	\item \textbf{ArgumentException}: Lançada quando os dados fornecidos são nulos, vazios ou falham na desserialização.
+	\item \textbf{InvalidOperationException}: Pode ser lançada em casos em que ocorre uma operação inesperada, como ao tentar acessar dados que não foram carregados corretamente.
+\end{itemize}
+
+Estas exceções permitem que o sistema lide com dados inválidos de forma controlada, sem causar falhas inesperadas. Além disso, a validação dos dados durante a importação e exportação impede que dados corrompidos ou malformados sejam persistidos, garantindo a integridade do sistema.
+
+\subsection{Considerações Finais sobre a Persistência de Dados}
+
+A escolha pelo formato JSON para persistência de dados oferece diversas vantagens em termos de simplicidade, flexibilidade e compatibilidade. A utilização de métodos de importação e exportação bem definidos, aliados ao tratamento de exceções para garantir a validade dos dados, proporciona um sistema robusto e fácil de manter. Além disso, a escolha de um formato de dados leve e amplamente suportado como o JSON garante que o sistema possa ser facilmente integrado a outras plataformas e serviços.
+
+\newpage
+\section{Qualidade do Código e Boas Práticas}
+\label{sec:qualidadecodigo}
+
+\subsection{Testes Unitários}
+
+\subsection{CI/CD Pipeline}
+
+\subsection{Padrões de Design Utilizados}
+
+\subsection{Lambda Functions}
+
+\newpage
+\section{Arquitetura em Camadas (Layered Architecture)}
+\label{sec:arquiteturacamadas}
+
+A adoção de uma arquitetura em camadas é uma prática muito reconhecida para organizar e estruturar o código de uma aplicação, visando separar responsabilidades e promover escalabilidade e manutenção. Dentro dessa abordagem, o padrão de \textbf{Model-View-Controller (MVC)} \cite{mvc} foi escolhido para gerir a interface de utilizador e a lógica de aplicação. Este padrão permite uma divisão clara entre as camadas que lidam com os dados, a lógica de negócio e a apresentação visual, facilitando o desenvolvimento modular e a evolução do sistema ao longo do tempo.
+
+\subsection{Escolha da Arquitetura}
+
+O padrão \textbf{MVC (Model-View-Controller)} \cite{mvc} foi escolhido pela sua capacidade de simplificar o desenvolvimento de interfaces de utilizador complexas ao isolar as responsabilidades de cada componente. No contexto de um sistema de gestão de alojamentos, onde há interações contínuas entre utilizadores, dados e regras de negócio, o MVC destaca-se pela facilidade com que permite adicionar ou modificar funcionalidades na interface sem impactar diretamente a lógica de negócio ou a camada de dados.
+
+As vantagens do MVC incluem:
+
+\begin{itemize}
+	\item \textbf{Modularidade e Reutilização}: A estrutura do MVC facilita a reutilização de código, pois a lógica de negócio (Controller) e os dados (Model) são isolados da camada de apresentação (View), permitindo que o sistema suporte múltiplas interfaces ou plataformas sem duplicação de lógica.
+	\item \textbf{Facilidade de Testes e Manutenção}: A divisão de responsabilidades permite testes mais eficazes em cada camada, especialmente na camada de lógica (Controller), que pode ser isolada para testes unitários sem necessidade de interações com a interface.
+	\item \textbf{Escalabilidade}: O MVC permite que o sistema se expanda de forma coesa, com cada camada sendo ampliada ou substituída sem impacto nas demais, essencial em sistemas que requerem evolução contínua.
+\end{itemize}
+
+\subsection{Desenvolvimento Backend Inicial e Adição de UI}
+
+O desenvolvimento deste sistema começou com a implementação das camadas fundamentais, como Model, Repository, Service, Utility e Validation. Estas camadas representam a lógica de negócios central e a persistência de dados, que são independentes da interface de utilizador. Iniciar com estas camadas permitiu que a lógica essencial fosse desenvolvida, testada e validada antes da introdução da interface visual.
+
+Essa abordagem foi adotada com os seguintes benefícios:
+
+\begin{itemize}
+	\item \textbf{Foco na Lógica de Negócio}: Começar com a implementação das camadas de Model, Repository, Service e Validation permitiu concentrar esforços na criação e validação da lógica de negócios antes de adicionar a complexidade da interface de utilizador.
+	
+	\item \textbf{Testabilidade}: A ausência de uma interface de utilizador no início permitiu que as camadas de lógica fossem testadas de forma independente e unitária, garantindo que a interação entre elas funcionasse corretamente antes de integrar a UI.
+	
+	\item \textbf{Facilidade de Evolução}: Ao desenvolver a lógica de negócios separadamente da UI, foi possível garantir que o sistema estivesse bem estruturado e funcional antes de se preocupar com a apresentação visual. Isso permitiu que a interface fosse adicionada posteriormente de forma coesa, sem impactar as camadas já implementadas.
+\end{itemize}
+
+Após garantir que as camadas essenciais estavam a funcionar corretamente, a camada de View (UI) foi então integrada ao sistema. O Controller e a View passaram a interagir com as camadas de Model, Repository e Service, proporcionando a interface de utilizador que permite aos utilizadores interagir com o sistema de maneira intuitiva.
+
+Este processo progressivo de desenvolvimento inicial das camadas fundamentais, seguido pela implementação da interface de utilizador, proporcionou uma base sólida e escalável para o sistema.
+
+\newpage
 \section{Conclusão}
 \label{sec:conclusion}
-
-w
 
 %%% ===============================================================================
 %%% Bibliography
