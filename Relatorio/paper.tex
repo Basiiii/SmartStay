@@ -418,7 +418,7 @@
 \institute{Instituto Politécnico do Cávado e do Ave\\
 	Licenciatura Engenharia de Sistemas Informáticos\\
 	\vspace{6pt}
-	16 de Outubro de 2024}
+	15 de Novembro de 2024}
 
 %% Multiple insitutes - ALTERNATIVE to the above
 % \author{%
@@ -603,9 +603,9 @@ Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — 
 
 \subsection{Models} A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Esses modelos são frequentemente utilizados para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento e recuperação de dados. Além disso, os modelos podem incluir validações de dados e regras de negócio específicas, facilitando a comunicação entre as diferentes camadas.
 
-\subsection{Repositories} A camada de \textit{Repositories} atua como a interface entre o sistema e a base de dados ou outro armazenamento persistente. Os repositórios são responsáveis por realizar as operações de leitura e escrita nos dados. Esta camada encapsula as complexidades do acesso aos dados e oferece métodos que permitem que a camada de serviço trabalhe com abstrações em vez de se preocupar diretamente com a persistência. No nosso sistema, por exemplo, o repositório de clientes pode fornecer métodos como \textit{Add()}, \textit{Remove()} e \textit{GetById()}, permitindo que os dados dos clientes sejam manipulados de forma segura e eficiente.
+\subsection{Repositories} A camada de \textit{Repositories} no nosso sistema é responsável por guardar e organizar listas de objetos de diferentes tipos, como Clientes, Alojamentos e Reservas. Esta camada serve como um \textit{container} centralizado para gerir estes conjuntos de dados durante a execução do programa, proporcionando um acesso estruturado e consistente às informações.
 
-\subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois gerencia o processo de reservas, incluindo a criação, validação e processamento de pagamentos. Os serviços permitem que a lógica de negócios seja centralizada e desacoplada das camadas de persistência e apresentação, tornando o sistema mais fácil de testar e manter.
+\subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois gere o processo de reservas, incluindo a criação, validação e processamento de pagamentos.
 
 \subsection{Utilities} A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. Exemplos típicos incluem ferramentas de validação, manipulação de strings, loggers e geradores de relatórios. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação. Por exemplo, um validador de datas ou um utilitário de formatação de preços pode ser usado em diferentes componentes, como na criação de reservas e no processamento de pagamentos.
 
@@ -628,7 +628,7 @@ O uso do \textit{Dictionary} garante que as operações de inserção e remoçã
 
 \subsection{Utilização de List e Pesquisa Binária}
 
-Para a classe \textit{Reservation}, foi utilizada uma \textit{List} de tuplas para armazenar intervalos de datas de reservas, o que permite gerir as datas de forma eficiente. A lista é ordenada, e para verificar a disponibilidade de um alojamento, utiliza-se a técnica de \textit{pesquisa binária}, que permite encontrar rapidamente se há sobreposição de datas entre reservas. Abaixo está um exemplo de como o sistema verifica se existe disponibilidade:
+Para a classe \textit{Reservation}, foi utilizada uma \textit{List} de tuplas para guardar intervalos de datas de reservas, o que permite gerir as datas de forma eficiente. A lista é ordenada, e para verificar a disponibilidade de um alojamento, utiliza-se a técnica de \textit{pesquisa binária}, que permite encontrar rapidamente se há sobreposição de datas entre reservas. Abaixo está um exemplo de como o sistema verifica se existe disponibilidade:
 
 \vspace*{15pt}
 \renewcommand{\lstlistingname}{Amostra de Código}
@@ -678,7 +678,7 @@ Estas escolhas refletem uma consideração cuidadosa da necessidade de desempenh
 \section{Uso de LINQ}
 \label{sec:usodelinq}
 
-No desenvolvimento do sistema, foi utilizado o LINQ (Language Integrated Query) para facilitar a consulta e manipulação de coleções de dados, proporcionando uma forma mais concisa e legível de trabalhar com dados em memória. O LINQ integra-se diretamente no código C\#, permitindo escrever consultas diretamente nas coleções, sem necessidade de recorrer a linguagens de consulta externas ou a loops complicados.
+No desenvolvimento do sistema, foi utilizado o LINQ (\textit{Language Integrated Query}) para facilitar a consulta e manipulação de coleções de dados, proporcionando uma forma mais concisa e legível de trabalhar com dados em memória. O LINQ integra-se diretamente no código C\#, permitindo escrever consultas diretamente nas coleções, sem necessidade de recorrer a linguagens de consulta externas ou a loops complicados.
 
 \subsection{Vantagens de LINQ}
 
@@ -804,7 +804,7 @@ namespace SmartStay.Validation
 }
 \end{lstlisting}
 
-Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é buscada dinamicamente a partir do dicionário. Caso o código de erro não esteja mapeado, uma mensagem padrão de "Erro de validação desconhecido" será retornada, garantindo que todas as exceções sejam tratadas de forma consistente.
+Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é buscada dinamicamente a partir do dicionário. Caso o código de erro não esteja mapeado, uma mensagem padrão ``Erro de validação desconhecido`` será retornada, garantindo que todas as exceções sejam tratadas de forma consistente.
 
 \subsection{Benefícios da Abordagem}
 A utilização de códigos de erro e mensagens dinâmicas traz uma série de benefícios para o sistema:
@@ -847,7 +847,7 @@ Neste exemplo, se o nome do cliente for inválido, a exceção \texttt{Validatio
 \section{Persistência de Dados com Ficheiros}
 \label{sec:persistenciadados}
 
-A persistência de dados é um componente essencial para qualquer sistema de gestão de informações. No caso deste projeto, optei por utilizar ficheiros JSON para armazenar os dados do sistema, como clientes, acomodações e reservas. O formato JSON foi escolhido devido à sua popularidade em aplicações web e móveis, à facilidade de leitura e escrita e ao seu suporte em diversas linguagens de programação.
+A persistência de dados é uma componente essencial para qualquer sistema de gestão de informações. No caso deste projeto, optei por utilizar ficheiros JSON para armazenar os dados do sistema, como clientes, acomodações e reservas. O formato JSON foi escolhido devido à sua popularidade em aplicações web, móveis e desktop, à facilidade de leitura e escrita e ao seu suporte em diversas linguagens de programação.
 
 \subsection{Escolha do Formato de Armazenamento}
 
@@ -898,7 +898,7 @@ No método \texttt{Import}, são realizadas as seguintes validações:
 
 \subsubsection{Exportação de Dados}
 
-O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada em um ficheiro ou enviada para outros sistemas. A implementação do método é simples:
+O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada num ficheiro ou enviada para outros sistemas. A implementação do método é simples:
 
 \begin{lstlisting}[
 	language=csh, 
@@ -919,7 +919,7 @@ O método \texttt{Export} converte os valores armazenados no dicionário \texttt
 As exceções tratadas nas operações de importação e exportação incluem:
 \begin{itemize}
 	\item \textbf{ArgumentException}: Lançada quando os dados fornecidos são nulos, vazios ou falham na desserialização.
-	\item \textbf{InvalidOperationException}: Pode ser lançada em casos em que ocorre uma operação inesperada, como ao tentar acessar dados que não foram carregados corretamente.
+	\item \textbf{InvalidOperationException}: Pode ser lançada em casos em que ocorre uma operação inesperada, como ao tentar aceder dados que não foram carregados corretamente.
 \end{itemize}
 
 Estas exceções permitem que o sistema lide com dados inválidos de forma controlada, sem causar falhas inesperadas. Além disso, a validação dos dados durante a importação e exportação impede que dados corrompidos ou malformados sejam persistidos, garantindo a integridade do sistema.
@@ -944,7 +944,7 @@ A escolha pelo formato JSON para persistência de dados oferece diversas vantage
 \section{Arquitetura em Camadas (Layered Architecture)}
 \label{sec:arquiteturacamadas}
 
-A adoção de uma arquitetura em camadas é uma prática muito reconhecida para organizar e estruturar o código de uma aplicação, visando separar responsabilidades e promover escalabilidade e manutenção. Dentro dessa abordagem, o padrão de \textbf{Model-View-Controller (MVC)} \cite{mvc} foi escolhido para gerir a interface de utilizador e a lógica de aplicação. Este padrão permite uma divisão clara entre as camadas que lidam com os dados, a lógica de negócio e a apresentação visual, facilitando o desenvolvimento modular e a evolução do sistema ao longo do tempo.
+A adoção de uma arquitetura em camadas é uma prática muito reconhecida para organizar e estruturar o código de uma aplicação, visando separar responsabilidades e promover escalabilidade e manutenção. Dentro desta abordagem, o padrão de \textbf{Model-View-Controller (MVC)} \cite{mvc} foi escolhido para gerir a interface de utilizador e a lógica de aplicação. Este padrão permite uma divisão clara entre as camadas que lidam com os dados, a lógica de negócio e a apresentação visual, facilitando o desenvolvimento modular e a evolução do sistema ao longo do tempo.
 
 \subsection{Escolha da Arquitetura}
 
@@ -960,9 +960,9 @@ As vantagens do MVC incluem:
 
 \subsection{Desenvolvimento Backend Inicial e Adição de UI}
 
-O desenvolvimento deste sistema começou com a implementação das camadas fundamentais, como Model, Repository, Service, Utility e Validation. Estas camadas representam a lógica de negócios central e a persistência de dados, que são independentes da interface de utilizador. Iniciar com estas camadas permitiu que a lógica essencial fosse desenvolvida, testada e validada antes da introdução da interface visual.
+O desenvolvimento deste sistema começou com a implementação das camadas fundamentais, como \textit{Model}, \textit{Repository}, \textit{Service}, \textit{Utility} e \textit{Validation}. Estas camadas representam a lógica de negócios central e a persistência de dados, que são independentes da interface de utilizador. Iniciar com estas camadas permitiu que a lógica essencial fosse desenvolvida, testada e validada antes da introdução da interface visual.
 
-Essa abordagem foi adotada com os seguintes benefícios:
+Esta abordagem foi adotada com os seguintes benefícios:
 
 \begin{itemize}
 	\item \textbf{Foco na Lógica de Negócio}: Começar com a implementação das camadas de Model, Repository, Service e Validation permitiu concentrar esforços na criação e validação da lógica de negócios antes de adicionar a complexidade da interface de utilizador.
@@ -972,13 +972,15 @@ Essa abordagem foi adotada com os seguintes benefícios:
 	\item \textbf{Facilidade de Evolução}: Ao desenvolver a lógica de negócios separadamente da UI, foi possível garantir que o sistema estivesse bem estruturado e funcional antes de se preocupar com a apresentação visual. Isso permitiu que a interface fosse adicionada posteriormente de forma coesa, sem impactar as camadas já implementadas.
 \end{itemize}
 
-Após garantir que as camadas essenciais estavam a funcionar corretamente, a camada de View (UI) foi então integrada ao sistema. O Controller e a View passaram a interagir com as camadas de Model, Repository e Service, proporcionando a interface de utilizador que permite aos utilizadores interagir com o sistema de maneira intuitiva.
+Depois de garantir que as camadas essenciais estavam a funcionar corretamente, a camada de View (UI) foi então integrada ao sistema. O Controller e a View passaram a interagir com as camadas de \textit{Model}, \textit{Repository} e \textit{Service}, proporcionando a interface de utilizador que permite aos utilizadores interagir com o sistema de maneira intuitiva.
 
 Este processo progressivo de desenvolvimento inicial das camadas fundamentais, seguido pela implementação da interface de utilizador, proporcionou uma base sólida e escalável para o sistema.
 
 \newpage
 \section{Conclusão}
 \label{sec:conclusion}
+
+Lorem Ipsum.
 
 %%% ===============================================================================
 %%% Bibliography
@@ -998,7 +1000,7 @@ Este processo progressivo de desenvolvimento inicial das camadas fundamentais, s
 % Enfore empty line after bibliography
 \ \\
 %
-Todas as ligações foram consultadas pela última vez no dia 13 de novembro de 2024.
+Todas as ligações foram consultadas pela última vez no dia 15 de novembro de 2024.
 
 
 %%% ===============================================================================
