@@ -19,7 +19,6 @@ using SmartStay.Utilities;
 /// It contains repositories that manage database interactions for various entities within the SmartStay application.
 /// </summary>
 namespace SmartStay.Repositories
-
 {
 /// <summary>
 /// Represents a collection of <see cref="Accommodation"/> objects, managed in a dictionary for fast lookup by
