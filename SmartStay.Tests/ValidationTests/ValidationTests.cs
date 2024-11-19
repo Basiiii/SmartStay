@@ -19,8 +19,8 @@
 /// results are returned or exceptions are thrown as expected. The tests also verify that error codes are correctly
 /// assigned.
 /// </remarks>
-using SmartStay.Models.Enums;
-using SmartStay.Validation;
+using Core.Models.Enums;
+using Core.Validation;
 
 namespace SmartStay.Tests
 {
