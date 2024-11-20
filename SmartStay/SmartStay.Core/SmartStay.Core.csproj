@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SmartStay.IO\SmartStay.IO.csproj" />
     <ProjectReference Include="..\SmartStay.Validation\SmartStay.Validation.csproj" />
   </ItemGroup>
 

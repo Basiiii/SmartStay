@@ -11,6 +11,7 @@
 #nullable enable
 using SmartStay.Core.Models;
 using SmartStay.Core.Repositories;
+using SmartStay.IO.FileOperations;
 
 /// <summary>
 /// The <c>Core.Services</c> namespace contains service classes that implement business logic for the SmartStay
@@ -34,17 +35,36 @@ public static class BookingManager
     /// <summary>
     /// Holds the collection of all clients in the system, stored in the <see cref="Clients"/> repository.
     /// </summary>
-    internal static readonly Clients _clients = new();
+    internal static readonly Clients _clients = new Clients();
 
     /// <summary>
     /// Holds the collection of all reservations in the system, stored in the <see cref="Reservations"/> repository.
     /// </summary>
-    internal static readonly Reservations _reservations = new();
+    internal static readonly Reservations _reservations = new Reservations();
 
     /// <summary>
     /// Holds the collection of all accommodations in the system, stored in the <see cref="Accommodations"/> repository.
     /// </summary>
-    internal static readonly Accommodations _accommodations = new();
+    internal static readonly Accommodations _accommodations = new Accommodations();
+
+#endregion
+
+#region Accessors for Repositories
+
+    /// <summary>
+    /// Exposes the `Clients` repository as a read-only property.
+    /// </summary>
+    public static Clients Clients => _clients;
+
+    /// <summary>
+    /// Exposes the `Reservations` repository as a read-only property.
+    /// </summary>
+    public static Reservations Reservations => _reservations;
+
+    /// <summary>
+    /// Exposes the `Accommodations` repository as a read-only property.
+    /// </summary>
+    public static Accommodations Accommodations => _accommodations;
 
 #endregion
 
@@ -75,49 +95,24 @@ public static class BookingManager
     public static bool RemoveClient(Client client) => _clients.Remove(client);
 
     /// <summary>
-    /// Imports a list of clients from a JSON string.
+    /// Imports clients from a given JSON file.
     /// </summary>
-    /// <param name="data">A JSON string containing client data to import.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="data"/> is <c>null</c> or an empty string.
-    /// </exception>
-    public static void ImportClients(string data) => _clients.Import(data);
+    /// <param name="filePath">A path to a JSON file containing the clients to import.</param>
+    public static void ImportClients(string filePath)
+    {
+        var fileContent = FileHandler.ReadFile(filePath);
+        _clients.Import(fileContent);
+    }
 
     /// <summary>
-    /// Exports the list of all clients to a specified file as a JSON string.
+    /// Exports the clients to a specified file as JSON.
     /// </summary>
     /// <param name="filePath">The file path where the client data will be saved.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="filePath"/> is <c>null</c> or an empty string.
-    /// </exception>
-    /// <exception cref="IOException">
-    /// Thrown when an I/O error occurs while writing to <paramref name="filePath"/>.
-    /// </exception>
-    public static void ExportClients(string filePath) => File.WriteAllText(filePath, _clients.Export());
-
-    /// <summary>
-    /// Retrieves all clients in the system.
-    /// </summary>
-    /// <returns>A read-only collection of <see cref="Client"/> objects.</returns>
-    public static IReadOnlyCollection<Client> GetAllClients() => _clients.GetAllClients();
-
-    /// <summary>
-    /// Finds a client by their unique ID.
-    /// </summary>
-    /// <param name="id">The unique ID of the client to find.</param>
-    /// <returns>
-    /// The <see cref="Client"/> object if found; otherwise, <c>null</c>.
-    /// </returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when <paramref name="id"/> is less than zero.
-    /// </exception>
-    public static Client? FindClientById(int id) => _clients.FindClientById(id);
-
-    /// <summary>
-    /// Counts the total number of clients in the system.
-    /// </summary>
-    /// <returns>The number of clients.</returns>
-    public static int CountClients() => _clients.CountClients();
+    public static void ExportClients(string filePath)
+    {
+        var json = _clients.Export();
+        FileHandler.WriteFile(filePath, json);
+    }
 
 #endregion
 
@@ -148,71 +143,24 @@ public static class BookingManager
     public static bool RemoveReservation(Reservation reservation) => _reservations.Remove(reservation);
 
     /// <summary>
-    /// Imports reservations from a JSON string.
+    /// Imports reservations from a given JSON file.
     /// </summary>
-    /// <param name="data">A JSON string containing reservation data to import.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="data"/> is <c>null</c> or an empty string.
-    /// </exception>
-    public static void ImportReservations(string data) => _reservations.Import(data);
+    /// <param name="filePath">A path to a JSON file containing the reservations to import.</param>
+    public static void ImportReservations(string filePath)
+    {
+        var fileContent = FileHandler.ReadFile(filePath);
+        _reservations.Import(fileContent);
+    }
 
     /// <summary>
-    /// Exports all reservations to a specified file as a JSON string.
+    /// Exports the reservations to a specified file as JSON.
     /// </summary>
-    /// <param name="filePath">The file path where reservation data will be saved.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="filePath"/> is <c>null</c> or an empty string.
-    /// </exception>
-    /// <exception cref="IOException">
-    /// Thrown when an I/O error occurs while writing to <paramref name="filePath"/>.
-    /// </exception>
-    public static void ExportReservations(string filePath) => File.WriteAllText(filePath, _reservations.Export());
-
-    /// <summary>
-    /// Retrieves all reservations in the system.
-    /// </summary>
-    /// <returns>A read-only collection of <see cref="Reservation"/> objects.</returns>
-    public static IReadOnlyCollection<Reservation> GetAllReservations() => _reservations.GetAllReservations();
-
-    /// <summary>
-    /// Finds a reservation by its unique ID.
-    /// </summary>
-    /// <param name="id">The unique ID of the reservation to find.</param>
-    /// <returns>
-    /// The <see cref="Reservation"/> object if found; otherwise, <c>null</c>.
-    /// </returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when <paramref name="id"/> is less than zero.
-    /// </exception>
-    public static Reservation? FindReservationById(int id) => _reservations.FindReservationById(id);
-
-    /// <summary>
-    /// Finds all reservations associated with a specific client by their ID.
-    /// </summary>
-    /// <param name="id">The unique ID of the client.</param>
-    /// <returns>A collection of <see cref="Reservation"/> objects for the specified client.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when <paramref name="id"/> is less than zero.
-    /// </exception>
-    public static IEnumerable<Reservation> FindReservationsByClientId(int id) =>
-        _reservations.FindReservationsByClientId(id);
-
-    /// <summary>
-    /// Finds all reservations associated with a specific accommodation by its ID.
-    /// </summary>
-    /// <param name="id">The unique ID of the accommodation.</param>
-    /// <returns>A collection of <see cref="Reservation"/> objects for the specified accommodation.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when <paramref name="id"/> is less than zero.
-    /// </exception>
-    public static IEnumerable<Reservation> FindReservationsByAccommodationId(int id) =>
-        _reservations.FindReservationsByAccommodationId(id);
-
-    /// <summary>
-    /// Counts the total number of reservations in the system.
-    /// </summary>
-    /// <returns>The number of reservations.</returns>
-    public static int CountReservations() => _reservations.CountReservations();
+    /// <param name="filePath">The file path where the reservations data will be saved.</param>
+    public static void ExportReservations(string filePath)
+    {
+        var json = _reservations.Export();
+        FileHandler.WriteFile(filePath, json);
+    }
 
 #endregion
 
@@ -243,49 +191,24 @@ public static class BookingManager
     public static bool RemoveAccommodation(Accommodation accommodation) => _accommodations.Remove(accommodation);
 
     /// <summary>
-    /// Imports accommodations from a JSON string.
+    /// Imports accommodations from a given JSON file.
     /// </summary>
-    /// <param name="data">A JSON string containing accommodation data to import.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="data"/> is <c>null</c> or an empty string.
-    /// </exception>
-    public static void ImportAccommodations(string data) => _accommodations.Import(data);
+    /// <param name="filePath">A path to a JSON file containing the accommodations to import.</param>
+    public static void ImportAccommodations(string filePath)
+    {
+        var fileContent = FileHandler.ReadFile(filePath);
+        _accommodations.Import(fileContent);
+    }
 
     /// <summary>
-    /// Exports all accommodations to a specified file as a JSON string.
+    /// Exports the accommodations to a specified file as JSON.
     /// </summary>
-    /// <param name="filePath">The file path where accommodation data will be saved.</param>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="filePath"/> is <c>null</c> or an empty string.
-    /// </exception>
-    /// <exception cref="IOException">
-    /// Thrown when an I/O error occurs while writing to <paramref name="filePath"/>.
-    /// </exception>
-    public static void ExportAccommodations(string filePath) => File.WriteAllText(filePath, _accommodations.Export());
-
-    /// <summary>
-    /// Retrieves all accommodations in the system.
-    /// </summary>
-    /// <returns>A read-only collection of <see cref="Accommodation"/> objects.</returns>
-    public static IReadOnlyCollection<Accommodation> GetAllAccommodations() => _accommodations.GetAllAccommodations();
-
-    /// <summary>
-    /// Finds an accommodation by its unique ID.
-    /// </summary>
-    /// <param name="id">The unique ID of the accommodation to find.</param>
-    /// <returns>
-    /// The <see cref="Accommodation"/> object if found; otherwise, <c>null</c>.
-    /// </returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when <paramref name="id"/> is less than zero.
-    /// </exception>
-    public static Accommodation? FindAccommodationById(int id) => _accommodations.FindAccommodationById(id);
-
-    /// <summary>
-    /// Counts the total number of accommodations in the system.
-    /// </summary>
-    /// <returns>The number of accommodations.</returns>
-    public static int CountAccommodations() => _accommodations.CountAccommodations();
+    /// <param name="filePath">The file path where the accommodations data will be saved.</param>
+    public static void ExportAccommodations(string filePath)
+    {
+        var json = _accommodations.Export();
+        FileHandler.WriteFile(filePath, json);
+    }
 
 #endregion
 }
