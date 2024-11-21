@@ -60,12 +60,12 @@ public class AccommodationConverter : JsonConverter<Accommodation>
         writer.WriteNumber("PricePerNight", value.PricePerNight);
 
         // Serialize reserved dates as an array
-        writer.WriteStartArray("ReservedDates");
-        foreach (var (Start, End) in value.ReservedDates)
+        writer.WriteStartArray("ReservationDates");
+        foreach (var reservation in value.ReservationDates)
         {
             writer.WriteStartObject();
-            writer.WriteString("Start", Start.ToString("yyyy-MM-dd"));
-            writer.WriteString("End", End.ToString("yyyy-MM-dd"));
+            writer.WriteString("Start", reservation.Start.ToString("yyyy-MM-dd"));
+            writer.WriteString("End", reservation.End.ToString("yyyy-MM-dd"));
             writer.WriteEndObject();
         }
         writer.WriteEndArray();

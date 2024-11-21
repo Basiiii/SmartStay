@@ -19,6 +19,11 @@ namespace SmartStay.Common.Enums
 public enum AccommodationType
 {
     /// <summary>
+    /// Indicates that the accommodation type is not defined. This is used when the accommodation type is not chosen.
+    /// </summary>
+    None,
+
+    /// <summary>
     /// Represents a traditional hotel accommodation, typically offering private rooms and common amenities.
     /// </summary>
     Hotel,

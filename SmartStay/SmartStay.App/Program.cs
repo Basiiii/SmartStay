@@ -8,16 +8,24 @@ namespace SmartStay.App
 {
 internal static class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         // Create and add clients with exception handling
         try
         {
-            var client1 = new Client("John", "Doe", "john.doe@example.com");
-            var client2 = new Client("Jane", "Smith", "jane.smith@example.com", "+3515556482097", "Foo Address");
+            BookingManager.CreateBasicClient("John", "Doe", "john.doe@example.com");
+            Console.WriteLine("Basic client (ID 1) created and added to the system.");
+        }
+        catch (ValidationException ex)
+        {
+            Console.WriteLine($"Failed to create client: {ex.Message} (Code: {ex.ErrorCode})");
+        }
 
-            Console.WriteLine($"Client 1 added: {BookingManager.AddClient(client1)}");
-            Console.WriteLine($"Client 2 added: {BookingManager.AddClient(client2)}");
+        try
+        {
+            BookingManager.CreateCompleteClient("Jane", "Smith", "jane.smith@example.com", "+3515556482097",
+                                                "Foo Address");
+            Console.WriteLine("Basic client (ID 2) created and added to the system.");
         }
         catch (ValidationException ex)
         {
@@ -33,11 +41,20 @@ internal static class Program
         // Create and add accommodations with exception handling
         try
         {
-            var accommodation1 = new Accommodation(AccommodationType.Hotel, "Grand Hotel", "123 Main Street", 100.00m);
-            var accommodation2 = new Accommodation(AccommodationType.House, "Cozy Cottage", "456 Elm Street", 80.00m);
+            BookingManager.CreateAccommodation(AccommodationType.Hotel, "Grand Hotel", "123 Main Street", 100.00m);
 
-            Console.WriteLine($"Accommodation 1 added: {BookingManager.AddAccommodation(accommodation1)}");
-            Console.WriteLine($"Accommodation 2 added: {BookingManager.AddAccommodation(accommodation2)}");
+            Console.WriteLine("Accommodation 1 created and added");
+        }
+        catch (ValidationException ex)
+        {
+            Console.WriteLine($"Failed to create accommodation: {ex.Message} (Code: {ex.ErrorCode})");
+        }
+
+        try
+        {
+            BookingManager.CreateAccommodation(AccommodationType.House, "Cozy Cottage", "456 Elm Street", 80.00m);
+
+            Console.WriteLine("Accommodation 2 created and added");
         }
         catch (ValidationException ex)
         {
@@ -55,39 +72,27 @@ internal static class Program
         {
             if (foundClient1 != null && foundAccommodation1 != null)
             {
-                Reservation reservation1 =
-                    new Reservation(foundClient1.Id, foundAccommodation1.Id, AccommodationType.Hotel,
-                                    DateTime.Now.AddDays(1), DateTime.Now.AddDays(3), 200.00m);
-                BookingManager.AddReservation(reservation1);
-
-                // Add reservation to accommodation1
-                bool added = foundAccommodation1.AddReservation(reservation1.CheckInDate, reservation1.CheckOutDate);
-                Console.WriteLine($"Reservation 1 added to Accommodation 1: {added}");
-                if (added)
-                {
-                    Console.WriteLine($"Accommodation 1: {foundAccommodation1}");
-                }
+                BookingManager.CreateReservation(foundClient1.Id, foundAccommodation1.Id, DateTime.Now.AddDays(1),
+                                                 DateTime.Now.AddDays(3));
+                Console.WriteLine("Created and added reservation for client 1 in accommodation 1.");
             }
-
             if (foundClient2 != null && foundAccommodation2 != null)
             {
-                var reservation2 = new Reservation(foundClient2.Id, foundAccommodation2.Id, AccommodationType.House,
-                                                   DateTime.Now.AddDays(2), DateTime.Now.AddDays(5), 240.00m);
-                BookingManager.AddReservation(reservation2);
 
-                // Add reservation to accommodation2
-                bool added = foundAccommodation2.AddReservation(reservation2.CheckInDate, reservation2.CheckOutDate);
-                Console.WriteLine($"Reservation 2 added to Accommodation 2: {added}");
-                if (added)
-                {
-                    Console.WriteLine($"Accommodation 2: {foundAccommodation2}");
-                }
+                BookingManager.CreateReservation(foundClient2.Id, foundAccommodation2.Id, DateTime.Now.AddDays(2),
+                                                 DateTime.Now.AddDays(5));
+                Console.WriteLine("Created and added reservation for client 2 in accommodation 2.");
             }
         }
         catch (ValidationException ex)
         {
             Console.WriteLine($"Failed to create reservation: {ex.Message} (Code: {ex.ErrorCode})");
         }
+
+        // Show Accommodations with new reservations
+        Console.WriteLine("\nAccommodations with reservations:");
+        Console.WriteLine($"Accommodation 1: {foundAccommodation1}");
+        Console.WriteLine($"Accommodation 2: {foundAccommodation2}");
 
         // Check accommodation availability after adding reservations
         if (foundAccommodation1 != null)

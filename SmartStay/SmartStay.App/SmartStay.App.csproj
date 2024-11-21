@@ -7,4 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SmartStay.Common\SmartStay.Common.csproj" />
+    <ProjectReference Include="..\SmartStay.Core\SmartStay.Core.csproj" />
+    <ProjectReference Include="..\SmartStay.IO\SmartStay.IO.csproj" />
+    <ProjectReference Include="..\SmartStay.Validation\SmartStay.Validation.csproj" />
+  </ItemGroup>
+
 </Project>

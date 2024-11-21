@@ -11,6 +11,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using SmartStay.Common.Enums;
+using SmartStay.Core.Repositories;
 using SmartStay.Core.Utilities;
 using SmartStay.Validation;
 using SmartStay.Validation.Validators;
@@ -37,8 +38,8 @@ public class Accommodation
     string _name;            // Name of the accommodation
     string _address;         // Address of the accommodation
     decimal _pricePerNight;  // Price per night for the accommodation
-    readonly List<(DateTime Start, DateTime End)> _reservedDates =
-        new List<(DateTime Start, DateTime End)>(); // Booked date ranges
+    readonly SortedSet<DateRange> _reservationDates =
+        new SortedSet<DateRange>(); // Sorted set for efficient availability check
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Accommodation"/> class with the specified details: type, name,
@@ -114,65 +115,123 @@ public class Accommodation
     }
 
     /// <summary>
-    /// Public getter for a read-only list of reserved dates.
+    /// Public getter for the ReservationDates DateRange as readonly collection.
     /// </summary>
-    public IReadOnlyList<(DateTime Start, DateTime End)> ReservedDates => _reservedDates.AsReadOnly();
+    public IReadOnlyCollection<DateRange> ReservationDates
+    {
+        get {
+            return _reservationDates.ToList().AsReadOnly();
+        }
+    }
 
     /// <summary>
-    /// Checks if the accommodation is available for the specified date range.
+    /// Checks if a given date range is available for a new reservation, ensuring there are no overlaps with existing
+    /// reservations.
     /// </summary>
-    /// <param name="startDate">The start date of the requested booking period.</param>
-    /// <param name="endDate">The end date of the requested booking period.</param>
-    /// <returns>True if the accommodation is available for the entire date range; otherwise, false.</returns>
-    /// <exception cref="ArgumentException">Thrown if the end date is not after the start date.</exception>
-    public bool IsAvailable(DateTime startDate, DateTime endDate)
+    /// <param name="startDate">The start date of the new reservation.</param>
+    /// <param name="endDate">The end date of the new reservation.</param>
+    /// <param name="existingReservationRange">
+    /// Optional parameter representing an existing reservation that can be ignored during the availability check,
+    /// used for modifying reservations.
+    /// </param>
+    /// <returns>
+    /// Returns <c>true</c> if the accommodation is available during the specified date range; otherwise, returns
+    /// <c>false</c>.
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="endDate"/> is less than or equal to <paramref
+    /// name="startDate"/>.</exception> <remarks> This method uses a <see cref="SortedSet{T}"/> to efficiently find
+    /// potential conflicting reservations by leveraging the <c>GetViewBetween</c> method, which narrows down the search
+    /// space to reservations potentially overlapping with the requested dates. Overlapping reservations are identified
+    /// based on whether the requested range intersects with any existing reservation.
+    /// </remarks>
+
+    public bool IsAvailable(DateTime startDate, DateTime endDate, DateRange? existingReservationRange = null)
     {
         if (endDate <= startDate)
             throw new ArgumentException("End date must be after the start date.");
 
-        // Perform binary search to find the nearest potential conflict
-        int index = _reservedDates.BinarySearch((startDate, endDate), new DateRangeComparer());
-        if (index < 0)
-            index = ~index; // If not found, BinarySearch returns bitwise complement of the insertion index
+        var newReservation = new DateRange(startDate, endDate);
 
-        // Check previous and next entries for potential overlaps
-        if (index > 0 && _reservedDates[index - 1].End > startDate)
+        // Get potential conflicting reservations within the requested range
+        var potentialConflicts = _reservationDates.GetViewBetween(
+            new DateRange(DateTime.MinValue, startDate), // All reservations that end before the start
+            new DateRange(DateTime.MaxValue, endDate)    // All reservations that start after the end
+        );
+
+        // Check if there are any overlapping reservations
+        foreach (var existingReservation in potentialConflicts)
         {
-            return false; // Overlaps with previous booking
-        }
-        if (index < _reservedDates.Count && _reservedDates[index].Start < endDate)
-        {
-            return false; // Overlaps with next booking
+            // Skip the existing reservation if it's the one we're trying to modify
+            if (existingReservation.Equals(existingReservationRange))
+            {
+                continue; // Skip this reservation as it's the one we're modifying
+            }
+
+            // An overlap occurs if the start date is before the end date, and the end date is after the start date
+            if ((newReservation.Start < existingReservation.End) && (newReservation.End > existingReservation.Start))
+            {
+                return false; // There's an overlap, so the accommodation is not available
+            }
         }
 
         return true; // No overlap found, accommodation is available
     }
 
     /// <summary>
-    /// Attempts to add a reservation for the specified date range if the accommodation is available.
+    /// Adds a new reservation to the accommodation, with an optional ability to skip the availability check for faster
+    /// bulk operations.
     /// </summary>
-    /// <param name="startDate">The start date of the booking.</param>
-    /// <param name="endDate">The end date of the booking.</param>
-    /// <returns>True if the reservation was successfully added; otherwise, false.</returns>
+    /// <param name="startDate">The start date of the reservation.</param>
+    /// <param name="endDate">The end date of the reservation.</param>
+    /// <param name="skipAvailabilityCheck">
+    /// A boolean flag indicating whether to skip the availability check. Set to <c>true</c> during bulk operations or
+    /// trusted inputs where availability is pre-validated.
+    /// </param>
+    /// <returns>
+    /// Returns <c>true</c> if the reservation was successfully added. If <paramref name="skipAvailabilityCheck"/> is
+    /// <c>false</c> and the date range is unavailable, returns <c>false</c>.
+    /// </returns>
     /// <remarks>
-    /// This method first checks if the accommodation is available for the given date range using
-    /// <see cref="IsAvailable"/>. If available, it inserts the booking in the sorted list at
-    /// the correct position to maintain the list's order.
+    /// This method adds the reservation to a <see cref="SortedSet{T}"/> that maintains ordered reservations by date
+    /// range. Skipping the availability check can improve performance significantly during bulk operations but should
+    /// only be used with pre-validated or trusted data.
     /// </remarks>
-    public bool AddReservation(DateTime startDate, DateTime endDate)
+    public bool AddReservation(DateTime startDate, DateTime endDate, bool skipAvailabilityCheck = false)
     {
-        if (!IsAvailable(startDate, endDate))
+        // If not skipping the availability check, validate the dates
+        if (!skipAvailabilityCheck && !IsAvailable(startDate, endDate))
         {
-            return false; // Not available, booking cannot be added
+            return false; // If not available, return false
         }
 
-        // Find the correct position to insert the new booking using binary search
-        int index = _reservedDates.BinarySearch((startDate, endDate), new DateRangeComparer());
-        if (index < 0)
-            index = ~index; // If not found, BinarySearch returns the bitwise complement of the index
+        // Add the new reservation's date range to the SortedSet
+        _reservationDates.Add(new DateRange(startDate, endDate));
+        return true; // Successfully added the reservation
+    }
 
-        _reservedDates.Insert(index, (startDate, endDate)); // Insert at the correct position
-        return true;                                        // Booking added successfully
+    /// <summary>
+    /// Removes an existing reservation from the accommodation.
+    /// </summary>
+    /// <param name="startDate">The start date of the reservation to be removed.</param>
+    /// <param name="endDate">The end date of the reservation to be removed.</param>
+    /// <returns>
+    /// Returns <c>true</c> if the reservation was successfully removed; otherwise, returns <c>false</c> if the
+    /// specified reservation was not found.
+    /// </returns>
+    /// <remarks>
+    /// This method uses the <see cref="SortedSet{T}.Remove"/> method to delete a specific reservation by matching its
+    /// <see cref="DateRange"/>. It ensures efficient removal operations due to the underlying data structure.
+    /// </remarks>
+    public bool RemoveReservation(DateTime startDate, DateTime endDate)
+    {
+        // Create the date range object to remove
+        var reservationToRemove = new DateRange(startDate, endDate);
+
+        // Remove the reservation from the SortedSet
+        bool removed = _reservationDates.Remove(reservationToRemove);
+
+        // Return whether the reservation was successfully removed
+        return removed;
     }
 
     /// <summary>

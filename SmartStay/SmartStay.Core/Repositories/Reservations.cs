@@ -28,12 +28,10 @@ namespace SmartStay.Core.Repositories
 /// </summary>
 public class Reservations : IManageableEntity<Reservation>
 {
-    private static readonly Dictionary<int, Reservation> value = new Dictionary<int, Reservation>();
-
     /// <summary>
     /// Internal dictionary to store reservations by their unique ID.
     /// </summary>
-    readonly Dictionary<int, Reservation> _reservationDictionary = value;
+    readonly Dictionary<int, Reservation> _reservationDictionary = new Dictionary<int, Reservation>();
 
     /// <summary>
     /// Attempts to add a new reservation to the collection.
@@ -151,17 +149,17 @@ public class Reservations : IManageableEntity<Reservation>
     }
 
     /// <summary>
-    /// Retrieves all the reservations in the collection.
+    /// Retrieves all reservations for a given accommodation, with check-in dates after the current time.
     /// </summary>
-    /// <returns>
-    /// A read-only collection of <see cref="Reservation"/> objects.
-    /// </returns>
-    /// <remarks>
-    /// Returns a copy of the internal dictionary's values as a list to prevent external modification.
-    /// </remarks>
-    public IReadOnlyCollection<Reservation> GetAllReservations()
+    /// <param name="accommodationId">The accommodation ID to filter by.</param>
+    /// <returns>A list of future reservations for the given accommodation.</returns>
+    public IEnumerable<Reservation> GetFutureReservations(int accommodationId)
     {
-        return _reservationDictionary.Values.ToList(); // Returns a copy of the reservation collection.
+        // Use LINQ to filter the dictionary's values directly without copying to a list.
+        return _reservationDictionary.Values
+            .Where(reservation =>
+                       reservation.AccommodationId == accommodationId && reservation.CheckInDate >= DateTime.Now)
+            .ToList();
     }
 
     /// <summary>

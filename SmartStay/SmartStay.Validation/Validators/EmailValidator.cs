@@ -16,12 +16,13 @@ using System.Text.RegularExpressions;
 /// </summary>
 namespace SmartStay.Validation.Validators
 {
-  /// <summary>
-  /// Defines the <see cref="EmailValidator"/> class, which provides functionality for validating
-  /// email addresses within the SmartStay application.
-  /// </summary>
-  public static class EmailValidator
+/// <summary>
+/// Defines the <see cref="EmailValidator"/> class, which provides functionality for validating
+/// email addresses within the SmartStay application.
+/// </summary>
+public static class EmailValidator
 {
+    // TODO: add a way to check if an email is already being used
 
     /// <summary>
     /// Regular expression pattern for validating email addresses.

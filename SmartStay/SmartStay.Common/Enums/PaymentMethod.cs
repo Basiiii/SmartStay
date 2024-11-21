@@ -19,6 +19,12 @@ namespace SmartStay.Common.Enums
 public enum PaymentMethod
 {
     /// <summary>
+    /// Indicates that the payment method should not be changed. This is used when the payment method should remain the
+    /// same.
+    /// </summary>
+    Unchanged,
+
+    /// <summary>
     /// No specific payment method selected; used as a default or placeholder value.
     /// </summary>
     None,
