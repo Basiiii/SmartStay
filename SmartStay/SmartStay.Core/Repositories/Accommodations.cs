@@ -126,17 +126,6 @@ public class Accommodations : IManageableEntity<Accommodation>
     }
 
     /// <summary>
-    /// Retrieves all the accommodations in the collection.
-    /// </summary>
-    /// <returns>
-    /// A read-only collection of <see cref="Accommodation"/> objects.
-    /// </returns>
-    public IReadOnlyCollection<Accommodation> GetAllAccommodations()
-    {
-        return _accommodationDictionary.Values.ToList(); // Returns a copy of the accommodation collection.
-    }
-
-    /// <summary>
     /// Counts the number of accommodations in the collection.
     /// </summary>
     /// <returns>

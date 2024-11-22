@@ -560,9 +560,9 @@ Utiliza-se \textit{XML Documentation Comments} para documentar o código, permit
 O diagrama de classes apresentado descreve a estrutura lógica do sistema de gestão de reservas para alojamentos turísticos, com uma arquitetura desenhada para centralizar e organizar informações essenciais sobre clientes, reservas, alojamentos e pagamentos. Este modelo, por além de otimizar o fluxo de trabalho, promove a extensibilidade e modularidade, facilitando tanto as expansões futuras como a manutenção do sistema.
 
 \subsection{Classes Principais}
-No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) armazena informações sobre um cliente individual, como nome, e-mail e endereço. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para armazenar e organizar várias instâncias da classe \textit{Client}. Esta coleção é implementada através de um dicionário, permitindo o acesso eficiente e rápido aos dados dos clientes.
+No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail e endereço. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para armazenar e organizar várias instâncias da classe \textit{Client}. Esta coleção é implementada através de um dicionário, permitindo o acesso eficiente e rápido aos dados dos clientes.
 
-A classe \textit{Accommodation} (alojamento) representa as propriedades ou quartos disponíveis para reserva, com informações como o tipo de alojamento, a capacidade e o preço por noite. Parecida à classe \textit{Clients}, o sistema utiliza a classe \textit{Accommodations}, que também serve como uma coleção para armazenar e gerir vários alojamentos, sendo implementada através de um dicionário para facilitar a consulta e a manipulação dos dados.
+A classe \textit{Accommodation} (alojamento) representa as propriedades ou quartos disponíveis para reserva, com informações como o tipo de alojamento, a disponibilidade e o preço por noite. Parecida à classe \textit{Clients}, o sistema utiliza a classe \textit{Accommodations}, que também serve como uma coleção para armazenar e gerir vários alojamentos, sendo implementada através de um dicionário para facilitar a consulta e a manipulação dos dados.
 
 A classe \textit{Reservation} (reserva) liga os clientes aos alojamentos, registando os detalhes da estadia, incluindo as datas de check-in e check-out, o custo total e o estado do pagamento. Tal como as classes \textit{Clients} e \textit{Accommodations}, o sistema utiliza a classe \textit{Reservations}, que guarda uma coleção de reservas, também gerida por um dicionário, permitindo a manipulação eficiente de múltiplas instâncias de reservas.
 
@@ -570,12 +570,14 @@ A classe \textit{Reservation} (reserva) liga os clientes aos alojamentos, regist
 A classe \textit{Payment} (pagamento) tem como objetivo guardar informações detalhadas sobre cada transação associada a uma reserva, incluindo o montante pago, a data do pagamento e o método utilizado. A classe \textit{Reservation} mantém uma coleção de instâncias da classe \textit{Payment}, permitindo registar todos os pagamentos realizados para uma determinada reserva.
 
 \subsection{BookingManager e a Interface ManageableEntity}
-A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para adicionar e remover clientes, criar e cancelar reservas, gerir alojamentos e processar pagamentos.
+A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para controlar o sistema, gerir alojamentos e processar pagamentos.
 
 O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. 
 
-\subsection{Padrão Facade}
-O \textit{BookingManager} atua como a face do sistema, permitindo direcionar chamadas para a classe apropriada com base no tipo de entidade a ser manipulada. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que simplifica a interação com o sistema ao fornecer uma interface única e centralizada. Este padrão oculta as complexidades internas do sistema, como a gestão dos dados em várias coleções, e permite que o utilizador ou outros componentes do sistema façam operações de forma mais intuitiva e eficiente. Ao centralizar a lógica de interação, o \textit{Facade} promove uma maior modularidade e extensibilidade, uma vez que mudanças internas podem ser feitas sem impactar a interface externa. Desta forma, o \textit{BookingManager} oferece um ponto único de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
+\subsection{Padrão de Face (Facade Pattern)}
+O \textit{BookingManager} atua como a face do sistema, permitindo simplificar a interação ao consolidar várias chamadas de funções numa única operação. Por exemplo, em vez de chamar funções separadas para criar um objeto \textit{Client} e adicioná-lo ao dicionário de \textit{clients}, a função única \texttt{CreateClient} realiza ambas as operações de forma transparente. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que fornece uma interface única e centralizada para interagir com o sistema, abstraindo a complexidade interna e promovendo uma maior simplicidade no uso.
+
+Ao centralizar essas operações, o \textit{Facade} melhora a modularidade e extensibilidade do sistema, permitindo que alterações internas sejam realizadas sem impacto na interface externa. Assim, o \textit{BookingManager} fornece um ponto de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
 
 \begin{figure}[h!]
 	\centering
@@ -599,7 +601,7 @@ A \textit{Common Language Specification (CLS)} define um conjunto de regras e pa
 
 Dentro deste contexto, o tipo \texttt{decimal} foi escolhido para operações financeiras e monetárias devido à sua alta precisão e, também, por ser um tipo que segue as normas da CLS. Esta conformidade permite que o sistema mantenha uma representação exata de valores monetários e seja facilmente reutilizável em outros ambientes e linguagens que suportem .NET. 
 
-Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — por exemplo, tipos inteiros não-assinados como \texttt{uint} e \texttt{ulong} não são CLS-compliant e podem apresentar problemas de interoperabilidade em algumas linguagens. A escolha de tipos compatíveis com a CLS reforça o compromisso com a robustez e a acessibilidade do sistema em um ambiente .NET multi-linguagem.
+Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — por exemplo, tipos inteiros não-assinados (\textit{unsigned}) como \texttt{uint} e \texttt{ulong} não são CLS-compliant e podem apresentar problemas de interoperabilidade em algumas linguagens. A escolha de tipos compatíveis com a CLS reforça o compromisso com a robustez e a acessibilidade do sistema em um ambiente .NET multi-linguagem.
 
 \subsection{Models} A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Esses modelos são frequentemente utilizados para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento e recuperação de dados. Além disso, os modelos podem incluir validações de dados e regras de negócio específicas, facilitando a comunicação entre as diferentes camadas.
 
@@ -608,6 +610,21 @@ Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — 
 \subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois gere o processo de reservas, incluindo a criação, validação e processamento de pagamentos.
 
 \subsection{Utilities} A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. Exemplos típicos incluem ferramentas de validação, manipulação de strings, loggers e geradores de relatórios. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação. Por exemplo, um validador de datas ou um utilitário de formatação de preços pode ser usado em diferentes componentes, como na criação de reservas e no processamento de pagamentos.
+
+\subsection{Bibliotecas}  
+A organização do código também foi complementada com a utilização de bibliotecas específicas, armazenadas na pasta \texttt{Libraries}, para promover a separação de responsabilidades e a modularidade do sistema. Estas bibliotecas foram estruturadas para encapsular diferentes funcionalidades do sistema, permitindo uma gestão mais clara e eficiente das preocupações. Abaixo descrevemos as principais bibliotecas criadas:  
+
+\begin{itemize}  
+	\item \textbf{SmartStay.Common}: Esta biblioteca foi criada para conter elementos comuns que são utilizados por todas as partes do sistema. Ela inclui definições de \textit{enums}, constantes e outros componentes genéricos que podem ser reutilizados de maneira transversal. Ao centralizar esses elementos na biblioteca \texttt{SmartStay.Common}, é possível reduzir a redundância de código e melhorar a consistência em diferentes partes da aplicação.  
+	
+	\item \textbf{SmartStay.Core}: A biblioteca central do sistema, \texttt{SmartStay.Core}, agrupa os modelos, repositórios, serviços e utilitários. Esta biblioteca encapsula a lógica de negócio principal e os elementos estruturais do sistema, assegurando uma clara separação entre os dados e as operações que os manipulam. Por exemplo, todas as classes de modelo, como \texttt{Client} e \texttt{Reservation}, bem como os repositórios que armazenam listas de objetos, estão organizados nesta biblioteca.
+	
+	\item \textbf{SmartStay.IO}: A biblioteca \texttt{SmartStay.IO} é responsável por lidar com operações de entrada e saída, particularmente o gerenciamento de dados em formato \textit{JSON}. Ela encapsula toda a lógica relacionada à leitura e escrita de informações, permitindo que o sistema realize a persistência de dados de maneira modular. Esta abordagem melhora a manutenção, pois mudanças na forma como os dados são armazenados ou carregados podem ser feitas exclusivamente nesta biblioteca, sem impactar outras partes do sistema.  
+	
+	\item \textbf{SmartStay.Validation}: A biblioteca \texttt{SmartStay.Validation} foi projetada para centralizar toda a lógica de validação de dados do sistema. Ela inclui regras específicas para garantir a integridade dos dados inseridos e manipulados pelo sistema, como validações de datas e formatos de entrada. Este design promove a reutilização de lógica de validação em diferentes componentes, aumentando a consistência e facilitando futuras alterações ou expansões nas regras de validação.
+\end{itemize}  
+
+A utilização destas bibliotecas reflete um compromisso com a separação de preocupações (\textit{Separation of Concerns}), promovendo uma arquitetura limpa, extensível e de fácil manutenção. Cada biblioteca tem um propósito bem definido e pode ser atualizada ou substituída de forma independente, reduzindo a complexidade e os riscos associados a alterações no sistema.  
 
 \newpage
 \section{Estruturas de Dados Utilizadas}

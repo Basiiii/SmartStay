@@ -144,7 +144,6 @@ public class Accommodation
     /// space to reservations potentially overlapping with the requested dates. Overlapping reservations are identified
     /// based on whether the requested range intersects with any existing reservation.
     /// </remarks>
-
     public bool IsAvailable(DateTime startDate, DateTime endDate, DateRange? existingReservationRange = null)
     {
         if (endDate <= startDate)

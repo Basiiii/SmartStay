@@ -124,20 +124,6 @@ public class Clients : IManageableEntity<Client>
     }
 
     /// <summary>
-    /// Retrieves all the clients in the collection.
-    /// </summary>
-    /// <returns>
-    /// A read-only collection of <see cref="Client"/> objects.
-    /// </returns>
-    /// <remarks>
-    /// Returns a copy of the internal dictionary's values to prevent external modification.
-    /// </remarks>
-    public IReadOnlyCollection<Client> GetAllClients()
-    {
-        return _clientDictionary.Values.ToList(); // Returns a copy of the client collection.
-    }
-
-    /// <summary>
     /// Counts the number of clients in the collection.
     /// </summary>
     /// <returns>

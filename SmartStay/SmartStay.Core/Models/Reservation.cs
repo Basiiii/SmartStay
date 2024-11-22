@@ -144,20 +144,6 @@ public class Reservation
     }
 
     /// <summary>
-    /// Generates a unique reservation ID in a thread-safe manner using Interlocked.Increment.
-    /// </summary>
-    /// <returns>A unique reservation ID.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when max limit of int is reached.</exception>
-    private static int GenerateReservationId()
-    {
-        if (_lastReservationId >= int.MaxValue)
-        {
-            throw new InvalidOperationException("Reservation ID limit exceeded.");
-        }
-        return Interlocked.Increment(ref _lastReservationId);
-    }
-
-    /// <summary>
     /// Marks the reservation as checked in and updates the status to CheckedIn.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if the reservation status is not Pending.</exception>
@@ -212,6 +198,20 @@ public class Reservation
     public bool IsFullyPaid()
     {
         return _amountPaid >= _totalCost;
+    }
+
+    /// <summary>
+    /// Generates a unique reservation ID in a thread-safe manner using Interlocked.Increment.
+    /// </summary>
+    /// <returns>A unique reservation ID.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when max limit of int is reached.</exception>
+    private static int GenerateReservationId()
+    {
+        if (_lastReservationId >= int.MaxValue)
+        {
+            throw new InvalidOperationException("Reservation ID limit exceeded.");
+        }
+        return Interlocked.Increment(ref _lastReservationId);
     }
 
     /// <summary>
