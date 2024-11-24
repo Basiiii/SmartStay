@@ -22,10 +22,13 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore
+      working-directory: ./SmartStay
+      run: dotnet restore SmartStay.sln
 
     - name: Build solution
-      run: dotnet build --no-restore --configuration Release
+      working-directory: ./SmartStay
+      run: dotnet build SmartStay.sln --no-restore --configuration Release
 
     - name: Run tests
+      working-directory: ./SmartStay
       run: dotnet test --no-build --verbosity normal --configuration Release
