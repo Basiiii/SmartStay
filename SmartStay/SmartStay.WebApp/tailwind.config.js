@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
+  darkMode: 'media',
   content: [
     './**/*.razor', // Razor components
     './Pages/**/*.razor', // If components are stored in a Pages folder

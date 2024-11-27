@@ -29,16 +29,17 @@ public class Reservation
     static int _lastReservationId = 0;                                                   // Last assigned reservation ID
     static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
 
-    readonly int _reservationId;                            // ID of the reservation
-    readonly int _clientId;                                 // ID of the client making the reservation
-    readonly int _accommodationId;                          // ID of the accommodation
-    AccommodationType _accommodationType;                   // Type of accommodation (e.g., Room, Suite, etc.)
-    DateTime _checkInDate;                                  // Check-in date for the reservation
-    DateTime _checkOutDate;                                 // Check-out date for the reservation
-    ReservationStatus _status = ReservationStatus.Pending;  // Current reservation status
-    decimal _totalCost;                                     // Total cost of the reservation
-    decimal _amountPaid = 0;                                // Amount paid towards the reservation
-    readonly List<Payment> _payments = new List<Payment>(); // List of payments made for the reservation
+    readonly int _reservationId;                           // ID of the reservation
+    readonly int _clientId;                                // ID of the client making the reservation
+    readonly int _accommodationId;                         // ID of the accommodation
+    readonly int _roomId;                                  // ID of the room
+    AccommodationType _accommodationType;                  // Type of accommodation (e.g., Room, Suite, etc.)
+    DateTime _checkInDate;                                 // Check-in date for the reservation
+    DateTime _checkOutDate;                                // Check-out date for the reservation
+    ReservationStatus _status = ReservationStatus.Pending; // Current reservation status
+    decimal _totalCost;                                    // Total cost of the reservation
+    decimal _amountPaid = 0;                               // Amount paid towards the reservation
+    readonly List<Payment> _payments = new();              // List of payments made for the reservation
 
     /// <summary>
     /// Constructor to initialize a new reservation with essential details.
@@ -46,16 +47,18 @@ public class Reservation
     /// </summary>
     /// <param name="clientId">The ID of the client.</param>
     /// <param name="accommodationId">The ID of the accommodation.</param>
+    /// <param name="roomId">The ID of the room.</param>
     /// <param name="accommodationType">The type of accommodation.</param>
     /// <param name="checkInDate">The check-in date.</param>
     /// <param name="checkOutDate">The check-out date.</param>
     /// <param name="totalCost">The total cost of the reservation.</param>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public Reservation(int clientId, int accommodationId, AccommodationType accommodationType, DateTime checkInDate,
-                       DateTime checkOutDate, decimal totalCost)
+    public Reservation(int clientId, int accommodationId, int roomId, AccommodationType accommodationType,
+                       DateTime checkInDate, DateTime checkOutDate, decimal totalCost)
     {
         ClientValidator.ValidateClientId(clientId);
         AccommodationValidator.ValidateAccommodationId(accommodationId);
+        RoomValidator.ValidateRoomId(roomId);
         PaymentValidator.ValidateTotalCost(totalCost);
         if (!DateValidator.IsValidDateRange(checkInDate, checkOutDate))
             throw new ValidationException(ValidationErrorCode.InvalidDateRange);
@@ -63,6 +66,7 @@ public class Reservation
         _reservationId = GenerateReservationId();
         _clientId = clientId;
         _accommodationId = accommodationId;
+        _roomId = roomId;
         _accommodationType = accommodationType;
         _checkInDate = checkInDate;
         _checkOutDate = checkOutDate;
@@ -88,6 +92,11 @@ public class Reservation
     /// Gets the Accommodation ID associated with the reservation.
     /// </summary>
     public int AccommodationId => _accommodationId;
+
+    /// <summary>
+    /// Gets the room ID associated with the reservation.
+    /// </summary>
+    public int RoomId => _roomId;
 
     /// <summary>
     /// Gets or sets the Accommodation Type.

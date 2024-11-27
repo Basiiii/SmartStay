@@ -1,0 +1,43 @@
+﻿@page "/login-owner"
+@layout PublicLayout
+@using SmartStay.WebApp.Pages.Components 
+
+<section class="bg-gray-50 dark:bg-gray-900">
+  <div class="flex min-h-screen items-stretch justify-center px-6 py-8 lg:py-4">
+    <!-- Left Side (Image) -->
+    <div class="hidden min-h-full w-1/2 rounded-l-lg lg:block" style="background-image: url('/images/tourists_crossing_log.webp'); background-size: cover; background-position: center;"></div>
+
+    <!-- Right Side (Form) -->
+    <div class="min-h-full w-full rounded-r-lg bg-white shadow dark:border dark:bg-gray-800 dark:border-gray-700 sm:max-w-md md:mt-0 lg:w-1/2 xl:p-0">
+      <div class="space-y-4 p-6 sm:p-8 md:space-y-6">
+        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+            Host Login
+        </h1>
+        <form class="space-y-4 md:space-y-4" action="#">
+          <!-- Email Field -->
+          <div>
+              <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+              <input type="email" name="email" id="email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
+          </div>
+
+          <!-- Password Field -->
+          <div>
+              <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
+              <input type="password" name="password" id="password" placeholder="••••••••" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
+
+          <!-- Register Link -->
+          <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+              Don't have an account? <a href="/register" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Create an Account</a>
+          </p>
+
+          <!-- Language Selector -->
+                    @* <LanguageSelector/> *@
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

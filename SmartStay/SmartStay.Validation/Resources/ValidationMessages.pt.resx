@@ -162,4 +162,10 @@
   <data name="InvalidPaymentStatus" xml:space="preserve">
     <value>O estado do pagamento fornecido é inválido.</value>
   </data>
+  <data name="InvalidAvailabilityStatus" xml:space="preserve">
+    <value>O estado da disponibilidade fornecida é inválida.</value>
+  </data>
+  <data name="InvalidRoomType" xml:space="preserve">
+    <value>O tipo de sala fornecida é inválida.</value>
+  </data>
 </root>

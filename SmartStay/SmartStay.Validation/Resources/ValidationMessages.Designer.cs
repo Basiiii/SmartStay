@@ -61,6 +61,60 @@ namespace SmartStay.Validation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided accommodation name is invalid..
+        /// </summary>
+        internal static string InvalidAccommodationName {
+            get {
+                return ResourceManager.GetString("InvalidAccommodationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided accommodation type is invalid..
+        /// </summary>
+        internal static string InvalidAccommodationType {
+            get {
+                return ResourceManager.GetString("InvalidAccommodationType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided address is invalid..
+        /// </summary>
+        internal static string InvalidAddress {
+            get {
+                return ResourceManager.GetString("InvalidAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided availability status is invalid..
+        /// </summary>
+        internal static string InvalidAvailabilityStatus {
+            get {
+                return ResourceManager.GetString("InvalidAvailabilityStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided date is invalid. Ensure the date is not in the past..
+        /// </summary>
+        internal static string InvalidDate {
+            get {
+                return ResourceManager.GetString("InvalidDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided date range is invalid. Check-in date must be earlier than the check-out date..
+        /// </summary>
+        internal static string InvalidDateRange {
+            get {
+                return ResourceManager.GetString("InvalidDateRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provided email address is invalid..
         /// </summary>
         internal static string InvalidEmail {
@@ -70,11 +124,92 @@ namespace SmartStay.Validation.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name must be a non-empty string and not exceed 50 characters..
+        ///   Looks up a localized string similar to The provided ID is invalid..
+        /// </summary>
+        internal static string InvalidId {
+            get {
+                return ResourceManager.GetString("InvalidId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided name is invalid..
         /// </summary>
         internal static string InvalidName {
             get {
                 return ResourceManager.GetString("InvalidName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided payment method is invalid..
+        /// </summary>
+        internal static string InvalidPaymentMethod {
+            get {
+                return ResourceManager.GetString("InvalidPaymentMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided payment status is invalid..
+        /// </summary>
+        internal static string InvalidPaymentStatus {
+            get {
+                return ResourceManager.GetString("InvalidPaymentStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided payment value is invalid. It must not exceed the total cost or be negative..
+        /// </summary>
+        internal static string InvalidPaymentValue {
+            get {
+                return ResourceManager.GetString("InvalidPaymentValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided phone number is invalid..
+        /// </summary>
+        internal static string InvalidPhoneNumber {
+            get {
+                return ResourceManager.GetString("InvalidPhoneNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided price is invalid..
+        /// </summary>
+        internal static string InvalidPrice {
+            get {
+                return ResourceManager.GetString("InvalidPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided reservation status is invalid..
+        /// </summary>
+        internal static string InvalidReservationStatus {
+            get {
+                return ResourceManager.GetString("InvalidReservationStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided room type is invalid..
+        /// </summary>
+        internal static string InvalidRoomType {
+            get {
+                return ResourceManager.GetString("InvalidRoomType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided total cost is invalid. It must be a positive value..
+        /// </summary>
+        internal static string InvalidTotalCost {
+            get {
+                return ResourceManager.GetString("InvalidTotalCost", resourceCulture);
             }
         }
     }

@@ -177,4 +177,12 @@
     <value>The provided payment status is invalid.</value>
     <comment>Error message for an invalid payment status.</comment>
   </data>
+  <data name="InvalidAvailabilityStatus" xml:space="preserve">
+    <value>The provided availability status is invalid.</value>
+    <comment>Error message for an invalid availability status.</comment>
+  </data>
+  <data name="InvalidRoomType" xml:space="preserve">
+    <value>The provided room type is invalid.</value>
+    <comment>Error message indicating the room type is invalid.</comment>
+  </data>
 </root>

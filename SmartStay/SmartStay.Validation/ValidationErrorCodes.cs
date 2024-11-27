@@ -95,8 +95,18 @@ public enum ValidationErrorCode
     InvalidPrice = 1014,
 
     /// <summary>
-    /// Error code indicating that the provided status is invalid.
+    /// Error code indicating that the provided payment status is invalid.
     /// </summary>
-    InvalidPaymentStatus = 1015
+    InvalidPaymentStatus = 1015,
+
+    /// <summary>
+    /// Error code indicating that the provided availability status is invalid.
+    /// </summary>
+    InvalidAvailabilityStatus = 1016,
+
+    /// <summary>
+    /// Error code indicating that the provided room type is invalid.
+    /// </summary>
+    InvalidRoomType = 1017
 }
 }

@@ -13,8 +13,6 @@ using SmartStay.Common.Enums;
 using SmartStay.Core.Models;
 using SmartStay.Core.Repositories;
 using SmartStay.Core.Utilities;
-using System.Linq;
-using System.Xml.Linq;
 
 /// <summary>
 /// The <c>Core.Services</c> namespace contains service classes that implement business logic for the SmartStay
@@ -38,17 +36,22 @@ public static class BookingManager
     /// <summary>
     /// Holds the collection of all clients in the system, stored in the <see cref="Clients"/> repository.
     /// </summary>
-    internal static readonly Clients _clients = new Clients();
+    internal static readonly Clients _clients = new();
 
     /// <summary>
     /// Holds the collection of all reservations in the system, stored in the <see cref="Reservations"/> repository.
     /// </summary>
-    internal static readonly Reservations _reservations = new Reservations();
+    internal static readonly Reservations _reservations = new();
 
     /// <summary>
     /// Holds the collection of all accommodations in the system, stored in the <see cref="Accommodations"/> repository.
     /// </summary>
-    internal static readonly Accommodations _accommodations = new Accommodations();
+    internal static readonly Accommodations _accommodations = new();
+
+    /// <summary>
+    /// Holds the collection of all owners in the system, stored in the <see cref="Owners"/> repository.
+    /// </summary>
+    internal static readonly Owners _owners = new();
 
 #endregion
 
@@ -211,6 +214,92 @@ public static class BookingManager
 
 #endregion
 
+#region Owner Management
+
+    /// <summary>
+    /// Creates a new owner with basic information and adds them to the system.
+    /// </summary>
+    /// <param name="firstName">The first name of the owner.</param>
+    /// <param name="lastName">The last name of the owner.</param>
+    /// <param name="email">The email address of the owner.</param>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    public static void CreateBasicOwner(string firstName, string lastName, string email)
+    {
+        Owner owner = new Owner(firstName, lastName, email);
+        _owners.Add(owner);
+    }
+
+    /// <summary>
+    /// Creates a new owner with all information and adds them to the system.
+    /// </summary>
+    /// <param name="firstName">The first name of the owner.</param>
+    /// <param name="lastName">The last name of the owner.</param>
+    /// <param name="email">The email address of the owner.</param>
+    /// <param name="phoneNumber">The phone number of the owner.</param>
+    /// <param name="address">The residential address of the owner.</param>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    public static void CreateCompleteOwner(string firstName, string lastName, string email, string phoneNumber,
+                                           string address)
+    {
+        Owner owner = new Owner(firstName, lastName, email, phoneNumber, address);
+        _owners.Add(owner);
+    }
+
+    /// <summary>
+    /// Finds an owner in the system by their unique ID.
+    /// </summary>
+    /// <param name="ownerId">The unique identifier for the owner.</param>
+    /// <returns>An <see cref="Owner"/> object if found, otherwise null.</returns>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    public static Owner FindOwnerById(int ownerId)
+    {
+        var owner = _owners.FindOwnerById(ownerId);
+
+        return owner ?? throw new ArgumentException($"Owner with ID {ownerId} not found.");
+    }
+
+    /// <summary>
+    /// Updates the details of an existing owner.
+    /// </summary>
+    /// <param name="ownerId">The unique ID of the owner to update.</param>
+    /// <param name="firstName">The new first name of the owner.</param>
+    /// <param name="lastName">The new last name of the owner.</param>
+    /// <param name="email">The new email address of the owner.</param>
+    /// <param name="phoneNumber">The new phone number of the owner.</param>
+    /// <param name="address">The new address of the owner.</param>
+    /// <exception cref="ArgumentException">Thrown when the owner ID is not found.</exception>
+    public static void UpdateOwner(int ownerId, string firstName = "", string lastName = "", string email = "",
+                                   string phoneNumber = "", string address = "")
+    {
+        var owner = FindOwnerById(ownerId);
+
+        // Validate information before updating
+        if (!string.IsNullOrEmpty(firstName))
+            owner.FirstName = firstName;
+        if (!string.IsNullOrEmpty(lastName))
+            owner.LastName = lastName;
+        if (!string.IsNullOrEmpty(email))
+            owner.Email = email;
+        if (!string.IsNullOrEmpty(phoneNumber))
+            owner.PhoneNumber = phoneNumber;
+        if (!string.IsNullOrEmpty(address))
+            owner.Address = address;
+    }
+
+    /// <summary>
+    /// Removes an owner from the system.
+    /// </summary>
+    /// <param name="ownerId">The unique ID of the owner to remove.</param>
+    /// <exception cref="ArgumentException">Thrown when the owner ID is not found.</exception>
+    public static void RemoveOwner(int ownerId)
+    {
+        var owner = FindOwnerById(ownerId);
+
+        _owners.Remove(owner);
+    }
+
+#endregion
+
 #region Reservation Management
 
     /// <summary>
@@ -230,45 +319,23 @@ public static class BookingManager
     /// 3. Calculates the total cost of the reservation based on accommodation type and duration.
     /// 4. Creates a new reservation and adds it to both the accommodation and the reservation list.
     /// </remarks>
-    public static Reservation CreateReservation(int clientId, int accommodationId, DateTime checkIn, DateTime checkOut)
+    public static Reservation CreateReservation(int clientId, int accommodationId, int roomId, DateTime checkIn,
+                                                DateTime checkOut)
     {
-        // Validate the reservation details (e.g., check availability of accommodation)
         var accommodation = _accommodations.FindAccommodationById(accommodationId) ??
                             throw new ArgumentException("Accommodation not found.");
 
-        // Calculate total cost
-        decimal totalCost = accommodation.CalculateTotalCost(checkIn, checkOut);
-
-        // Create the reservation
-        var reservation = new Reservation(clientId, accommodationId, accommodation.Type, checkIn, checkOut, totalCost);
-
-        // Add reservation to accommodation
-        bool success = accommodation.AddReservation(checkIn, checkOut);
-        if (!success)
-            throw new ArgumentException("Accommodation is not available for the selected dates.");
-
-        // Add it to the reservation list
-        _reservations.Add(reservation);
-
-        // Return the reservation object
-        return reservation;
-    }
-
-    public static Reservation CreateReservationBulk(int clientId, int accommodationId, DateTime checkIn,
-                                                    DateTime checkOut)
-    {
-        // Validate the reservation details (e.g., check availability of accommodation)
-        var accommodation = _accommodations.FindAccommodationById(accommodationId) ??
-                            throw new ArgumentException("Accommodation not found.");
+        var room = accommodation.FindRoomById(roomId) ?? throw new ArgumentException("Room not found.");
 
         // Calculate total cost
-        decimal totalCost = accommodation.CalculateTotalCost(checkIn, checkOut);
+        decimal totalCost = room.CalculateTotalCost(checkIn, checkOut);
 
         // Create the reservation
-        var reservation = new Reservation(clientId, accommodationId, accommodation.Type, checkIn, checkOut, totalCost);
+        var reservation =
+            new Reservation(clientId, accommodationId, roomId, accommodation.Type, checkIn, checkOut, totalCost);
 
         // Add reservation to accommodation
-        bool success = accommodation.AddReservation(checkIn, checkOut, skipAvailabilityCheck: true);
+        bool success = room.AddReservation(checkIn, checkOut);
         if (!success)
             throw new ArgumentException("Accommodation is not available for the selected dates.");
 
@@ -283,59 +350,70 @@ public static class BookingManager
     /// Updates the check-in and/or check-out dates of an existing reservation.
     /// </summary>
     /// <param name="reservationId">The unique ID of the reservation to update.</param>
-    /// <param name="newCheckIn">The new check-in date for the reservation, or null if no change is required.</param>
-    /// <param name="newCheckOut">The new check-out date for the reservation, or null if no change is required.</param>
-    /// <exception cref="ArgumentException">Thrown when the reservation is not found or the new dates are
-    /// invalid.</exception> <remarks> This method ensures that the accommodation associated with the reservation is
-    /// available for the updated dates, excluding the current reservation's existing date range, before applying the
-    /// changes. If no new dates are specified, the reservation remains unchanged.
+    /// <param name="newCheckIn">The new check-in date for the reservation, or <c>null</c> if no change is
+    /// required.</param> <param name="newCheckOut">The new check-out date for the reservation, or <c>null</c> if no
+    /// change is required.</param>
+    /// <returns><c>true</c> if the reservation was successfully updated; otherwise, <c>false</c>.</returns>
+    /// <exception cref="ArgumentException">Thrown when the reservation with the specified ID is
+    /// not found, the accommodation or room is not found, or if the new dates are invalid or unavailable.</exception>
+    /// <remarks>
+    /// This method updates the check-in and check-out dates of a reservation if necessary. It checks the availability
+    /// of the associated accommodation and room for the new dates. The method excludes the current reservation's
+    /// existing date range when verifying availability. If no new dates are specified, the reservation remains
+    /// unchanged.
     /// </remarks>
-    public static void UpdateReservation(int reservationId, DateTime? newCheckIn = null, DateTime? newCheckOut = null)
+    public static bool UpdateReservation(int reservationId, DateTime? newCheckIn = null, DateTime? newCheckOut = null)
     {
         // Find the reservation by ID
         var reservation = _reservations.FindReservationById(reservationId);
         if (reservation == null)
-            throw new ArgumentException("Reservation not found.");
+            throw new ArgumentException($"Reservation with ID {reservationId} not found.");
 
         // Find the associated accommodation
         var accommodation = _accommodations.FindAccommodationById(reservation.AccommodationId);
         if (accommodation == null)
-            throw new InvalidOperationException(
-                $"Accommodation with ID {reservation.AccommodationId} not found. Cannot update the reservation.");
+            throw new ArgumentException($"Accommodation with ID {reservation.AccommodationId} not found.");
+
+        // Find the associated room
+        var room = accommodation.FindRoomById(reservation.RoomId);
+        if (room == null)
+            throw new ArgumentException($"Room with ID {reservation.RoomId} not found.");
 
         // Determine the new check-in and check-out dates
         DateTime effectiveCheckIn = newCheckIn ?? reservation.CheckInDate;
         DateTime effectiveCheckOut = newCheckOut ?? reservation.CheckOutDate;
 
         // Validate the new dates, excluding the current reservation's dates from the conflict check
-        if (!IsAvailableForUpdate(accommodation, reservation.CheckInDate, reservation.CheckOutDate, effectiveCheckIn,
+        if (!IsAvailableForUpdate(room, reservation.CheckInDate, reservation.CheckOutDate, effectiveCheckIn,
                                   effectiveCheckOut))
         {
-            throw new ArgumentException("The accommodation is not available for the selected dates.");
+            return false; // Not available
         }
 
-        // Update the reserved dates in the accommodation
-        accommodation.RemoveReservation(reservation.CheckInDate,
-                                        reservation.CheckOutDate);         // Safely remove current dates
-        accommodation.AddReservation(effectiveCheckIn, effectiveCheckOut); // Add the new dates
+        // Update the reserved dates in the room
+        room.RemoveReservation(reservation.CheckInDate,
+                               reservation.CheckOutDate);         // Safely remove current dates
+        room.AddReservation(effectiveCheckIn, effectiveCheckOut); // Add the new dates
 
         // Update the reservation dates
         reservation.CheckInDate = effectiveCheckIn;
         reservation.CheckOutDate = effectiveCheckOut;
+
+        return true;
     }
 
     /// <summary>
     /// Cancels a reservation by its unique ID, freeing up the associated accommodation for the specified dates.
     /// </summary>
     /// <param name="reservationId">The unique ID of the reservation to cancel.</param>
-    /// <exception cref="ArgumentException">Thrown when the reservation with the given ID is not found.</exception>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when the associated accommodation for the reservation cannot be found.
+    /// <exception cref="ArgumentException">
+    /// Thrown when the reservation with the specified ID cannot be found, or the associated accommodation or room
+    /// cannot be found.
     /// </exception>
     /// <remarks>
-    /// This method does not delete the reservation from the system. Instead, it marks the reservation's status as
-    /// <see cref="ReservationStatus.Cancelled"/> and removes the reserved dates from the accommodation's availability.
-    /// This ensures the system retains a record of the reservation for historical or reporting purposes.
+    /// This method cancels a reservation by marking its status as <see cref="ReservationStatus.Cancelled"/> and
+    /// removing the reserved dates from the room's availability. It does not delete the reservation from the system;
+    /// the system retains the historical record of the reservation for reporting or auditing purposes.
     /// </remarks>
     public static void CancelReservation(int reservationId)
     {
@@ -344,35 +422,39 @@ public static class BookingManager
         if (reservation == null)
             throw new ArgumentException("Reservation not found.");
 
-        // Find the associated acommodation
+        // Find the associated accommodation
         var accommodation = _accommodations.FindAccommodationById(reservation.AccommodationId);
         if (accommodation == null)
-            throw new InvalidOperationException(
-                $"Accommodation with ID {reservation.AccommodationId} not found. Cannot cancel the reservation.");
+            throw new ArgumentException($"Accommodation with ID {reservation.AccommodationId} not found.");
+
+        // Find the associated room
+        var room = accommodation.FindRoomById(reservation.RoomId);
+        if (room == null)
+            throw new ArgumentException($"Room with ID {reservation.RoomId} not found.");
 
         // Remove the reservation from the accommodation's reserved dates
-        accommodation.RemoveReservation(reservation.CheckInDate, reservation.CheckOutDate);
+        room.RemoveReservation(reservation.CheckInDate, reservation.CheckOutDate);
 
         // Set the reservation status to cancelled
         reservation.Status = ReservationStatus.Cancelled;
     }
 
     /// <summary>
-    /// Checks whether an accommodation is available for a new date range, excluding the current reservation's dates.
+    /// Checks whether a room is available for a new date range, excluding the current reservation's dates.
     /// </summary>
-    /// <param name="accommodation">The accommodation to check.</param>
+    /// <param name="room">The room to check.</param>
     /// <param name="currentStart">The current check-in date of the reservation.</param>
     /// <param name="currentEnd">The current check-out date of the reservation.</param>
     /// <param name="newStart">The proposed new check-in date.</param>
     /// <param name="newEnd">The proposed new check-out date.</param>
     /// <returns>True if the accommodation is available for the new dates; otherwise, false.</returns>
-    private static bool IsAvailableForUpdate(Accommodation accommodation, DateTime currentStart, DateTime currentEnd,
-                                             DateTime newStart, DateTime newEnd)
+    private static bool IsAvailableForUpdate(Room room, DateTime currentStart, DateTime currentEnd, DateTime newStart,
+                                             DateTime newEnd)
     {
         DateRange existingReservation = new DateRange(currentStart, currentEnd);
 
         // Exclude the current reservation's dates from the availability check
-        return accommodation.IsAvailable(newStart, newEnd, existingReservation);
+        return room.IsAvailable(newStart, newEnd, existingReservation);
     }
 
 #endregion
@@ -382,16 +464,22 @@ public static class BookingManager
     /// <summary>
     /// Creates and adds a new accommodation to the system.
     /// </summary>
+    /// <param name="ownerId">The ID of the accommodation owner.</param>
     /// <param name="type">The type of the accommodation (e.g., hotel, apartment, etc.).</param>
     /// <param name="name">The name of the accommodation.</param>
     /// <param name="address">The address of the accommodation.</param>
-    /// <param name="pricePerNight">The price per night for the accommodation.</param>
     /// <returns>The newly created accommodation.</returns>
-    public static Accommodation CreateAccommodation(AccommodationType type, string name, string address,
-                                                    decimal pricePerNight)
+    /// <exception cref="ArgumentException">Thrown if the owner is not found.</exception>
+    public static Accommodation CreateAccommodation(int ownerId, AccommodationType type, string name, string address)
     {
-        var accommodation = new Accommodation(type, name, address, pricePerNight);
+        var owner = _owners.FindOwnerById(ownerId);
+        if (owner == null)
+            throw new ArgumentException("Owner not found in the system.");
+
+        var accommodation = new Accommodation(ownerId, type, name, address);
         _accommodations.Add(accommodation);
+        owner.AddAccommodation(accommodation);
+
         return accommodation;
     }
 
@@ -402,41 +490,55 @@ public static class BookingManager
     /// <param name="type">The new type of the accommodation (optional).</param>
     /// <param name="name">The new name of the accommodation (optional).</param>
     /// <param name="address">The new address of the accommodation (optional).</param>
-    /// <param name="pricePerNight">The new price per night for the accommodation (optional).</param>
-    /// <exception cref="ArgumentException">Thrown if the accommodation ID is not found.</exception>
+    /// <exception cref="ArgumentException">Thrown if the accommodation is not found.</exception>
     public static void UpdateAccommodation(int accommodationId, AccommodationType type = AccommodationType.None,
-                                           string name = "", string address = "", decimal? pricePerNight = null)
+                                           string name = "", string address = "")
     {
         var accommodation = _accommodations.FindAccommodationById(accommodationId) ??
-                            throw new ArgumentException("Accommodation not found.");
+                            throw new ArgumentException("Accommodation not found in the system.");
 
         // Validate fields before updating
         ValidateField(type, AccommodationType.None,
                       Validation.Validators.AccommodationValidator.ValidateAccommodationType);
         ValidateField(name, "", Validation.Validators.NameValidator.ValidateAccommodationName);
         ValidateField(address, "", Validation.Validators.AddressValidator.ValidateAddress);
-        if (pricePerNight != null)
-        {
-            Validation.Validators.PaymentValidator.ValidatePrice((decimal)pricePerNight);
-        }
 
         // Use the SetField helper to update fields only if they are not the default
         SetField(type, AccommodationType.None, value => accommodation.Type = value);
         SetField(name, "", value => accommodation.Name = value);
         SetField(address, "", value => accommodation.Address = value);
-        if (pricePerNight != null)
-        {
-            accommodation.PricePerNight = pricePerNight.Value;
-        }
     }
 
+    /// <summary>
+    /// Removes an accommodation from the system and disassociates it from its owner.
+    /// This method will first ensure the accommodation exists in the system, then check if the owner of the
+    /// accommodation is valid. If both are found, the accommodation is removed from the system and from the owner's
+    /// list of accommodations.
+    /// </summary>
+    /// <param name="accommodationId">The unique ID of the accommodation to remove from the system.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the accommodation with the given ID is not found in the system.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown if the owner associated with the accommodation is not found in the system.
+    /// </exception>
+    /// <remarks>
+    /// This method ensures that both the accommodation and the associated owner are updated in the system to reflect
+    /// the removal. The accommodation is removed from the system, and the relationship between the accommodation and
+    /// the owner is also removed.
+    /// </remarks>
     public static void RemoveAccommodation(int accommodationId)
     {
         var accommodation = _accommodations.FindAccommodationById(accommodationId);
-        if (accommodation != null)
-        {
-            throw new InvalidOperationException();
-        }
+        if (accommodation == null)
+            throw new ArgumentException("Accommodation not found in the system.");
+
+        var owner = _owners.FindOwnerById(accommodation.OwnerId);
+        if (owner == null)
+            throw new ArgumentException("Owner not found in the system.");
+
+        _accommodations.Remove(accommodation);
+        owner.RemoveAccommodation(accommodation);
     }
 
 #endregion

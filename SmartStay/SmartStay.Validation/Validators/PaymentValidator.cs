@@ -17,14 +17,13 @@ using SmartStay.Common.Enums;
 /// </summary>
 namespace SmartStay.Validation.Validators
 {
-  /// <summary>
-  /// The <c>SmartStay.Validation.Validators</c> namespace contains classes and methods for validating 
-  /// various types of input data in the SmartStay application. These validations enforce data integrity 
-  /// and compliance with application-specific requirements.
-  /// </summary>
-  public static class PaymentValidator
+/// <summary>
+/// The <c>SmartStay.Validation.Validators</c> namespace contains classes and methods for validating
+/// various types of input data in the SmartStay application. These validations enforce data integrity
+/// and compliance with application-specific requirements.
+/// </summary>
+public static class PaymentValidator
 {
-
     /// <summary>
     /// Validates a price, throwing an exception if invalid.
     /// </summary>

@@ -1,0 +1,96 @@
+﻿@page "/register"
+@layout PublicLayout
+@using SmartStay.WebApp.Pages.Components 
+
+<section class="bg-gray-50 dark:bg-gray-900">
+  <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
+      <a href="#" class="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
+          <img class="mr-2 h-8 w-8" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+          Flowbite    
+      </a>
+      <div class="w-full rounded-lg bg-white shadow dark:border dark:bg-gray-800 dark:border-gray-700 sm:max-w-2xl md:mt-0 xl:p-0">
+          <div class="space-y-4 p-6 sm:p-8 md:space-y-6">
+              <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+                  Register a New Account
+              </h1>
+              <form class="space-y-4 md:space-y-4" action="#">
+          <!-- First Name and Last Name Fields (Horizontally aligned) -->
+          <div class="flex space-x-4">
+            <!-- First Name -->
+            <div class="flex-1">
+              <label for="first-name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">First Name</label>
+              <input type="text" name="first-name" id="first-name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="John" required="">
+            </div>
+            <!-- Last Name -->
+            <div class="flex-1">
+              <label for="last-name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
+              <input type="text" name="last-name" id="last-name" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Doe" required="">
+            </div>
+          </div>
+
+          <!-- Email and Password Fields -->
+          <div class="flex space-x-4">
+              <!-- Email -->
+              <div class="flex-1">
+                  <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                  <input type="email" name="email" id="email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
+              </div>
+              <!-- Password -->
+              <div class="flex-1">
+                  <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                  <input type="password" name="password" id="password" placeholder="••••••••" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+              </div>
+          </div>
+
+          <!-- Phone Number and Address Fields -->
+          <div class="flex space-x-4">
+              <!-- Phone Number -->
+              <div class="flex-1">
+                  <label for="phone" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Phone Number (Optional)</label>
+                  <input type="text" name="phone" id="phone" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="+1 (123) 456-7890">
+              </div>
+              <!-- Address -->
+              <div class="flex-1">
+                  <label for="address" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Address (Optional)</label>
+                  <input type="text" name="address" id="address" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1234 Main St, City, Country">
+              </div>
+          </div>
+
+          <!-- User or Host Checkbox -->
+          <div class="flex">
+              <div class="flex h-5 items-center">
+                  <input id="helper-checkbox" aria-describedby="helper-checkbox-text" type="checkbox" value="" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-blue-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600">
+              </div>
+              <div class="ms-2 text-sm">
+                  <label for="helper-checkbox" class="font-medium text-gray-900 dark:text-gray-300">I own an accommodation</label>
+                  <p id="helper-checkbox-text" class="text-xs font-normal text-gray-500 dark:text-gray-300">Select this option if you want to be a host on the SmartStay platform.</p>
+              </div>
+          </div>
+
+          <!-- Terms and Conditions Checkbox -->
+          <div class="flex items-start">
+            <div class="flex h-5 items-center"> 
+              <input id="terms" aria-describedby="terms" type="checkbox" class="h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:ring-offset-gray-800 dark:focus:ring-primary-600" required=""> 
+            </div> 
+            <div class="ml-3 text-sm"> 
+              <label for="terms" class="font-light text-gray-500 dark:text-gray-300">I accept the <a class="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms and Conditions</a></label> 
+            </div> 
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            Create Account
+          </button>
+
+          <!-- Login Link -->
+          <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+              Already have an account? <a href="/login" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
+          </p>
+
+          <!-- Language Selector -->
+                    @* <LanguageSelector/> *@
+        </form>
+          </div>
+      </div>
+  </div>
+</section>
