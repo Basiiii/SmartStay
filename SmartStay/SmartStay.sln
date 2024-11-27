@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Validation.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.IO.Tests", "SmartStay.IO.Tests\SmartStay.IO.Tests.csproj", "{37F55275-88FD-46F4-9542-A1B5F25AAEF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.WebApp", "SmartStay.WebApp\SmartStay.WebApp.csproj", "{CA5E955C-FC54-4A0B-8FA6-275E2BAC1236}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.App", "SmartStay.App\SmartStay.App.csproj", "{5715C9F1-3AE9-4853-B19E-995AE5B75B02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +51,10 @@ Global
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA5E955C-FC54-4A0B-8FA6-275E2BAC1236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA5E955C-FC54-4A0B-8FA6-275E2BAC1236}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA5E955C-FC54-4A0B-8FA6-275E2BAC1236}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA5E955C-FC54-4A0B-8FA6-275E2BAC1236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
