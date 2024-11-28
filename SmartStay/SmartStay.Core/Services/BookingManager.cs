@@ -4,7 +4,7 @@
 /// <file>
 /// This file contains the definition of the <see cref="BookingManager"/> class,
 /// which manages client, reservation, and accommodation operations for the booking system.
-/// It provides static methods to add, remove, import, and export clients, reservations, and accommodations.
+/// It provides methods to add, remove, import, and export clients, reservations, and accommodations.
 /// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
@@ -21,7 +21,7 @@ using SmartStay.Core.Utilities;
 namespace SmartStay.Core.Services
 {
 /// <summary>
-/// Provides a static facade for managing clients, reservations, and accommodations in the booking system.
+/// Provides a facade for managing clients, reservations, and accommodations in the booking system.
 /// This class centralizes all operations for adding, removing, importing, and exporting data for these entities.
 /// It interacts with internal repositories to simplify the main API and ensure a standardized approach.
 /// </summary>
@@ -29,29 +29,29 @@ namespace SmartStay.Core.Services
 /// This class offers a unified interface for handling key booking operations and data entities, facilitating
 /// integrations with other system components or external applications.
 /// </remarks>
-public static class BookingManager
+public class BookingManager
 {
 #region Collections
 
     /// <summary>
     /// Holds the collection of all clients in the system, stored in the <see cref="Clients"/> repository.
     /// </summary>
-    internal static readonly Clients _clients = new();
+    internal readonly Clients _clients = new();
 
     /// <summary>
     /// Holds the collection of all reservations in the system, stored in the <see cref="Reservations"/> repository.
     /// </summary>
-    internal static readonly Reservations _reservations = new();
+    internal readonly Reservations _reservations = new();
 
     /// <summary>
     /// Holds the collection of all accommodations in the system, stored in the <see cref="Accommodations"/> repository.
     /// </summary>
-    internal static readonly Accommodations _accommodations = new();
+    internal readonly Accommodations _accommodations = new();
 
     /// <summary>
     /// Holds the collection of all owners in the system, stored in the <see cref="Owners"/> repository.
     /// </summary>
-    internal static readonly Owners _owners = new();
+    internal readonly Owners _owners = new();
 
 #endregion
 
@@ -66,7 +66,7 @@ public static class BookingManager
     /// <param name="defaultValue">The default value of the field (e.g., empty string or
     /// PaymentMethod.Unchanged).</param>
     /// <param name="validationFunc">The validation function to apply to the field.</param>
-    public static void ValidateField<T>(T fieldValue, T defaultValue, Func<T, T> validationFunc)
+    public void ValidateField<T>(T fieldValue, T defaultValue, Func<T, T> validationFunc)
     {
         // Only validate if the field value is not the default value
         if (!EqualityComparer<T>.Default.Equals(fieldValue, defaultValue))
@@ -82,7 +82,7 @@ public static class BookingManager
     /// <param name="fieldValue">The value to set for the field.</param>
     /// <param name="defaultValue">The default value (e.g., empty string or PaymentMethod.Unchanged).</param>
     /// <param name="setterAction">The action to set the field if the value is not default.</param>
-    public static void SetField<T>(T fieldValue, T defaultValue, Action<T> setterAction)
+    public void SetField<T>(T fieldValue, T defaultValue, Action<T> setterAction)
     {
         // Only set the field if the value is not the default value
         if (!EqualityComparer<T>.Default.Equals(fieldValue, defaultValue))
@@ -98,17 +98,17 @@ public static class BookingManager
     /// <summary>
     /// Exposes the `Clients` repository as a read-only property.
     /// </summary>
-    public static Clients Clients => _clients;
+    public Clients Clients => _clients;
 
     /// <summary>
     /// Exposes the `Reservations` repository as a read-only property.
     /// </summary>
-    public static Reservations Reservations => _reservations;
+    public Reservations Reservations => _reservations;
 
     /// <summary>
     /// Exposes the `Accommodations` repository as a read-only property.
     /// </summary>
-    public static Accommodations Accommodations => _accommodations;
+    public Accommodations Accommodations => _accommodations;
 
 #endregion
 
@@ -121,7 +121,7 @@ public static class BookingManager
     /// <param name="lastName">The last name of the client.</param>
     /// <param name="email">The email address of the client.</param>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public static void CreateBasicClient(string firstName, string lastName, string email)
+    public void CreateBasicClient(string firstName, string lastName, string email)
     {
         Client client = new Client(firstName, lastName, email);
         _clients.Add(client);
@@ -136,8 +136,8 @@ public static class BookingManager
     /// <param name="phoneNumber">The phone number of the client.</param>
     /// <param name="address">The residential address of the client.</param>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public static void CreateCompleteClient(string firstName, string lastName, string email, string phoneNumber,
-                                            string address)
+    public void CreateCompleteClient(string firstName, string lastName, string email, string phoneNumber,
+                                     string address)
     {
         Client client = new Client(firstName, lastName, email, phoneNumber, address);
         _clients.Add(client);
@@ -149,7 +149,7 @@ public static class BookingManager
     /// <param name="clientId">The unique identifier for the client.</param>
     /// <returns>A <see cref="Client"/> object if found, otherwise null.</returns>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public static Client FindClientById(int clientId)
+    public Client FindClientById(int clientId)
     {
         var client = _clients.FindClientById(clientId);
 
@@ -167,9 +167,9 @@ public static class BookingManager
     /// <param name="address">The new address of the client.</param>
     /// <param name="paymentMethod">The new preferred payment method of the client.</param>
     /// <exception cref="ArgumentException">Thrown when the client ID is not found.</exception>
-    public static void UpdateClient(int clientId, string firstName = "", string lastName = "", string email = "",
-                                    string phoneNumber = "", string address = "",
-                                    PaymentMethod paymentMethod = PaymentMethod.Unchanged)
+    public void UpdateClient(int clientId, string firstName = "", string lastName = "", string email = "",
+                             string phoneNumber = "", string address = "",
+                             PaymentMethod paymentMethod = PaymentMethod.Unchanged)
     {
         // Find the client by ID
         var client =
@@ -198,7 +198,7 @@ public static class BookingManager
     /// </summary>
     /// <param name="clientId">The unique ID of the client to remove.</param>
     /// <exception cref="ArgumentException">Thrown when the client ID is not found.</exception>
-    public static void RemoveClient(int clientId)
+    public void RemoveClient(int clientId)
     {
         // Find the client by ID
         var client = _clients.FindClientById(clientId);
@@ -223,7 +223,7 @@ public static class BookingManager
     /// <param name="lastName">The last name of the owner.</param>
     /// <param name="email">The email address of the owner.</param>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public static void CreateBasicOwner(string firstName, string lastName, string email)
+    public void CreateBasicOwner(string firstName, string lastName, string email)
     {
         Owner owner = new Owner(firstName, lastName, email);
         _owners.Add(owner);
@@ -238,8 +238,7 @@ public static class BookingManager
     /// <param name="phoneNumber">The phone number of the owner.</param>
     /// <param name="address">The residential address of the owner.</param>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public static void CreateCompleteOwner(string firstName, string lastName, string email, string phoneNumber,
-                                           string address)
+    public void CreateCompleteOwner(string firstName, string lastName, string email, string phoneNumber, string address)
     {
         Owner owner = new Owner(firstName, lastName, email, phoneNumber, address);
         _owners.Add(owner);
@@ -251,7 +250,7 @@ public static class BookingManager
     /// <param name="ownerId">The unique identifier for the owner.</param>
     /// <returns>An <see cref="Owner"/> object if found, otherwise null.</returns>
     /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
-    public static Owner FindOwnerById(int ownerId)
+    public Owner FindOwnerById(int ownerId)
     {
         var owner = _owners.FindOwnerById(ownerId);
 
@@ -268,8 +267,8 @@ public static class BookingManager
     /// <param name="phoneNumber">The new phone number of the owner.</param>
     /// <param name="address">The new address of the owner.</param>
     /// <exception cref="ArgumentException">Thrown when the owner ID is not found.</exception>
-    public static void UpdateOwner(int ownerId, string firstName = "", string lastName = "", string email = "",
-                                   string phoneNumber = "", string address = "")
+    public void UpdateOwner(int ownerId, string firstName = "", string lastName = "", string email = "",
+                            string phoneNumber = "", string address = "")
     {
         var owner = FindOwnerById(ownerId);
 
@@ -291,7 +290,7 @@ public static class BookingManager
     /// </summary>
     /// <param name="ownerId">The unique ID of the owner to remove.</param>
     /// <exception cref="ArgumentException">Thrown when the owner ID is not found.</exception>
-    public static void RemoveOwner(int ownerId)
+    public void RemoveOwner(int ownerId)
     {
         var owner = FindOwnerById(ownerId);
 
@@ -319,8 +318,8 @@ public static class BookingManager
     /// 3. Calculates the total cost of the reservation based on accommodation type and duration.
     /// 4. Creates a new reservation and adds it to both the accommodation and the reservation list.
     /// </remarks>
-    public static Reservation CreateReservation(int clientId, int accommodationId, int roomId, DateTime checkIn,
-                                                DateTime checkOut)
+    public Reservation CreateReservation(int clientId, int accommodationId, int roomId, DateTime checkIn,
+                                         DateTime checkOut)
     {
         var accommodation = _accommodations.FindAccommodationById(accommodationId) ??
                             throw new ArgumentException("Accommodation not found.");
@@ -362,7 +361,7 @@ public static class BookingManager
     /// existing date range when verifying availability. If no new dates are specified, the reservation remains
     /// unchanged.
     /// </remarks>
-    public static bool UpdateReservation(int reservationId, DateTime? newCheckIn = null, DateTime? newCheckOut = null)
+    public bool UpdateReservation(int reservationId, DateTime? newCheckIn = null, DateTime? newCheckOut = null)
     {
         // Find the reservation by ID
         var reservation = _reservations.FindReservationById(reservationId);
@@ -415,7 +414,7 @@ public static class BookingManager
     /// removing the reserved dates from the room's availability. It does not delete the reservation from the system;
     /// the system retains the historical record of the reservation for reporting or auditing purposes.
     /// </remarks>
-    public static void CancelReservation(int reservationId)
+    public void CancelReservation(int reservationId)
     {
         // Find the reservation from the given ID
         var reservation = _reservations.FindReservationById(reservationId);
@@ -448,8 +447,8 @@ public static class BookingManager
     /// <param name="newStart">The proposed new check-in date.</param>
     /// <param name="newEnd">The proposed new check-out date.</param>
     /// <returns>True if the accommodation is available for the new dates; otherwise, false.</returns>
-    private static bool IsAvailableForUpdate(Room room, DateTime currentStart, DateTime currentEnd, DateTime newStart,
-                                             DateTime newEnd)
+    private bool IsAvailableForUpdate(Room room, DateTime currentStart, DateTime currentEnd, DateTime newStart,
+                                      DateTime newEnd)
     {
         DateRange existingReservation = new DateRange(currentStart, currentEnd);
 
@@ -470,7 +469,7 @@ public static class BookingManager
     /// <param name="address">The address of the accommodation.</param>
     /// <returns>The newly created accommodation.</returns>
     /// <exception cref="ArgumentException">Thrown if the owner is not found.</exception>
-    public static Accommodation CreateAccommodation(int ownerId, AccommodationType type, string name, string address)
+    public Accommodation CreateAccommodation(int ownerId, AccommodationType type, string name, string address)
     {
         var owner = _owners.FindOwnerById(ownerId);
         if (owner == null)
@@ -491,8 +490,8 @@ public static class BookingManager
     /// <param name="name">The new name of the accommodation (optional).</param>
     /// <param name="address">The new address of the accommodation (optional).</param>
     /// <exception cref="ArgumentException">Thrown if the accommodation is not found.</exception>
-    public static void UpdateAccommodation(int accommodationId, AccommodationType type = AccommodationType.None,
-                                           string name = "", string address = "")
+    public void UpdateAccommodation(int accommodationId, AccommodationType type = AccommodationType.None,
+                                    string name = "", string address = "")
     {
         var accommodation = _accommodations.FindAccommodationById(accommodationId) ??
                             throw new ArgumentException("Accommodation not found in the system.");
@@ -527,7 +526,7 @@ public static class BookingManager
     /// the removal. The accommodation is removed from the system, and the relationship between the accommodation and
     /// the owner is also removed.
     /// </remarks>
-    public static void RemoveAccommodation(int accommodationId)
+    public void RemoveAccommodation(int accommodationId)
     {
         var accommodation = _accommodations.FindAccommodationById(accommodationId);
         if (accommodation == null)

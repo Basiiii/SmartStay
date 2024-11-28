@@ -1,7 +1,10 @@
 ﻿@page "/register"
 @using SmartStay.App.Pages.Components
 @using SmartStay.App.Data
+@using SmartStay.Core.Services
 @layout PublicLayout
+
+@inject BookingManager bookingManager
 
 @code {
     private AccountModel accountModel = new AccountModel();
@@ -10,6 +13,12 @@
     {
         // Handle form submission
         Console.WriteLine($"Creating a new client: {accountModel.FirstName} {accountModel.LastName}, Email: {accountModel.Email}, Pass: {accountModel.Password}, Number: {accountModel.Phone}, Address: {accountModel.Address}, Type: {accountModel.IsHost}");
+
+        // Call Facade class
+        bookingManager.CreateBasicClient(accountModel.FirstName, accountModel.LastName, accountModel.Email);
+        var client = bookingManager.Clients.FindClientById(1);
+        if (client != null)
+            Console.WriteLine($"IT WORKSS {client.FirstName}");
     }
 }
 
