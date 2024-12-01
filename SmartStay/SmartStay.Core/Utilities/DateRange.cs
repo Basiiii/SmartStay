@@ -6,7 +6,6 @@
 /// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>21/11/2024</date>
-using System;
 
 /// <summary>
 /// The <c>SmartStay.Utilities</c> namespace provides helper functions and utility classes used throughout the SmartStay

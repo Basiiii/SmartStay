@@ -52,7 +52,12 @@ public class Reservation
     /// <param name="checkInDate">The check-in date.</param>
     /// <param name="checkOutDate">The check-out date.</param>
     /// <param name="totalCost">The total cost of the reservation.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.
+    ///     Each validation has a specific error code:
+    ///     <br/><b>InvalidId:</b> if the client, accommodation or room ID is invalid.
+    ///     <br/><b>InvalidTotalCost:</b> if total cost is invalid.
+    ///     <br/><b>InvalidDateRange:</b> if the check-in date is later than the check-out date.
+    /// </exception>
     public Reservation(int clientId, int accommodationId, int roomId, AccommodationType accommodationType,
                        DateTime checkInDate, DateTime checkOutDate, decimal totalCost)
     {
@@ -155,42 +160,67 @@ public class Reservation
     /// <summary>
     /// Marks the reservation as checked in and updates the status to CheckedIn.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if the reservation status is not Pending.</exception>
-    public void CheckIn()
+    /// <returns>
+    /// True if the reservation status was successfully updated to CheckedIn;
+    /// false if the current status is not Pending.
+    /// </returns>
+    /// <remarks>
+    /// This method will not modify the reservation status if it is not in Pending state.
+    /// Ensure the status is appropriately validated before calling this method if strict workflows are required.
+    /// </remarks>
+    public bool CheckIn()
     {
         if (_status != ReservationStatus.Pending)
         {
-            throw new InvalidOperationException("Reservation must be in Pending status to check in.");
+            return false;
         }
         _status = ReservationStatus.CheckedIn;
+        return true;
     }
 
     /// <summary>
     /// Marks the reservation as checked out and updates the status to CheckedOut.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if the reservation status is not CheckedIn.</exception>
-    public void CheckOut()
+    /// <returns>
+    /// True if the reservation status was successfully updated to CheckedOut;
+    /// false if the current status is not CheckedIn.
+    /// </returns>
+    /// <remarks>
+    /// This method will not modify the reservation status if it is not in CheckedIn state.
+    /// Ensure the status is appropriately validated before calling this method if strict workflows are required.
+    /// </remarks>
+    public bool CheckOut()
     {
         if (_status != ReservationStatus.CheckedIn)
         {
-            throw new InvalidOperationException("Reservation must be in CheckedIn status to check out.");
+            return false;
         }
         _status = ReservationStatus.CheckedOut;
+        return true;
     }
 
     /// <summary>
     /// Makes a payment towards the reservation and adds a new Payment object to the payment list.
     /// </summary>
-    public void MakePayment(decimal paymentAmount, PaymentMethod paymentMethod)
+    /// <param name="paymentAmount">The amount of the payment. Must be greater than zero.</param>
+    /// <param name="paymentMethod">The payment method used for the payment.</param>
+    /// <returns>
+    /// A <see cref="PaymentResult"/> indicating the result of the payment attempt.
+    /// </returns>
+    /// <remarks>
+    /// This method validates the payment amount and ensures the reservation is not overpaid or already fully paid.
+    /// The payment method is also validated using the <see cref="PaymentValidator.ValidatePaymentMethod"/> method.
+    /// </remarks>
+    public PaymentResult MakePayment(decimal paymentAmount, PaymentMethod paymentMethod)
     {
         if (paymentAmount <= 0)
-            throw new InvalidOperationException("Payment amount must be greater than zero.");
+            return PaymentResult.InvalidAmount;
         if (IsFullyPaid())
-            throw new InvalidOperationException("Reservation is already fully paid.");
+            return PaymentResult.AlreadyFullyPaid;
         if (paymentAmount > _totalCost - _amountPaid)
-            throw new InvalidOperationException("Payment is more than total required.");
-
-        PaymentValidator.ValidatePaymentMethod(paymentMethod);
+            return PaymentResult.AmountExceedsTotal;
+        if (!PaymentValidator.IsValidPaymentMethod(paymentMethod))
+            return PaymentResult.InvalidPaymentMethod;
 
         // Create a new Payment instance and add it to the list
         var payment = new Payment(_reservationId, paymentAmount, DateTime.Now, paymentMethod, PaymentStatus.Completed);
@@ -198,6 +228,8 @@ public class Reservation
 
         // Update the amount paid
         _amountPaid += paymentAmount;
+
+        return PaymentResult.Success;
     }
 
     /// <summary>

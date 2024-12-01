@@ -47,7 +47,11 @@ public class Owner
     /// <param name="firstName">The first name of the owner.</param>
     /// <param name="lastName">The last name of the owner.</param>
     /// <param name="email">The email address of the owner.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.
+    ///     Each validation has a specific error code:
+    ///     <br/><b>InvalidName:</b> if the first or last name is invalid (from the basic constructor).
+    ///     <br/><b>InvalidEmail:</b> if the email address is invalid (from the basic constructor).
+    /// </exception>
     public Owner(string firstName, string lastName, string email)
     {
         NameValidator.ValidateName(firstName);
@@ -69,7 +73,13 @@ public class Owner
     /// <param name="email">The email address of the owner.</param>
     /// <param name="phoneNumber">The phone number of the owner.</param>
     /// <param name="address">The residential address of the owner.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.
+    ///     Each validation has a specific error code:
+    ///     <br/><b>InvalidName:</b> if the first or last name is invalid (from the basic constructor).
+    ///     <br/><b>InvalidEmail:</b> if the email address is invalid (from the basic constructor).
+    ///     <br/><b>InvalidPhoneNumber:</b> if the phone number is invalid.
+    ///     <br/><b>InvalidAddress:</b> if the address is invalid.
+    /// </exception>
     public Owner(string firstName, string lastName, string email, string phoneNumber, string address)
         : this(firstName, lastName, email)
     {
@@ -141,27 +151,45 @@ public class Owner
     public List<Accommodation> Accommodations => _accommodationsOwned;
 
     /// <summary>
-    /// Adds an accommodation to the list of accommodations owned by the owner.
+    /// Adds the specified accommodation to the list of accommodations owned by the owner.
     /// </summary>
-    /// <param name="accommodation">The accommodation to add.</param>
-    public void AddAccommodation(Accommodation accommodation)
+    /// <param name="accommodation">The accommodation to add. Cannot be null.</param>
+    /// <returns>
+    /// True if the accommodation was successfully added; false if the provided accommodation is null.
+    /// </returns>
+    /// <remarks>
+    /// This method does not perform any additional checks to ensure the accommodation is unique
+    /// or validate its state. Ensure external validation is performed if required.
+    /// </remarks>
+    public bool AddAccommodation(Accommodation accommodation)
     {
         if (accommodation == null)
-            throw new ArgumentNullException(nameof(accommodation), "Accommodation cannot be null.");
+            return false;
 
         _accommodationsOwned.Add(accommodation);
+        return true;
     }
 
     /// <summary>
-    /// Removes an accommodation from the list of accommodations owned by the owner.
+    /// Removes the specified accommodation from the list of accommodations owned by the owner.
     /// </summary>
-    /// <param name="accommodation">The accommodation to add.</param>
-    public void RemoveAccommodation(Accommodation accommodation)
+    /// <param name="accommodation">The accommodation to remove. Cannot be null.</param>
+    /// <returns>
+    /// True if the accommodation was successfully removed; false if the provided accommodation is null
+    /// or not found in the list.
+    /// </returns>
+    /// <remarks>
+    /// This method assumes that the list allows duplicate entries. If duplicates exist,
+    /// only the first occurrence of the accommodation will be removed.
+    /// Ensure external validation is performed if additional checks are required.
+    /// </remarks>
+    public bool RemoveAccommodation(Accommodation accommodation)
     {
         if (accommodation == null)
-            throw new ArgumentNullException(nameof(accommodation), "Accommodation cannot be null.");
+            return false;
 
         _accommodationsOwned.Remove(accommodation);
+        return true;
     }
 
     /// <summary>

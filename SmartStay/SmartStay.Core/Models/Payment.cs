@@ -110,7 +110,7 @@ public class Payment
         // Check if the current value exceeds the max limit of int (2,147,483,647)
         if (_lastPaymentId >= int.MaxValue)
         {
-            throw new InvalidOperationException("Client ID limit exceeded.");
+            throw new InvalidOperationException("Payment ID limit exceeded.");
         }
 
         return Interlocked.Increment(ref _lastPaymentId);

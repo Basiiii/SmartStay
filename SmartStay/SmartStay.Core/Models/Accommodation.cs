@@ -9,9 +9,7 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using SmartStay.Common.Enums;
-using SmartStay.Core.Utilities;
 using SmartStay.Validation;
 using SmartStay.Validation.Validators;
 

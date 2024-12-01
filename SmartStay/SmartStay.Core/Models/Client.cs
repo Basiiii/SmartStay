@@ -44,11 +44,16 @@ public class Client
     /// <summary>
     /// Constructor to initialize a new client with basic details: first name, last name, and email.
     /// Validates the input parameters.
+    /// <br/>Throws specific validation exceptions if any input is invalid.
     /// </summary>
     /// <param name="firstName">The first name of the client.</param>
     /// <param name="lastName">The last name of the client.</param>
     /// <param name="email">The email address of the client.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    /// <exception cref="ValidationException">Thrown if the first name, last name, or email is invalid.
+    ///     Each validation has a specific error code:
+    ///     <br/><b>InvalidName:</b> if the first or last name is invalid.
+    ///     <br/><b>InvalidEmail:</b> if the email address is invalid.
+    /// </exception>
     public Client(string firstName, string lastName, string email)
     {
         NameValidator.ValidateName(firstName);
@@ -64,13 +69,20 @@ public class Client
     /// <summary>
     /// Constructor to initialize a new client with basic details (first name, last name, email)
     /// and additional details (phone number and address).
+    /// Validates the input parameters and throws validation exceptions for any invalid inputs.
     /// </summary>
     /// <param name="firstName">The first name of the client.</param>
     /// <param name="lastName">The last name of the client.</param>
     /// <param name="email">The email address of the client.</param>
     /// <param name="phoneNumber">The phone number of the client.</param>
     /// <param name="address">The residential address of the client.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.
+    ///     Each validation has a specific error code:
+    ///     <br/><b>InvalidName:</b> if the first or last name is invalid (from the basic constructor).
+    ///     <br/><b>InvalidEmail:</b> if the email address is invalid (from the basic constructor).
+    ///     <br/><b>InvalidPhoneNumber:</b> if the phone number is invalid.
+    ///     <br/><b>InvalidAddress:</b> if the address is invalid.
+    /// </exception>
     public Client(string firstName, string lastName, string email, string phoneNumber, string address)
         : this(firstName, lastName, email)
     {
@@ -90,7 +102,14 @@ public class Client
     /// <param name="phoneNumber">The phone number of the client.</param>
     /// <param name="address">The residential address of the client.</param>
     /// <param name="preferredPaymentMethod">The preferred payment method of the client.</param>
-    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid.</exception>
+    /// <exception cref="ValidationException">Thrown when any of the input parameters are invalid:
+    ///     <br/><b>InvalidName:</b> if the first or last name is invalid.
+    ///     <br/><b>InvalidEmail:</b> if the email address is invalid.
+    ///     <br/><b>InvalidPhoneNumber:</b> if the phone number is invalid.
+    ///     <br/><b>InvalidAddress:</b> if the address is invalid.
+    ///     <br/><b>InvalidPaymentMethod:</b> if the preferred payment method is invalid.
+    /// </exception>
+    /// <returns>The <see cref="Client"/> object created.</returns>
     public Client(string firstName, string lastName, string email, string phoneNumber, string address,
                   PaymentMethod preferredPaymentMethod)
         : this(firstName, lastName, email, phoneNumber, address)

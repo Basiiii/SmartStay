@@ -1,4 +1,7 @@
-﻿/// <copyright file="ManageableEntity.cs">
+﻿
+using SmartStay.Common.Models;
+
+/// <copyright file="ManageableEntity.cs">
 /// Copyright (c) 2024 All Rights Reserved
 /// </copyright>
 /// <file>
@@ -43,7 +46,7 @@ public interface IManageableEntity<in T>
     /// Imports a list of items from a serialized string.
     /// </summary>
     /// <param name="data">The serialized string representing a collection of items.</param>
-    void Import(string data);
+    ImportResult Import(string data);
 
     /// <summary>
     /// Exports the current list of items as a serialized string.

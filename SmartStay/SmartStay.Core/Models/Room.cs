@@ -136,35 +136,27 @@ public class Room
     }
 
     /// <summary>
-    /// Adds a new reservation to the accommodation, with an optional ability to skip the availability check for faster
-    /// bulk operations.
+    /// Adds a new reservation to the accommodation.
     /// </summary>
     /// <param name="startDate">The start date of the reservation.</param>
     /// <param name="endDate">The end date of the reservation.</param>
-    /// <param name="skipAvailabilityCheck">
-    /// A boolean flag indicating whether to skip the availability check. Set to <c>true</c> during bulk operations or
-    /// trusted inputs where availability is pre-validated.
-    /// </param>
     /// <returns>
-    /// Returns <c>true</c> if the reservation was successfully added. If <paramref name="skipAvailabilityCheck"/> is
-    /// <c>false</c> and the date range is unavailable, returns <c>false</c>.
+    /// Returns <c>true</c> if the reservation was successfully added. If the date range is unavailable (overlap),
+    /// returns <c>false</c>.
     /// </returns>
     /// <remarks>
     /// This method adds the reservation to a <see cref="SortedSet{T}"/> that maintains ordered reservations by date
-    /// range. Skipping the availability check can improve performance significantly during bulk operations but should
-    /// only be used with pre-validated or trusted data.
+    /// range. If the date range overlaps with an existing reservation, the method will return <c>false</c>.
     /// </remarks>
-    public bool AddReservation(DateTime startDate, DateTime endDate, bool skipAvailabilityCheck = false)
+    public bool AddReservation(DateTime startDate, DateTime endDate)
     {
-        // If not skipping the availability check, validate the dates
-        if (!skipAvailabilityCheck && !IsAvailable(startDate, endDate))
-        {
-            return false; // If not available, return false
-        }
+        var newReservation = new DateRange(startDate, endDate);
 
-        // Add the new reservation's date range to the SortedSet
-        _reservationDates.Add(new DateRange(startDate, endDate));
-        return true; // Successfully added the reservation
+        // Attempt to add the new reservation
+        bool addedSuccessfully = _reservationDates.Add(newReservation);
+
+        // Return the result of the Add operation (true if added, false if it already exists due to overlap)
+        return addedSuccessfully;
     }
 
     /// <summary>

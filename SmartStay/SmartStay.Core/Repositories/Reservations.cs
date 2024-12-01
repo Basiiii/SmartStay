@@ -9,6 +9,7 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
 #nullable enable
+using SmartStay.Common.Models;
 using SmartStay.Core.Models;
 using SmartStay.Core.Models.Interfaces;
 using SmartStay.Core.Utilities;
@@ -85,22 +86,39 @@ public class Reservations : IManageableEntity<Reservation>
     /// ID.
     /// </summary>
     /// <param name="data">The JSON string containing the list of reservations.</param>
+    /// <returns>
+    /// An <see cref="ImportResult"/> summarizing the outcome of the import operation.
+    /// </returns>
     /// <exception cref="ArgumentException">Thrown if the data is null or empty.</exception>
     /// <exception cref="ArgumentException">Thrown if deserialization of the data fails.</exception>
-    public void Import(string data)
+    public ImportResult Import(string data)
     {
         if (string.IsNullOrEmpty(data))
         {
             throw new ArgumentException("Data cannot be null or empty", nameof(data));
         }
 
+        // Deserialize the data into a List<Reservation> instead of a single Reservation
         var reservations = JsonHelper.DeserializeFromJson<Reservation>(data) ??
                            throw new ArgumentException("Deserialized reservation data cannot be null", nameof(data));
 
-        foreach (Reservation reservation in reservations)
+        int replacedCount = 0;
+        int importedCount = 0;
+
+        foreach (var reservation in reservations)
         {
-            _reservationDictionary[reservation.ReservationId] = reservation;
+            if (_reservationDictionary.ContainsKey(reservation.ReservationId))
+            {
+                replacedCount++;
+            }
+            else
+            {
+                importedCount++;
+            }
+            _reservationDictionary[reservation.ReservationId] = reservation; // Direct insertion for efficiency
         }
+
+        return new ImportResult { ImportedCount = importedCount, ReplacedCount = replacedCount };
     }
 
     /// <summary>

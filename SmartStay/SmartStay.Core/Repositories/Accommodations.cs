@@ -11,9 +11,7 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
 #nullable enable
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SmartStay.Common.Models;
 using SmartStay.Core.Models;
 using SmartStay.Core.Models.Interfaces;
 using SmartStay.Core.Utilities;
@@ -84,23 +82,40 @@ public class Accommodations : IManageableEntity<Accommodation>
     /// Existing accommodations with the same ID are replaced.
     /// </summary>
     /// <param name="data">The JSON string containing the list of accommodations.</param>
+    /// <returns>
+    /// An <see cref="ImportResult"/> summarizing the outcome of the import operation.
+    /// </returns>
     /// <exception cref="ArgumentException">Thrown if the data is null or empty.</exception>
     /// <exception cref="ArgumentException">Thrown if deserialization of the data fails.</exception>
-    public void Import(string data)
+    public ImportResult Import(string data)
     {
         if (string.IsNullOrEmpty(data))
         {
             throw new ArgumentException("Data cannot be null or empty", nameof(data));
         }
 
+        // Deserialize the data into a List<Accommodation> instead of a single Accommodation
         var accommodations =
             JsonHelper.DeserializeFromJson<Accommodation>(data) ??
             throw new ArgumentException("Deserialized accommodation data cannot be null", nameof(data));
 
+        int replacedCount = 0;
+        int importedCount = 0;
+
         foreach (var accommodation in accommodations)
         {
-            _accommodationDictionary[accommodation.Id] = accommodation;
+            if (_accommodationDictionary.ContainsKey(accommodation.Id))
+            {
+                replacedCount++;
+            }
+            else
+            {
+                importedCount++;
+            }
+            _accommodationDictionary[accommodation.Id] = accommodation; // Direct insertion for efficiency
         }
+
+        return new ImportResult { ImportedCount = importedCount, ReplacedCount = replacedCount };
     }
 
     /// <summary>

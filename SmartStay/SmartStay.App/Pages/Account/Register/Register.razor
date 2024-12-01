@@ -1,25 +1,70 @@
 ﻿@page "/register"
 @using SmartStay.App.Pages.Components
 @using SmartStay.App.Data
+@using SmartStay.Core.Models
 @using SmartStay.Core.Services
 @layout PublicLayout
 
 @inject BookingManager bookingManager
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 @code {
     private AccountModel accountModel = new AccountModel();
 
-    private void HandleSubmit()
+    private async void HandleSubmit()
     {
-        // Handle form submission
-        Console.WriteLine($"Creating a new client: {accountModel.FirstName} {accountModel.LastName}, Email: {accountModel.Email}, Pass: {accountModel.Password}, Number: {accountModel.Phone}, Address: {accountModel.Address}, Type: {accountModel.IsHost}");
+        LogFormSubmissionDetails();
 
-        // Call Facade class
-        bookingManager.CreateBasicClient(accountModel.FirstName, accountModel.LastName, accountModel.Email);
-        var client = bookingManager.Clients.FindClientById(1);
-        if (client != null)
-            Console.WriteLine($"IT WORKSS {client.FirstName}");
+        if (accountModel.IsHost)
+        {
+            var client = CreateClient();
+            if (client != null)
+            {
+                await StoreUserIdAndRedirect(client.Id);
+            }
+        }
+        else
+        {
+            var owner = CreateOwner();
+            if (owner != null)
+            {
+                await StoreUserIdAndRedirect(owner.Id);
+            }
+        }
     }
+
+    private void LogFormSubmissionDetails()
+    {
+        Console.WriteLine($"Creating a new user: {accountModel.FirstName} {accountModel.LastName}, Email: {accountModel.Email}, Phone: {accountModel.Phone}, Address: {accountModel.Address}, Is Host: {accountModel.IsHost}");
+    }
+
+    private bool HasOptionalFields() =>
+        !string.IsNullOrWhiteSpace(accountModel.Phone) && !string.IsNullOrWhiteSpace(accountModel.Address);
+
+    private Client CreateClient()
+    {
+        return HasOptionalFields()
+            ? bookingManager.CreateCompleteClient(accountModel.FirstName, accountModel.LastName, accountModel.Email, accountModel.Phone, accountModel.Address)
+            : bookingManager.CreateBasicClient(accountModel.FirstName, accountModel.LastName, accountModel.Email);
+    }
+
+    private Owner CreateOwner()
+    {
+        return HasOptionalFields()
+            ? bookingManager.CreateCompleteOwner(accountModel.FirstName, accountModel.LastName, accountModel.Email, accountModel.Phone, accountModel.Address)
+            : bookingManager.CreateBasicOwner(accountModel.FirstName, accountModel.LastName, accountModel.Email);
+    }
+
+    private async Task StoreUserIdAndRedirect(int? userId)
+    {
+        if (userId.HasValue)
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "UserID", userId.ToString());
+            NavigationManager.NavigateTo("/home");
+        }
+    }
+
 }
 
 <section class="bg-gray-50 dark:bg-gray-900">

@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStay.Common.Models;
 using SmartStay.Core.Models;
 using SmartStay.Core.Models.Interfaces;
 using SmartStay.Core.Utilities;
@@ -83,22 +84,39 @@ public class Owners : IManageableEntity<Owner>
     /// Imports a list of owners from a JSON string. Replaces any existing owners with the same ID in the collection.
     /// </summary>
     /// <param name="data">The JSON string containing the list of owners.</param>
+    /// <returns>
+    /// An <see cref="ImportResult"/> summarizing the outcome of the import operation.
+    /// </returns>
     /// <exception cref="ArgumentException">Thrown if the data is null or empty.</exception>
     /// <exception cref="ArgumentException">Thrown if deserialization of the data fails.</exception>
-    public void Import(string data)
+    public ImportResult Import(string data)
     {
         if (string.IsNullOrEmpty(data))
         {
             throw new ArgumentException("Data cannot be null or empty", nameof(data));
         }
 
+        // Deserialize the data into a List<Owner> instead of a single Owner
         var owners = JsonHelper.DeserializeFromJson<Owner>(data) ??
                      throw new ArgumentException("Deserialized owner data cannot be null", nameof(data));
 
+        int replacedCount = 0;
+        int importedCount = 0;
+
         foreach (var owner in owners)
         {
+            if (_ownerDictionary.ContainsKey(owner.Id))
+            {
+                replacedCount++;
+            }
+            else
+            {
+                importedCount++;
+            }
             _ownerDictionary[owner.Id] = owner; // Direct insertion for efficiency
         }
+
+        return new ImportResult { ImportedCount = importedCount, ReplacedCount = replacedCount };
     }
 
     /// <summary>
