@@ -478,7 +478,7 @@ Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gest�
 O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamentos, exigindo soluções que garantam agilidade, precisão e uma experiência satisfatória para os clientes. Este projeto visa desenvolver um sistema de gestão de alojamentos turísticos que permita a administração eficaz de registos de clientes, reservas e alojamentos. A implementação foi realizada em C\#, uma linguagem reconhecida pela sua robustez e flexibilidade, permitindo o desenvolvimento de aplicações escaláveis e eficientes.
 
 \subsection{Estrutura de Dados e Persistência}
-Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a persistência de dados é gerida em formato JSON, facilitando a integração e manipulação das informações.
+Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a  é gerida em formato JSON, facilitando a integração e manipulação das informações.
 
 \subsection{Boas Práticas de Programação}
 Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
@@ -551,6 +551,10 @@ Utiliza-se \textit{XML Documentation Comments} para documentar o código, permit
 	\item Utilizam-se tags como \texttt{<summary>}, \texttt{<param>}, \texttt{<returns>} e \texttt{<example>} para estruturar corretamente os comentários.
 	\item Define-se o autor nos comentários de cabeçalho de classes para novos ficheiros ou seções significativas de código.
 \end{itemize}
+
+\subsection{Padrões de Design Utilizados}
+
+\subsection{Funções Lambda}
 
 \newpage
 \section{Diagrama de Classes}
@@ -643,53 +647,69 @@ readonly Dictionary<int, Client> _clientDictionary = new Dictionary<int, Client>
 
 O uso do \textit{Dictionary} garante que as operações de inserção e remoção de clientes sejam realizadas de forma rápida, com um tempo médio de execução constante $O(1)$, o que melhora a escalabilidade do sistema à medida que mais clientes são adicionados.
 
-\subsection{Utilização de List e Pesquisa Binária}
+\subsection{Utilização de SortedSet}
 
-Para a classe \textit{Reservation}, foi utilizada uma \textit{List} de tuplas para guardar intervalos de datas de reservas, o que permite gerir as datas de forma eficiente. A lista é ordenada, e para verificar a disponibilidade de um alojamento, utiliza-se a técnica de \textit{pesquisa binária}, que permite encontrar rapidamente se há sobreposição de datas entre reservas. Abaixo está um exemplo de como o sistema verifica se existe disponibilidade:
+Para a classe \textit{Room}, foi utilizada a estrutura \textit{SortedSet<DateRange>} para guardar os intervalos de datas das reservas. O \textit{SortedSet} é uma coleção que mantém os elementos em ordem, o que permite realizar buscas e verificações de maneira eficiente. A principal vantagem do \textit{SortedSet} sobre outras estruturas, como listas ou dicionários, é que ele mantém a ordem dos elementos automaticamente e proporciona operações eficientes de inserção, remoção e busca.
+
+O \textit{SortedSet} é baseado numa árvore binária balanceada, tipicamente uma árvore vermelho-preta (\textit{Red-Black Tree}), que garante um tempo de execução logarítmico para as operações básicas: inserção, remoção e busca, ou seja, $O(log n)$. Isto acontece porque, ao usar uma árvore binária balanceada, o \textit{SortedSet} mantém o conjunto de dados ordenados, sem a necessidade de reordenar os elementos manualmente a cada operação.
+
+Abaixo está um exemplo de como o sistema verifica a disponibilidade de um alojamento utilizando o \textit{SortedSet<DateRange>}:
 
 \vspace*{15pt}
-\renewcommand{\lstlistingname}{Amostra de Código}
 \begin{lstlisting}[ 
 	language=csh, 
-	caption={Uso de Pesquisa Binária}, 
+	caption={Uso de Dictionary}, 
 	label={lst:C}]
-public bool IsAvailable(DateTime startDate, DateTime endDate)
+public bool IsAvailable(DateTime startDate, DateTime endDate, DateRange? existingReservationRange = null)
 {
 	if (endDate <= startDate)
 	throw new ArgumentException("End date must be after the start date.");
 	
-	int index = _reservedDates.BinarySearch((startDate, endDate), new DateRangeComparer());
-	if (index < 0)
-	index = ~index; // A pesquisa binária retorna o complemento do índice de inserção
+	var newReservation = new DateRange(startDate, endDate);
 	
-	if (index > 0 && _reservedDates[index - 1].End > startDate)
+	// Get potential conflicting reservations within the requested range
+	var potentialConflicts = _reservationDates.GetViewBetween(
+	new DateRange(DateTime.MinValue, startDate), // All reservations that end before the start
+	new DateRange(DateTime.MaxValue, endDate)    // All reservations that start after the end
+	);
+	
+	// Check if there are any overlapping reservations
+	foreach (var existingReservation in potentialConflicts)
 	{
-		return false; // Sobreposição com a reserva anterior
-	}
-	if (index < _reservedDates.Count && _reservedDates[index].Start < endDate)
-	{
-		return false; // Sobreposição com a reserva seguinte
+		// Skip the existing reservation if it's the one we're trying to modify
+		if (existingReservation.Equals(existingReservationRange))
+		{
+			continue; // Skip this reservation as it's the one we're modifying
+		}
+		
+		// An overlap occurs if the start date is before the end date, and the end date is after the start date
+		if ((newReservation.Start < existingReservation.End) && (newReservation.End > existingReservation.Start))
+		{
+			return false; // There's an overlap, so the accommodation is not available
+		}
 	}
 	
-	return true; // Não há sobreposição, o alojamento está disponível
+	return true; // No overlap found, accommodation is available
 }
-
-return true; // Não há sobreposição, o alojamento está disponível
 \end{lstlisting}
 
-Ao utilizar a \textit{List} de tuplas para armazenar intervalos de datas e a pesquisa binária para verificar a disponibilidade, o sistema é capaz de realizar verificações de disponibilidade de maneira muito mais eficiente do que uma busca linear. A \textit{pesquisa binária} reduz o tempo de busca de $O(n)$ para $O(\textit{log}(n))$, o que é um ganho significativo em termos de desempenho, principalmente em sistemas com muitas reservas.
+O uso do \textit{SortedSet} permite que o sistema verifique rapidamente se há conflitos de datas para uma nova reserva. Quando uma nova reserva é solicitada, o método \texttt{GetViewBetween} é utilizado para obter apenas as reservas que podem potencialmente se sobrepor com a nova reserva, o que torna o processo de verificação muito mais eficiente.
+
+A principal vantagem do \textit{SortedSet} é que ele mantém os dados ordenados automaticamente, e as operações de busca e inserção são realizadas em tempo $O(log n)$, o que é muito mais eficiente do que um algoritmo de busca linear que teria um custo de $O(n)$. Em sistemas com muitas reservas, isto resulta num ganho de desempenho significativo.
+
+Além disso, a estrutura \textit{SortedSet} oferece uma forma eficiente de lidar com a inserção de novos intervalos de datas, pois a árvore binária balanceada garante que as operações de inserção e remoção também sejam realizadas de maneira logarítmica. Isso é fundamental para garantir que o sistema permaneça escalável à medida que o número de reservas aumenta.
 
 \subsection{Vantagens das Estruturas de Dados Escolhidas}
 
-As escolhas de \textit{Dictionary} e \textit{List} oferecem várias vantagens para o sistema:
+As escolhas do \textit{Dictionary} e \textit{SortedSet} refletem uma análise cuidadosa das necessidades do sistema, como a eficiência de acesso, a escalabilidade e a organização dos dados. Abaixo, destacam-se as principais vantagens dessas escolhas:
 
 \begin{itemize}
-	\item \textbf{Eficiência de Acesso}: O \textit{Dictionary} permite acesso rápido às entidades, como clientes e reservas, através de suas chaves únicas. Isto melhora a performance, especialmente quando o sistema lida com um grande volume de dados.
-	\item \textbf{Organização e Escalabilidade}: O uso do \textit{Dictionary} para armazenar entidades e o \textit{List} para reservas garante que o sistema seja facilmente escalável. À medida que o número de clientes ou reservas cresce, o desempenho do sistema permanece estável devido à eficiência destas estruturas.
-	\item \textbf{Pesquisa Rápida de Intervalos de Datas}: A combinação de \textit{List} com pesquisa binária permite que a verificação de disponibilidade de um alojamento seja realizada de forma muito mais eficiente do que outras abordagens. A inserção das reservas na lista ordenada mantém a integridade dos dados e facilita a verificação de conflitos de datas.
+	\item \textbf{Eficiência de Acesso}: O \textit{Dictionary} permite acesso rápido às entidades, como clientes e reservas, através de chaves únicas. Esta característica é fundamental para garantir o bom desempenho do sistema, especialmente quando precisa de lidar com grandes volumes de dados.
+	\item \textbf{Escalabilidade}: O uso do \textit{Dictionary} para guardar entidades e do \textit{SortedSet} para as datas das reservas garante um sistema escalável. À medida que o número de clientes ou reservas aumenta, o desempenho mantém-se estável devido à eficiência destas estruturas.
+	\item \textbf{Verificação Rápida de Conflitos de Datas}: O \textit{SortedSet} facilita a verificação de conflitos de datas de reservas, graças à sua capacidade de manter os dados ordenados automaticamente. A combinação com a operação \texttt{GetViewBetween} reduz significativamente o tempo de busca e garante uma execução eficiente mesmo com um número elevado de reservas.
 \end{itemize}
 
-Estas escolhas refletem uma consideração cuidadosa da necessidade de desempenho e eficiência, ao mesmo tempo que garantem uma implementação simples e direta, essencial para manter o sistema modular e fácil de manter.
+Estas escolhas refletem uma análise cuidadosa dos requisitos de desempenho e eficiência do sistema, buscando sempre o equilíbrio entre a simplicidade na implementação o alto desempenho. Isto garante um sistema não apenas eficaz, mas também fácil de manter e escalar ao longo do tempo.
 
 \newpage
 \section{Uso de LINQ}
@@ -756,27 +776,23 @@ A principal característica da \texttt{ValidationException} é que ela recebe um
 	language=csh, 
 	caption={Classe ValidationException}, 
 	label={lst:C}]
-namespace SmartStay.Validation
+public class ValidationException : Exception
 {
-	public class ValidationException : Exception
+	public ValidationErrorCode ErrorCode { get; }
+	
+	public ValidationException(ValidationErrorCode errorCode) : base(ValidationErrorMessages.GetErrorMessage(errorCode))
 	{
-		public ValidationException(ValidationErrorCode errorCode) 
-		: base(ValidationErrorMessages.GetErrorMessage(errorCode))
-		{
-			ErrorCode = errorCode;
-		}
-		
-		public ValidationErrorCode ErrorCode { get; }
+		ErrorCode = errorCode;
 	}
 }
 \end{lstlisting}
 
-Como pode ser observado, ao receber um \texttt{ValidationErrorCode}, a classe \texttt{ValidationException} utiliza o método \texttt{GetErrorMessage} da classe \texttt{ValidationErrorMessages} para obter a mensagem correspondente ao erro, evitando a necessidade de codificar as mensagens diretamente na aplicação.
+Como pode ser visto, ao receber um \texttt{ValidationErrorCode}, a classe \texttt{ValidationException} utiliza o método \texttt{GetErrorMessage} da classe \texttt{ValidationErrorMessages} para obter a mensagem correspondente ao erro, evitando a necessidade de codificar as mensagens diretamente na aplicação.
 
 \subsection{Definição dos Códigos de Erro}
 A enumeração \texttt{ValidationErrorCode} é responsável por definir os diferentes tipos de erros que podem ocorrer durante a validação dos dados. Cada valor desta enumeração é associado a um código numérico único, o que permite identificar de forma eficiente qual validação falhou.
 
-Abaixo, apresentamos um exemplo simplificado dessa enumeração:
+Abaixo está um exemplo simplificado desta enumeração:
 
 \begin{lstlisting}[
 	language=csh, 
@@ -793,35 +809,29 @@ namespace SmartStay.Validation
 }
 \end{lstlisting}
 
-Cada valor da enumeração representa um tipo específico de erro de validação, como por exemplo, nome inválido, e-mail inválido, ou número de telefone inválido. Esta enumeração é usada na classe \texttt{ValidationException} para determinar o erro que ocorreu.
-
 \subsection{Mensagens de Erro Dinâmicas}
-A classe \texttt{ValidationErrorMessages} é responsável por mapear cada código de erro para uma mensagem descritiva correspondente. Em vez de codificar as mensagens diretamente nas classes de validação ou nas exceções, as mensagens são armazenadas em um dicionário, o que facilita a manutenção e a atualização das mensagens de erro.
+A classe \texttt{ValidationErrorMessages} é responsável por buscar as mensagens de erro localizadas a partir de ficheiros de recursos. Em vez de guardar as mensagens diretamente no código, as mensagens são mantidas em ficheiros de recursos (.resx), o que facilita a tradução e manutenção das mensagens de erro, especialmente em sistemas com muitos idiomas.
 
-Veja abaixo um exemplo simplificado dessa classe:
+Veja abaixo um exemplo simplificado da classe \textit{ValidationErrorMessages}:
 
 \begin{lstlisting}[
 	language=csh, 
 	caption={Classe ValidationErrorMessages}, 
 	label={lst:C}]
-namespace SmartStay.Validation
+public static class ValidationErrorMessages
 {
-	public static class ValidationErrorMessages
+	private static readonly ResourceManager _resourceManager = new ResourceManager(
+	"SmartStay.Validation.Resources.ValidationMessages", typeof(ValidationErrorMessages).Assembly);
+	
+	public static string GetErrorMessage(ValidationErrorCode errorCode)
 	{
-		private static readonly Dictionary<ValidationErrorCode, string> ErrorMessages = new() {
-			{ ValidationErrorCode.InvalidName, "O nome deve ser uma string não vazia e não exceder 50 caracteres." },
-			{ ValidationErrorCode.InvalidEmail, "O endereço de e-mail é inválido ou não corresponde ao formato exigido." }
-		};
-		
-		public static string GetErrorMessage(ValidationErrorCode errorCode)
-		{
-			return ErrorMessages.TryGetValue(errorCode, out var message) ? message : "Erro de validação desconhecido.";
-		}
+		return _resourceManager.GetString(errorCode.ToString(), CultureInfo.CurrentCulture) ??
+		"Unknown validation error.";
 	}
 }
 \end{lstlisting}
 
-Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é buscada dinamicamente a partir do dicionário. Caso o código de erro não esteja mapeado, uma mensagem padrão ``Erro de validação desconhecido`` será retornada, garantindo que todas as exceções sejam tratadas de forma consistente.
+Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é obtida dinamicamente a partir do ficheiro de recursos com base na cultura atual. Caso o código de erro não esteja mapeado, uma mensagem padrão "Unknown validation error." \textit{("Erro de validação desconhecido")} será devolvida, garantindo que todas as exceções são tratadas de forma consistente e traduzidas corretamente para o idioma apropriado.
 
 \subsection{Benefícios da Abordagem}
 A utilização de códigos de erro e mensagens dinâmicas traz uma série de benefícios para o sistema:
@@ -832,25 +842,6 @@ A utilização de códigos de erro e mensagens dinâmicas traz uma série de ben
 	\item \textbf{Internacionalização}: Como as mensagens de erro estão centralizadas, é mais fácil adaptar o sistema para diferentes idiomas no futuro.
 	\item \textbf{Consistência}: Ao utilizar códigos de erro numéricos e associar cada um a uma mensagem específica, garantimos que o tratamento de exceções será consistente ao longo de toda a aplicação.
 \end{itemize}
-
-\subsection{Exemplo de Uso}
-Abaixo, é apresentado um exemplo de como as exceções de validação são utilizadas no código. Neste exemplo, caso o nome fornecido por um cliente seja inválido, uma exceção de validação é gerada e a mensagem correspondente é retornada:
-
-\begin{lstlisting}[
-	language=csh, 
-	caption={Uso da Exceção de Validação}, 
-	label={lst:C}]
-try
-{
-	ValidateClientName(client.Name);
-}
-catch (ValidationException ex)
-{
-	Console.WriteLine($"Erro de validação: {ex.Message}");
-}
-\end{lstlisting}
-
-Neste exemplo, se o nome do cliente for inválido, a exceção \texttt{ValidationException} será lançada, e a mensagem de erro correspondente ao código de erro será mostrada ao utilizador.
 
 \newpage
 \section{Tratamento de Logs}
@@ -946,16 +937,11 @@ Estas exceções permitem que o sistema lide com dados inválidos de forma contr
 A escolha pelo formato JSON para persistência de dados oferece diversas vantagens em termos de simplicidade, flexibilidade e compatibilidade. A utilização de métodos de importação e exportação bem definidos, aliados ao tratamento de exceções para garantir a validade dos dados, proporciona um sistema robusto e fácil de manter. Além disso, a escolha de um formato de dados leve e amplamente suportado como o JSON garante que o sistema possa ser facilmente integrado a outras plataformas e serviços.
 
 \newpage
-\section{Qualidade do Código e Boas Práticas}
-\label{sec:qualidadecodigo}
-
-\subsection{Testes Unitários}
+\section{Testes Unitários}
+\label{sec:testesunitarios}
 
 \subsection{CI/CD Pipeline}
 
-\subsection{Padrões de Design Utilizados}
-
-\subsection{Lambda Functions}
 
 \newpage
 \section{Arquitetura em Camadas (Layered Architecture)}

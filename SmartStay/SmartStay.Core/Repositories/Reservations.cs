@@ -9,13 +9,12 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
 #nullable enable
+using System.Runtime.Serialization;
+using ProtoBuf;
 using SmartStay.Common.Models;
 using SmartStay.Core.Models;
 using SmartStay.Core.Models.Interfaces;
 using SmartStay.Core.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// The <c>SmartStay.Repositories</c> namespace provides data access layers for retrieving and storing application data.
@@ -27,12 +26,22 @@ namespace SmartStay.Core.Repositories
 /// Represents a collection of <see cref="Reservation"/> objects, managed in a dictionary for fast lookup by reservation
 /// ID.
 /// </summary>
+[ProtoContract]
 public class Reservations : IManageableEntity<Reservation>
 {
     /// <summary>
     /// Internal dictionary to store reservations by their unique ID.
     /// </summary>
     readonly Dictionary<int, Reservation> _reservationDictionary = new Dictionary<int, Reservation>();
+
+    /// <summary>
+    /// A temporary list used for serialization by Protobuf. This list holds the reservations
+    /// that are copied from the dictionary during serialization. Protobuf-Net does not serialize
+    /// dictionaries directly, so the dictionary is temporarily copied to this list before serialization.
+    /// This list is cleared and rebuilt after deserialization from the binary data.
+    /// </summary>
+    [ProtoMember(1)] // Serialize the list of accommodations
+    List<Reservation> _reservationList = new();
 
     /// <summary>
     /// Attempts to add a new reservation to the collection.
@@ -52,12 +61,12 @@ public class Reservations : IManageableEntity<Reservation>
             throw new ArgumentNullException(nameof(reservation), "Reservation cannot be null");
         }
 
-        if (_reservationDictionary.ContainsKey(reservation.ReservationId))
+        if (_reservationDictionary.ContainsKey(reservation.Id))
         {
             return false; // Reservation already exists
         }
 
-        _reservationDictionary[reservation.ReservationId] = reservation;
+        _reservationDictionary[reservation.Id] = reservation;
         return true; // Reservation added successfully
     }
 
@@ -78,7 +87,7 @@ public class Reservations : IManageableEntity<Reservation>
         }
 
         // Remove the reservation using its ID
-        return _reservationDictionary.Remove(reservation.ReservationId);
+        return _reservationDictionary.Remove(reservation.Id);
     }
 
     /// <summary>
@@ -107,7 +116,7 @@ public class Reservations : IManageableEntity<Reservation>
 
         foreach (var reservation in reservations)
         {
-            if (_reservationDictionary.ContainsKey(reservation.ReservationId))
+            if (_reservationDictionary.ContainsKey(reservation.Id))
             {
                 replacedCount++;
             }
@@ -115,7 +124,7 @@ public class Reservations : IManageableEntity<Reservation>
             {
                 importedCount++;
             }
-            _reservationDictionary[reservation.ReservationId] = reservation; // Direct insertion for efficiency
+            _reservationDictionary[reservation.Id] = reservation; // Direct insertion for efficiency
         }
 
         return new ImportResult { ImportedCount = importedCount, ReplacedCount = replacedCount };
@@ -128,6 +137,130 @@ public class Reservations : IManageableEntity<Reservation>
     public string Export()
     {
         return JsonHelper.SerializeToJson<Reservation>(_reservationDictionary.Values);
+    }
+
+    /// <summary>
+    /// Prepares the object for serialization by copying all reservations
+    /// from the dictionary to the temporary list. This is necessary because
+    /// Protobuf-Net serializes the list and not the dictionary directly.
+    /// </summary>
+    [ProtoBeforeSerialization]
+    private void PrepareForSerialization()
+    {
+        // Clear the temporary list to ensure no leftover data
+        _reservationList.Clear();
+
+        // Add all reservations from the dictionary to the temporary list
+        foreach (var reservation in _reservationDictionary.Values)
+        {
+            _reservationList.Add(reservation);
+        }
+    }
+
+    /// <summary>
+    /// Rebuilds the dictionary from the list of reservations after deserialization.
+    /// This is necessary because Protobuf-Net deserializes the list and not the dictionary.
+    /// </summary>
+    [ProtoAfterDeserialization]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members",
+                                                     Justification =
+                                                         "IDE Error, this is called automatically by protobuf-net.")]
+    private void AfterDeserialization()
+    {
+        // Clear the dictionary before rebuilding
+        _reservationDictionary.Clear();
+
+        // Rebuild the dictionary using the data from the list
+        foreach (var reservation in _reservationList)
+        {
+            _reservationDictionary[reservation.Id] = reservation;
+        }
+
+        // Clear the temporary list once the dictionary is rebuilt
+        _reservationList.Clear();
+
+        // Set _lastReservationId to the highest ID in the deserialized data
+        if (_reservationDictionary.Count > 0)
+        {
+            // Find the highest ID from the loaded reservations
+            Reservation.LastAssignedId = _reservationDictionary.Values.Max(r => r.Id);
+        }
+        else
+        {
+            // If no reservations, reset to 0
+            Reservation.LastAssignedId = 0;
+        }
+    }
+
+    /// <summary>
+    /// Saves the current state of the reservations collection to a file by serializing
+    /// the object into a Protobuf format. If an error occurs during the saving process,
+    /// it will be caught and logged.
+    /// </summary>
+    /// <param name="filePath">The path of the file to save the data.</param>
+    /// <exception cref="IOException">Thrown when an I/O error occurs while saving the data.</exception>
+    /// <exception cref="SerializationException">Thrown when a serialization error occurs while saving the
+    /// data.</exception>
+    public void Save(string filePath)
+    {
+        try
+        {
+            // Prepare for serialization by copying the dictionary contents to the temporary list
+            PrepareForSerialization();
+
+            // Open the file stream for saving the data to the specified file
+            using (var fileStream = File.Create(filePath))
+            {
+                // Serialize the reservations object and write it to the file stream
+                Serializer.Serialize(fileStream, this);
+            }
+        }
+        catch (IOException ioEx)
+        {
+            throw new IOException("An error occurred while saving the reservations data.", ioEx);
+        }
+        catch (SerializationException serEx)
+        {
+            throw new SerializationException(
+                "An error occurred during serialization while saving the reservations data.", serEx);
+        }
+    }
+
+    /// <summary>
+    /// Loads the collection from a binary file and assigns it to the current instance.
+    /// If an error occurs during the loading process, it will be caught and logged.
+    /// </summary>
+    /// <param name="filePath">The file path to load the collection from.</param>
+    /// <exception cref="IOException">Thrown when an I/O error occurs while loading the data.</exception>
+    /// <exception cref="SerializationException">Thrown when a deserialization error occurs while loading the
+    /// data.</exception>
+    public void Load(string filePath)
+    {
+        try
+        {
+            // Open the file stream for reading
+            using (var fileStream = File.OpenRead(filePath))
+            {
+                // Deserialize the reservations object from the file
+                var reservations = Serializer.Deserialize<Reservations>(fileStream);
+
+                // Copy the data from the deserialized object to the current instance
+                _reservationDictionary.Clear();
+                foreach (var reservation in reservations._reservationDictionary)
+                {
+                    _reservationDictionary[reservation.Key] = reservation.Value;
+                }
+            }
+        }
+        catch (IOException ioEx)
+        {
+            throw new IOException("An error occurred while loading the reservations data.", ioEx);
+        }
+        catch (SerializationException serEx)
+        {
+            throw new SerializationException(
+                "An error occurred during deserialization while loading the reservations data.", serEx);
+        }
     }
 
     /// <summary>

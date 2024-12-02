@@ -9,6 +9,7 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
 using System.Text.Json;
+using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation;
 using SmartStay.Validation.Validators;
@@ -24,17 +25,69 @@ namespace SmartStay.Core.Models
 /// such as its type, name, address, nightly price, and availability status.
 /// This class provides methods to update availability and calculate total cost.
 /// </summary>
+[ProtoContract]
 public class Accommodation
 {
+    /// <summary>
+    /// The last assigned accommodation ID. Used for generating unique IDs for new accommodations.
+    /// </summary>
     static int _lastAccommodationId = 0; // Last assigned accommodation ID
+
+    /// <summary>
+    /// JSON Serializer options used for formatting accommodation data in JSON (for example, write-indented for
+    /// readability).
+    /// </summary>
     static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
 
-    readonly int _id;                        // ID of the accommodation
-    int _ownerId;                            // ID of the owner
-    AccommodationType _type;                 // Type of accommodation (Hotel, House, etc.)
-    string _name;                            // Name of the accommodation
-    string _address;                         // Address of the accommodation
-    List<Room> _rooms { get; set; } = new(); // List of rooms
+    /// <summary>
+    /// The unique identifier for this accommodation. This ID is used to distinguish one accommodation from another.
+    /// </summary>
+    [ProtoMember(1)]
+    readonly int _id; // ID of the accommodation
+
+    /// <summary>
+    /// The unique identifier for the owner of this accommodation. This ID links the accommodation to its owner.
+    /// </summary>
+    [ProtoMember(2)]
+    int _ownerId; // ID of the owner
+
+    /// <summary>
+    /// The type of the accommodation. It could represent categories like Hotel, House, Apartment, etc.
+    /// </summary>
+    [ProtoMember(3)]
+    AccommodationType _type; // Type of accommodation (Hotel, House, etc.)
+
+    /// <summary>
+    /// The name of the accommodation. This is typically a name like "Sunset Hotel" or "Oceanview Villa".
+    /// </summary>
+    [ProtoMember(4)]
+    string _name; // Name of the accommodation
+
+    /// <summary>
+    /// The address of the accommodation. This provides the physical location of the accommodation.
+    /// </summary>
+    [ProtoMember(5)]
+    string _address; // Address of the accommodation
+
+    /// <summary>
+    /// A list of rooms associated with the accommodation. Each room can have its own properties like size, bed type,
+    /// and other features.
+    /// </summary>
+    [ProtoMember(6)]
+    List<Room> _rooms = new(); // List of rooms
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Accommodation"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Accommodation"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Accommodation()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Accommodation"/> class with the specified details: type, name,
@@ -66,6 +119,15 @@ public class Accommodation
         _type = type;
         _name = name;
         _address = address;
+    }
+
+    /// <summary>
+    /// Public getter and setter for the last assigned ID.
+    /// </summary>
+    public static int LastAssignedId
+    {
+        get => _lastAccommodationId;
+        set => _lastAccommodationId = value;
     }
 
     /// <summary>
@@ -110,9 +172,13 @@ public class Accommodation
     }
 
     /// <summary>
-    /// Public getter for the list of rooms in the accommodation.
+    /// Public getter and setter for the list of rooms in the accommodation.
     /// </summary>
-    public List<Room> Rooms => _rooms;
+    public List<Room> Rooms
+    {
+        get => _rooms;
+        set => _rooms = value;
+    }
 
     /// <summary>
     /// Gets the total number of rooms in the accommodation.

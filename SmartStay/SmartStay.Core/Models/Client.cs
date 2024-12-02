@@ -10,6 +10,7 @@
 /// <date>07/10/2024</date>
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation.Validators;
 
@@ -26,20 +27,79 @@ namespace SmartStay.Core.Models
 /// This class validates the provided data upon creation or when modifying specific properties,
 /// ensuring that all data is consistent and correct.
 /// </summary>
+[ProtoContract]
 public class Client
 {
+    /// <summary>
+    /// The last assigned client ID. Used for generating unique IDs for new clients.
+    /// </summary>
     static int _lastClientId = 0; // Last assigned client ID
+
+    /// <summary>
+    /// JSON Serializer options used for formatting client data in JSON (for example, write-indented for readability),
+    /// and allowing unsafe characters in the JSON string (such as `<>`).
+    /// </summary>
     static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() {
         WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     }; // JSON Serializer options
 
-    readonly int _id;                                           // ID of the client
-    string _firstName;                                          // First name of the client
-    string _lastName;                                           // Last name of the client
-    string _email;                                              // Email address of the client
-    string _phoneNumber = string.Empty;                         // Phone number of the client
-    string _address = string.Empty;                             // Address of the client
+    /// <summary>
+    /// The unique identifier for this client. This ID is used to distinguish one client from another.
+    /// </summary>
+    [ProtoMember(1)]
+    readonly int _id; // ID of the client
+
+    /// <summary>
+    /// The first name of the client. This field holds the client's given name.
+    /// </summary>
+    [ProtoMember(2)]
+    string _firstName; // First name of the client
+
+    /// <summary>
+    /// The last name of the client. This field holds the client's family name.
+    /// </summary>
+    [ProtoMember(3)]
+    string _lastName; // Last name of the client
+
+    /// <summary>
+    /// The email address of the client. This field holds the client's contact email.
+    /// </summary>
+    [ProtoMember(4)]
+    string _email; // Email address of the client
+
+    /// <summary>
+    /// The phone number of the client. This field holds the client's contact phone number.
+    /// Defaults to an empty string if not provided.
+    /// </summary>
+    [ProtoMember(5)]
+    string _phoneNumber = string.Empty; // Phone number of the client
+
+    /// <summary>
+    /// The address of the client. This field holds the client's home or billing address.
+    /// Defaults to an empty string if not provided.
+    /// </summary>
+    [ProtoMember(6)]
+    string _address = string.Empty; // Address of the client
+
+    /// <summary>
+    /// The preferred payment method of the client. This field indicates how the client prefers to pay for services.
+    /// The value is set to `None` by default.
+    /// </summary>
+    [ProtoMember(7)]
     PaymentMethod _preferredPaymentMethod = PaymentMethod.None; // Preferred payment method of the client
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Client"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Client"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Client()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Constructor to initialize a new client with basic details: first name, last name, and email.

@@ -123,6 +123,75 @@ public class BookingManager
     /// </summary>
     public Accommodations Accommodations => _accommodations;
 
+    /// <summary>
+    /// Exposes the `Owners` repository as a read-only property.
+    /// </summary>
+    public Owners Owners => _owners;
+
+#endregion
+
+#region System Management
+
+    /// <summary>
+    /// Saves all repositories (Clients, Accommodations, Reservations, Owners) to their respective files.
+    /// </summary>
+    public void SaveAll(string dataFolder)
+    {
+        try
+        {
+            // Define file paths for each repository
+            string clientsFilePath = Path.Combine(dataFolder, "clients.dat");
+            string accommodationsFilePath = Path.Combine(dataFolder, "accommodations.dat");
+            string reservationsFilePath = Path.Combine(dataFolder, "reservations.dat");
+            string ownersFilePath = Path.Combine(dataFolder, "owners.dat");
+
+            // Save each repository to its corresponding file
+            _clients.Save(clientsFilePath);
+            _accommodations.Save(accommodationsFilePath);
+            _reservations.Save(reservationsFilePath);
+            _owners.Save(ownersFilePath);
+
+            _logger.LogInformation("All repositories saved successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while saving all repositories:");
+            throw new InvalidOperationException("Error occurred while saving all repositories.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Loads all repositories (Clients, Accommodations, Reservations, Owners) from their respective files.
+    /// </summary>
+    public void LoadAll(string dataFolder)
+    {
+        try
+        {
+            // Define file paths for each repository
+            string clientsFilePath = Path.Combine(dataFolder, "clients.dat");
+            string accommodationsFilePath = Path.Combine(dataFolder, "accommodations.dat");
+            string reservationsFilePath = Path.Combine(dataFolder, "reservations.dat");
+            string ownersFilePath = Path.Combine(dataFolder, "owners.dat");
+
+            // Load each repository from its corresponding file
+            if (File.Exists(clientsFilePath))
+                _clients.Load(clientsFilePath);
+            if (File.Exists(accommodationsFilePath))
+                _accommodations.Load(accommodationsFilePath);
+            if (File.Exists(reservationsFilePath))
+                _reservations.Load(reservationsFilePath);
+            if (File.Exists(ownersFilePath))
+                _owners.Load(ownersFilePath);
+
+            _logger.LogInformation("All repositories loaded successfully.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while loading all repositories.");
+            throw new InvalidOperationException("Error occurred while loading all repositories.", ex);
+        }
+    }
+
 #endregion
 
 #region Client Management
@@ -717,7 +786,7 @@ public class BookingManager
         // Log successful reservation creation
         _logger.LogInformation("Successfully created reservation {ReservationId} for client {ClientId} at " +
                                    "accommodation {AccommodationId}, room {RoomId}. Total cost: {TotalCost}.",
-                               reservation.ReservationId, clientId, accommodationId, roomId, totalCost);
+                               reservation.Id, clientId, accommodationId, roomId, totalCost);
 
         // Return the newly created reservation
         return reservation;
@@ -962,20 +1031,20 @@ public class BookingManager
     private (Accommodation, Room) FindAssociatedEntities(Reservation reservation)
     {
         _logger.LogInformation("Finding associated accommodation and room for reservation ID {ReservationId}.",
-                               reservation.ReservationId);
+                               reservation.Id);
 
         // Find accommodation
         var accommodation = _accommodations.FindAccommodationById(reservation.AccommodationId);
         if (accommodation == null)
         {
             _logger.LogWarning("Accommodation with ID {AccommodationId} not found for reservation {ReservationId}.",
-                               reservation.AccommodationId, reservation.ReservationId);
+                               reservation.AccommodationId, reservation.Id);
             throw new EntityNotFoundException(nameof(Accommodation), reservation.AccommodationId);
         }
 
         _logger.LogInformation(
             "Successfully found accommodation with ID {AccommodationId} for reservation {ReservationId}.",
-            accommodation.Id, reservation.ReservationId);
+            accommodation.Id, reservation.Id);
 
         // Find room
         var room = accommodation.FindRoomById(reservation.RoomId);
@@ -983,13 +1052,13 @@ public class BookingManager
         {
             _logger.LogWarning(
                 "Room with ID {RoomId} not found in accommodation {AccommodationId} for reservation {ReservationId}.",
-                reservation.RoomId, accommodation.Id, reservation.ReservationId);
+                reservation.RoomId, accommodation.Id, reservation.Id);
             throw new EntityNotFoundException(nameof(Room), reservation.RoomId);
         }
 
         _logger.LogInformation("Successfully found room with ID {RoomId} in accommodation {AccommodationId} for " +
                                    "reservation {ReservationId}.",
-                               room.Id, accommodation.Id, reservation.ReservationId);
+                               room.Id, accommodation.Id, reservation.Id);
 
         return (accommodation, room);
     }
@@ -1006,8 +1075,7 @@ public class BookingManager
     /// <exception cref="ArgumentException">Thrown if the new dates are invalid.</exception>
     private (DateTime, DateTime) GetEffectiveDates(Reservation reservation, DateTime? newCheckIn, DateTime? newCheckOut)
     {
-        _logger.LogInformation("Determining effective dates for reservation ID {ReservationId}.",
-                               reservation.ReservationId);
+        _logger.LogInformation("Determining effective dates for reservation ID {ReservationId}.", reservation.Id);
 
         DateTime effectiveCheckIn = newCheckIn ?? reservation.CheckInDate;
         DateTime effectiveCheckOut = newCheckOut ?? reservation.CheckOutDate;
@@ -1016,13 +1084,13 @@ public class BookingManager
         {
             _logger.LogError(
                 "Invalid dates for reservation {ReservationId}: Check-In: {CheckIn}, Check-Out: {CheckOut}.",
-                reservation.ReservationId, effectiveCheckIn, effectiveCheckOut);
+                reservation.Id, effectiveCheckIn, effectiveCheckOut);
             throw new ArgumentException("Check-out date must be later than check-in date.");
         }
 
         _logger.LogInformation(
             "Effective dates for reservation {ReservationId}: Check-In: {CheckIn}, Check-Out: {CheckOut}.",
-            reservation.ReservationId, effectiveCheckIn, effectiveCheckOut);
+            reservation.Id, effectiveCheckIn, effectiveCheckOut);
 
         return (effectiveCheckIn, effectiveCheckOut);
     }

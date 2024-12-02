@@ -9,6 +9,7 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
 using System.Text.Json;
+using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Core.Utilities;
 using SmartStay.Validation;
@@ -25,15 +26,36 @@ namespace SmartStay.Core.Models
 /// such as its type, price per night, and reservation details. This class provides methods for updating
 /// availability and calculating the total cost for a stay.
 /// </summary>
+[ProtoContract]
 public class Room
 {
     static int _lastRoomId = 0;                                                          // Last assigned room ID
     static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
 
-    readonly int _id;                                        // ID of the room
-    RoomType _type;                                          // Type of room (Single, Double, Suite, etc.)
-    decimal _pricePerNight;                                  // Price per night for the room
+    [ProtoMember(1)]
+    readonly int _id; // ID of the room
+
+    [ProtoMember(2)]
+    RoomType _type; // Type of room (Single, Double, Suite, etc.)
+
+    [ProtoMember(3)]
+    decimal _pricePerNight; // Price per night for the room
+
+    [ProtoMember(4)]
     readonly SortedSet<DateRange> _reservationDates = new(); // Sorted set for efficient availability check
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Room"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Room"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Room()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Room"/> class with the specified details: type and price per night.

@@ -9,6 +9,7 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>09/11/2024</date>
 using System.Text.Json;
+using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation;
 using SmartStay.Validation.Validators;
@@ -24,22 +25,98 @@ namespace SmartStay.Core.Models
 /// accommodation type, dates, and payment information. This class ensures data consistency by validating
 /// input parameters upon creation or when modifying specific properties.
 /// </summary>
+[ProtoContract]
 public class Reservation
 {
-    static int _lastReservationId = 0;                                                   // Last assigned reservation ID
-    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
+    /// <summary>
+    /// The last assigned reservation ID, used for tracking the most recent reservation ID.
+    /// </summary>
+    static int _lastReservationId = 0;
 
-    readonly int _reservationId;                           // ID of the reservation
-    readonly int _clientId;                                // ID of the client making the reservation
-    readonly int _accommodationId;                         // ID of the accommodation
-    readonly int _roomId;                                  // ID of the room
-    AccommodationType _accommodationType;                  // Type of accommodation (e.g., Room, Suite, etc.)
-    DateTime _checkInDate;                                 // Check-in date for the reservation
-    DateTime _checkOutDate;                                // Check-out date for the reservation
+    /// <summary>
+    /// JSON serializer options used for serializing the reservation data.
+    /// </summary>
+    static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() { WriteIndented = true };
+
+    /// <summary>
+    /// The unique ID of the reservation. This ID is used to identify the reservation.
+    /// </summary>
+    [ProtoMember(1)]
+    readonly int _reservationId; // ID of the reservation
+
+    /// <summary>
+    /// The unique ID of the client who made the reservation.
+    /// </summary>
+    [ProtoMember(2)]
+    readonly int _clientId; // ID of the client making the reservation
+
+    /// <summary>
+    /// The unique ID of the accommodation being reserved.
+    /// </summary>
+    [ProtoMember(3)]
+    readonly int _accommodationId; // ID of the accommodation
+
+    /// <summary>
+    /// The unique ID of the room being reserved.
+    /// </summary>
+    [ProtoMember(4)]
+    readonly int _roomId; // ID of the room
+
+    /// <summary>
+    /// The type of accommodation for the reservation (e.g., Room, Suite, etc.).
+    /// </summary>
+    [ProtoMember(5)]
+    AccommodationType _accommodationType; // Type of accommodation (e.g., Room, Suite, etc.)
+
+    /// <summary>
+    /// The check-in date for the reservation.
+    /// </summary>
+    [ProtoMember(6)]
+    DateTime _checkInDate; // Check-in date for the reservation
+
+    /// <summary>
+    /// The check-out date for the reservation.
+    /// </summary>
+    [ProtoMember(7)]
+    DateTime _checkOutDate; // Check-out date for the reservation
+
+    /// <summary>
+    /// The current status of the reservation (e.g., Pending, Confirmed, Canceled, etc.).
+    /// The default status is set to <see cref="ReservationStatus.Pending"/>.
+    /// </summary>
+    [ProtoMember(8)]
     ReservationStatus _status = ReservationStatus.Pending; // Current reservation status
-    decimal _totalCost;                                    // Total cost of the reservation
-    decimal _amountPaid = 0;                               // Amount paid towards the reservation
-    readonly List<Payment> _payments = new();              // List of payments made for the reservation
+
+    /// <summary>
+    /// The total cost of the reservation.
+    /// </summary>
+    [ProtoMember(9)]
+    decimal _totalCost; // Total cost of the reservation
+
+    /// <summary>
+    /// The amount already paid towards the reservation. Default value is 0.
+    /// </summary>
+    [ProtoMember(10)]
+    decimal _amountPaid = 0; // Amount paid towards the reservation
+
+    /// <summary>
+    /// A list of payments made for the reservation.
+    /// </summary>
+    [ProtoMember(11)]
+    readonly List<Payment> _payments = new(); // List of payments made for the reservation
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Reservation"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Reservation"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Reservation()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Constructor to initialize a new reservation with essential details.
@@ -79,14 +156,18 @@ public class Reservation
     }
 
     /// <summary>
-    /// Gets the list of payments made towards the reservation.
+    /// Public getter and setter for the last assigned ID.
     /// </summary>
-    public IReadOnlyList<Payment> Payments => _payments.AsReadOnly();
+    public static int LastAssignedId
+    {
+        get => _lastReservationId;
+        set => _lastReservationId = value;
+    }
 
     /// <summary>
     /// Gets the Reservation ID.
     /// </summary>
-    public int ReservationId => _reservationId;
+    public int Id => _reservationId;
 
     /// <summary>
     /// Gets the Client ID associated with the reservation.
@@ -156,6 +237,11 @@ public class Reservation
         get => _amountPaid;
         set => _amountPaid = PaymentValidator.ValidatePayment(value);
     }
+
+    /// <summary>
+    /// Gets the list of payments made towards the reservation.
+    /// </summary>
+    public IReadOnlyList<Payment> Payments => _payments.AsReadOnly();
 
     /// <summary>
     /// Marks the reservation as checked in and updates the status to CheckedIn.

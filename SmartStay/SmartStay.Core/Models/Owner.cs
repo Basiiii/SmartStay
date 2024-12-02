@@ -10,6 +10,7 @@
 /// <date>07/10/2024</date>
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation.Validators;
 
@@ -25,20 +26,77 @@ namespace SmartStay.Core.Models
 /// accommodations. This class validates the provided data upon creation or when modifying specific properties, ensuring
 /// that all data is consistent and correct.
 /// </summary>
+[ProtoContract]
 public class Owner
 {
-    static int _lastOwnerId = 0; // Last assigned owner ID
-    static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() {
-        WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-    }; // JSON Serializer options
+    /// <summary>
+    /// The last assigned owner ID. This value is used to track the highest ID assigned to any owner.
+    /// </summary>
+    static int _lastOwnerId = 0;
 
-    readonly int _id;                                          // ID of the owner
-    string _firstName;                                         // First name of the owner
-    string _lastName;                                          // Last name of the owner
-    string _email;                                             // Email address of the owner
-    string _phoneNumber = string.Empty;                        // Phone number of the owner
-    string _address = string.Empty;                            // Address of the owner
+    /// <summary>
+    /// JSON serializer options used for formatting and escaping.
+    /// </summary>
+    static readonly JsonSerializerOptions _jsonOptions =
+        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+    /// <summary>
+    /// The unique ID of the owner. This field uniquely identifies each owner.
+    /// </summary>
+    [ProtoMember(1)]
+    readonly int _id; // ID of the owner
+
+    /// <summary>
+    /// The first name of the owner. This field stores the owner's first name.
+    /// </summary>
+    [ProtoMember(2)]
+    string _firstName; // First name of the owner
+
+    /// <summary>
+    /// The last name of the owner. This field stores the owner's last name.
+    /// </summary>
+    [ProtoMember(3)]
+    string _lastName; // Last name of the owner
+
+    /// <summary>
+    /// The email address of the owner. This field stores the owner's email.
+    /// </summary>
+    [ProtoMember(4)]
+    string _email; // Email address of the owner
+
+    /// <summary>
+    /// The phone number of the owner. This field stores the owner's phone number.
+    /// It is optional and can be left empty.
+    /// </summary>
+    [ProtoMember(5)]
+    string _phoneNumber = string.Empty; // Phone number of the owner
+
+    /// <summary>
+    /// The address of the owner. This field stores the owner's address.
+    /// It is optional and can be left empty.
+    /// </summary>
+    [ProtoMember(6)]
+    string _address = string.Empty; // Address of the owner
+
+    /// <summary>
+    /// The list of accommodations owned by the owner. This field stores the accommodations that the owner is associated
+    /// with.
+    /// </summary>
+    [ProtoMember(7)]
     readonly List<Accommodation> _accommodationsOwned = new(); // List of accommodations owned by the owner
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Owner"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Owner"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Owner()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Constructor to initialize a new owner with basic details: first name, last name, and email.
@@ -88,6 +146,15 @@ public class Owner
 
         _phoneNumber = phoneNumber;
         _address = address;
+    }
+
+    /// <summary>
+    /// Public getter and setter for the last assigned ID.
+    /// </summary>
+    public static int LastAssignedId
+    {
+        get => _lastOwnerId;
+        set => _lastOwnerId = value;
     }
 
     /// <summary>

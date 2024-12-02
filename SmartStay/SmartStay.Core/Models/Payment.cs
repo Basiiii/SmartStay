@@ -10,6 +10,7 @@
 /// <date>11/11/2024</date>
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
+using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation;
 using SmartStay.Validation.Validators;
@@ -23,17 +24,67 @@ namespace SmartStay.Core.Models
 /// <summary>
 /// Represents a payment made in the SmartStay system, with details such as amount, date, method, and status.
 /// </summary>
+[ProtoContract]
 public class Payment
 {
-    static int _lastPaymentId = 0;                                                       // Last assigned payment ID
-    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
+    /// <summary>
+    /// The last assigned payment ID, used for tracking the most recent payment ID.
+    /// </summary>
+    static int _lastPaymentId = 0;
 
-    readonly int _id;               // ID of the payment
-    readonly int _reservationId;    // ID of the reservation being paid
-    readonly decimal _amount;       // Amount of the payment
-    readonly DateTime _date;        // Date the payment was made
+    /// <summary>
+    /// JSON serializer options used for serializing the payment data.
+    /// </summary>
+    static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() { WriteIndented = true };
+
+    /// <summary>
+    /// The unique ID of the payment. This ID is used to identify the payment.
+    /// </summary>
+    [ProtoMember(1)]
+    readonly int _id; // ID of the payment
+
+    /// <summary>
+    /// The unique ID of the reservation for which the payment was made.
+    /// </summary>
+    [ProtoMember(2)]
+    readonly int _reservationId; // ID of the reservation being paid
+
+    /// <summary>
+    /// The amount paid in this payment transaction.
+    /// </summary>
+    [ProtoMember(3)]
+    readonly decimal _amount; // Amount of the payment
+
+    /// <summary>
+    /// The date the payment was made.
+    /// </summary>
+    [ProtoMember(4)]
+    readonly DateTime _date; // Date the payment was made
+
+    /// <summary>
+    /// The payment method used for the transaction (e.g., PayPal, Bank Transfer).
+    /// </summary>
+    [ProtoMember(5)]
     readonly PaymentMethod _method; // Payment Method used
-    PaymentStatus _status;          // Status of the payment
+
+    /// <summary>
+    /// The current status of the payment (e.g., Pending, Completed, Failed).
+    /// </summary>
+    [ProtoMember(6)]
+    PaymentStatus _status; // Status of the payment
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Payment"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Payment"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Payment()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Payment"/> class with specified details.
@@ -59,6 +110,15 @@ public class Payment
         _date = paymentDate;
         _method = paymentMethod;
         _status = paymentStatus;
+    }
+
+    /// <summary>
+    /// Public getter and setter for the last assigned ID.
+    /// </summary>
+    public static int LastAssignedId
+    {
+        get => _lastPaymentId;
+        set => _lastPaymentId = value;
     }
 
     /// <summary>

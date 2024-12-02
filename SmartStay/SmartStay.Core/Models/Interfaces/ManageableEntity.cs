@@ -1,7 +1,4 @@
-﻿
-using SmartStay.Common.Models;
-
-/// <copyright file="ManageableEntity.cs">
+﻿/// <copyright file="ManageableEntity.cs">
 /// Copyright (c) 2024 All Rights Reserved
 /// </copyright>
 /// <file>
@@ -20,6 +17,8 @@ using SmartStay.Common.Models;
 /// </summary>
 namespace SmartStay.Core.Models.Interfaces
 {
+using SmartStay.Common.Models;
+
 /// <summary>
 /// Defines the <see cref="IManageableEntity{T}" /> interface for managing a collection of entities
 /// of type <typeparamref name="T"/>. This interface standardizes methods for adding, removing,
@@ -53,5 +52,17 @@ public interface IManageableEntity<in T>
     /// </summary>
     /// <returns>A serialized string representing the collection of items.</returns>
     string Export();
+
+    /// <summary>
+    /// Saves the collection to a binary file.
+    /// </summary>
+    /// <param name="filePath">The file path to save the collection to.</param>
+    void Save(string filePath);
+
+    /// <summary>
+    /// Loads the collection from a binary file.
+    /// </summary>
+    /// <param name="filePath">The file path to load the collection from.</param>
+    void Load(string filePath);
 }
 }
