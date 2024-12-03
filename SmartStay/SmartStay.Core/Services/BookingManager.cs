@@ -46,6 +46,11 @@ public class BookingManager
     readonly ILogger<BookingManager> _logger;
 
     /// <summary>
+    /// Holds the collection of all owners in the system, stored in the <see cref="Owners"/> repository.
+    /// </summary>
+    internal readonly Owners _owners = new();
+
+    /// <summary>
     /// Holds the collection of all clients in the system, stored in the <see cref="Clients"/> repository.
     /// </summary>
     internal readonly Clients _clients = new();
@@ -59,11 +64,6 @@ public class BookingManager
     /// Holds the collection of all accommodations in the system, stored in the <see cref="Accommodations"/> repository.
     /// </summary>
     internal readonly Accommodations _accommodations = new();
-
-    /// <summary>
-    /// Holds the collection of all owners in the system, stored in the <see cref="Owners"/> repository.
-    /// </summary>
-    internal readonly Owners _owners = new();
 
 #endregion
 
@@ -109,6 +109,11 @@ public class BookingManager
 #region Accessors for Repositories
 
     /// <summary>
+    /// Exposes the `Owners` repository as a read-only property.
+    /// </summary>
+    public Owners Owners => _owners;
+
+    /// <summary>
     /// Exposes the `Clients` repository as a read-only property.
     /// </summary>
     public Clients Clients => _clients;
@@ -122,11 +127,6 @@ public class BookingManager
     /// Exposes the `Accommodations` repository as a read-only property.
     /// </summary>
     public Accommodations Accommodations => _accommodations;
-
-    /// <summary>
-    /// Exposes the `Owners` repository as a read-only property.
-    /// </summary>
-    public Owners Owners => _owners;
 
 #endregion
 

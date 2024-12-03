@@ -180,6 +180,15 @@ public class Client
     }
 
     /// <summary>
+    /// Public getter and setter for the last assigned ID.
+    /// </summary>
+    public static int LastAssignedId
+    {
+        get => _lastClientId;
+        set => _lastClientId = value;
+    }
+
+    /// <summary>
     /// Public getter for the user Id.
     /// </summary>
     public int Id => _id;

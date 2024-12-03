@@ -477,8 +477,10 @@ Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gest�
 \subsection{Contexto e Motivação}
 O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamentos, exigindo soluções que garantam agilidade, precisão e uma experiência satisfatória para os clientes. Este projeto visa desenvolver um sistema de gestão de alojamentos turísticos que permita a administração eficaz de registos de clientes, reservas e alojamentos. A implementação foi realizada em C\#, uma linguagem reconhecida pela sua robustez e flexibilidade, permitindo o desenvolvimento de aplicações escaláveis e eficientes.
 
-\subsection{Estrutura de Dados e Persistência}
-Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a  é gerida em formato JSON, facilitando a integração e manipulação das informações.
+\subsection{Estrutura de Dados e Persistência}  
+Para garantir um desempenho optimizado, o sistema utiliza dicionários como estruturas de dados principais, baseados em tabelas de hash, que proporcionam um acesso rápido e eficiente às informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção.  
+
+Adicionalmente, a persistência de dados é gerida em formato JSON, o que facilita a integração com outros sistemas e a manipulação dos dados de forma legível e estruturada. No entanto, para operações que exigem maior eficiência em termos de tempo de leitura/escrita, como guardar ou carregar rapidamente os dados sem necessidade de exportação ou importação, utilizamos o \textbf{protobuf-net} para serializar e desserializar os dados em formato binário. Esta abordagem combina a flexibilidade do JSON com a velocidade do formato binário, garantindo um equilíbrio entre interoperabilidade e desempenho.  
 
 \subsection{Boas Práticas de Programação}
 Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
@@ -501,6 +503,7 @@ A adoção de uma convenção de nomeação clara melhora a clareza do código. 
 	\item \textbf{Métodos}: \texttt{MethodName()}
 	\item \textbf{Propriedades}: \texttt{PropertyName}
 	\item \textbf{Variáveis de Instância e Locais}: \texttt{variableName}
+	\item \textbf{Variáveis privadas}: \texttt{\_variableName}
 	\item \textbf{Constantes}: \texttt{CONSTANT\_NAME}
 	\item \textbf{Parâmetros}: \texttt{parameterName}
 	\item \textbf{Enums}: \texttt{EnumName}
@@ -554,7 +557,59 @@ Utiliza-se \textit{XML Documentation Comments} para documentar o código, permit
 
 \subsection{Padrões de Design Utilizados}
 
+O sistema implementado segue princípios sólidos de engenharia de software, recorrendo a padrões de design bem estabelecidos para garantir uma arquitectura modular, reutilizável e fácil de manter. Dois dos principais padrões utilizados foram:
+
+\begin{itemize}
+	\item \textbf{MVC (Model-View-Controller)}: Este padrão foi utilizado para separar as preocupações do sistema. O backend implementa as regras de negócio e a manipulação de dados no modelo (Model), enquanto o frontend é responsável pela apresentação visual (View) e interage com o modelo através de controladores (Controllers). Este design melhora a organização do código e facilita a introdução de alterações numa camada sem impactar as outras.
+	
+	\item \textbf{Facade (Face)}: Uma classe face do sistema foi utilizada para simplificar e abstrair interações complexas entre diferentes componentes do sistema. Este padrão oferece uma interface simples e clara para funcionalidades comuns.
+\end{itemize}
+
+Estes padrões permitiram a divisão eficiente do código em duas camadas principais: backend e frontend, promovendo um design coeso e robusto.
+
 \subsection{Funções Lambda}
+
+O sistema também aproveita as funções lambda para simplificar a manipulação de coleções e propriedades. Estas expressões são frequentemente utilizadas para criar acessores e transformar coleções de forma concisa e eficiente. Seguem dois exemplos ilustrativos:
+
+\vspace*{15pt}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Getter e Setter com Função Lambda}, 
+	label={lst:lambdaGetterSetter}]
+public static int LastAssignedId
+{
+	get => _lastAccommodationId;
+	set => _lastAccommodationId = value;
+}
+\end{lstlisting}
+
+No exemplo acima, as expressões lambda proporcionam uma forma compacta e clara de definir os métodos de acesso para propriedades.
+
+Outro uso comum de funções lambda é na transformação de colecções:
+
+\vspace*{15pt}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Transformação de Colecções com Funções Lambda}, 
+	label={lst:lambdaTransformation}]
+var accommodationData = new 
+{ 
+	Id = _id, 
+	Type = _type.ToString(), 
+	Name = _name, 
+	Address = _address,
+	Rooms = _rooms.Select(room => new 
+	{
+		room.Id,
+		room.PricePerNight,
+		room.Type,
+	}) 
+};
+\end{lstlisting}
+
+Neste caso, as funções lambda são utilizadas em combinação com o método \texttt{Select} para transformar uma lista de quartos, criando um novo objecto para cada elemento com os atributos seleccionados.
+
+Estas utilizações ilustram como as funções lambda podem tornar o código mais legível e expressivo, reduzindo a necessidade de estruturas explícitas de loops.
 
 \newpage
 \section{Diagrama de Classes}
@@ -855,45 +910,56 @@ A utilização de códigos de erro e mensagens dinâmicas traz uma série de ben
 \section{Persistência de Dados com Ficheiros}
 \label{sec:persistenciadados}
 
-A persistência de dados é uma componente essencial para qualquer sistema de gestão de informações. No caso deste projeto, optei por utilizar ficheiros JSON para armazenar os dados do sistema, como clientes, acomodações e reservas. O formato JSON foi escolhido devido à sua popularidade em aplicações web, móveis e desktop, à facilidade de leitura e escrita e ao seu suporte em diversas linguagens de programação.
+A persistência de dados é uma componente essencial para qualquer sistema de gestão. No caso deste projeto, optou-se por utilizar ficheiros JSON para importar e exportar os dados, enquanto a persistência binária é feita utilizando \texttt{Protocol Buffers} (Protobuf). O formato JSON foi escolhido para a importação e exportação devido à sua popularidade e facilidade de uso, especialmente em aplicações web, móveis e desktop. Além disso, JSON é altamente legível, permitindo que os dados sejam facilmente manipulados e depurados.
 
-\subsection{Escolha do Formato de Armazenamento}
+Para a persistência binária, foi escolhido o \texttt{Protobuf}, em vez dos métodos tradicionais binários como o \texttt{BinaryFormatter}, que é obsoleto e apresenta vulnerabilidades de segurança. O \texttt{BinaryFormatter} tem riscos significativos na desserialização de dados, o que pode resultar em falhas de segurança, como execução remota de código. O \texttt{Protobuf}, por outro lado, oferece uma solução mais segura, eficiente e compacta para armazenar dados de forma binária. Além disso, é compatível com diversas linguagens e plataformas, o que facilita a integração com outros sistemas.
 
-Optou-se pelo formato JSON para persistir os dados devido a vários fatores:
-
-\begin{itemize}
-	\item \textbf{Simplicidade e Legibilidade}: O JSON é um formato de texto simples, que pode ser facilmente lido por humanos e máquinas. Isso facilita tanto a depuração durante o desenvolvimento quanto a análise de dados.
-	\item \textbf{Compatibilidade Universal}: O JSON é amplamente suportado por diversas plataformas e frameworks, tornando-o ideal para integração com sistemas externos e APIs.
-	\item \textbf{Estrutura Flexível}: O JSON oferece uma estrutura de dados hierárquica e facilmente extensível, o que é vantajoso para representar dados complexos como clientes, reservas e acomodações de forma clara e eficiente.
-	\item \textbf{Desempenho}: As bibliotecas modernas de manipulação de JSON são muito eficientes, permitindo uma rápida serialização e desserialização dos dados.
-\end{itemize}
+Portanto, enquanto o JSON é utilizado para a leitura e manipulação de dados de forma mais acessível, o \texttt{Protobuf} é usado para a gravação e carregamento eficiente de dados binários, garantindo melhor desempenho e menor tamanho de ficheiro. Este equilíbrio entre formatos textuais e binários permite que o sistema aproveite o melhor de ambos os mundos: a simplicidade e flexibilidade do JSON para operações de importação/exportação e a eficiência do \texttt{Protobuf} para persistência binária.
 
 \subsection{Importação e Exportação de Dados}
 
-Para garantir que os dados possam ser facilmente armazenados e recuperados de forma persistente, implementaram-se métodos para exportar e importar os dados para e a partir de JSON. A seguir, são apresentados os métodos utilizados para a importação e exportação da lista de clientes, com a mesma abordagem sendo aplicada para acomodações e reservas.
+Para garantir que os dados possam ser facilmente armazenados e recuperados de forma persistente, foram implementados métodos para exportar e importar os dados para e a partir de JSON, enquanto a persistência binária é feita utilizando \texttt{Protocol Buffers} (Protobuf). O Protobuf foi escolhido como alternativa ao tradicional formato binário, pois oferece vantagens em termos de eficiência e compactação de dados, além de ser mais moderno e amplamente suportado. 
+
+A seguir, são apresentados os métodos utilizados para a importação e exportação de dados no formato JSON, que é utilizado para facilitar a leitura e manipulação dos dados em formato textual. Já a persistência binária, voltada para a gravação e leitura de dados de forma mais eficiente e compacta, é realizada utilizando Protobuf. O uso do Protobuf, em vez dos formatos binários tradicionais, é uma escolha estratégica para garantir melhor desempenho, menor tamanho de arquivo e maior compatibilidade entre diferentes plataformas.
+
+A abordagem de importação e exportação é aplicada de maneira similar tanto para a lista de clientes, quanto para acomodações e reservas.
 
 \subsubsection{Importação de Dados}
 
-O método \texttt{Import} permite importar uma lista de clientes a partir de uma string JSON. Caso a string JSON seja inválida ou nula, são lançadas exceções específicas para garantir que os dados sejam válidos antes de serem inseridos na coleção. O código do método é o seguinte:
+O método \texttt{Import} permite importar uma lista de objetos a partir de uma string JSON. Caso a string JSON seja inválida ou nula, são lançadas exceções específicas para garantir que os dados sejam válidos antes de serem inseridos na coleção. O código seguinte apresenta um exemplo do método \textit{Import} dos clientes:
 
 \begin{lstlisting}[
 	language=csh, 
 	caption={Método Import para Importar Clientes}, 
 	label={lst:C}]
-public void Import(string data)
+public ImportResult Import(string data)
 {
 	if (string.IsNullOrEmpty(data))
 	{
 		throw new ArgumentException("Data cannot be null or empty", nameof(data));
 	}
 	
+	// Deserialize the data into a List<Client> instead of a single Client
 	var clients = JsonHelper.DeserializeFromJson<Client>(data) ??
 	throw new ArgumentException("Deserialized client data cannot be null", nameof(data));
 	
+	int replacedCount = 0;
+	int importedCount = 0;
+	
 	foreach (var client in clients)
 	{
-		_clientDictionary[client.Id] = client; // Inserção direta para maior eficiência
+		if (_clientDictionary.ContainsKey(client.Id))
+		{
+			replacedCount++;
+		}
+		else
+		{
+			importedCount++;
+		}
+		_clientDictionary[client.Id] = client; // Direct insertion for efficiency
 	}
+	
+	return new ImportResult { ImportedCount = importedCount, ReplacedCount = replacedCount };
 }
 \end{lstlisting}
 
@@ -902,11 +968,12 @@ No método \texttt{Import}, são realizadas as seguintes validações:
 	\item Se a string \texttt{data} for nula ou vazia, uma exceção \texttt{ArgumentException} é lançada.
 	\item A deserialização do JSON é realizada utilizando um método auxiliar (\texttt{DeserializeFromJson}), e, caso falhe, outra exceção \texttt{ArgumentException} é gerada.
 	\item Para cada cliente na lista importada, o cliente é adicionado ao dicionário \texttt{\_clientDictionary}, substituindo qualquer cliente existente com o mesmo ID.
+	\item O método \texttt{Import} retorna um objeto \texttt{ImportResult}, que contém a quantidade de clientes importados e substituídos, proporcionando informações úteis sobre o processo de importação.
 \end{itemize}
 
-\subsubsection{Exportação de Dados}
+\subsubsection{Exemplo de Exportação de Dados}
 
-O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada num ficheiro ou enviada para outros sistemas. A implementação do método é simples:
+O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada num ficheiro ou enviada para outros sistemas. O código do método é o seguinte:
 
 \begin{lstlisting}[
 	language=csh, 
@@ -919,6 +986,8 @@ public string Export()
 \end{lstlisting}
 
 O método \texttt{Export} converte os valores armazenados no dicionário \texttt{\_clientDictionary} numa string JSON utilizando o método auxiliar \texttt{SerializeToJson}. Se o dicionário estiver vazio, é retornada uma coleção vazia para garantir que o formato JSON seja válido.
+
+Neste método, os valores do dicionário \texttt{\_clientDictionary} são serializados diretamente para uma string JSON. O uso de \texttt{Enumerable.Empty<Client>()} garante que, caso não existam clientes no dicionário, uma lista vazia seja serializada, evitando problemas com a estrutura JSON.
 
 \subsection{Validação e Exceções na Persistência de Dados}
 
@@ -935,6 +1004,104 @@ Estas exceções permitem que o sistema lide com dados inválidos de forma contr
 \subsection{Considerações Finais sobre a Persistência de Dados}
 
 A escolha pelo formato JSON para persistência de dados oferece diversas vantagens em termos de simplicidade, flexibilidade e compatibilidade. A utilização de métodos de importação e exportação bem definidos, aliados ao tratamento de exceções para garantir a validade dos dados, proporciona um sistema robusto e fácil de manter. Além disso, a escolha de um formato de dados leve e amplamente suportado como o JSON garante que o sistema possa ser facilmente integrado a outras plataformas e serviços.
+
+\subsection{Persistência de Dados com Protobuf}
+
+Embora o formato JSON seja simples e eficaz, em alguns cenários, como sistemas com grandes volumes de dados ou requisitos de desempenho mais exigentes, pode ser vantajoso utilizar um formato binário mais compacto e eficiente. Nesse contexto, o \texttt{Protocol Buffers} (Protobuf) se apresenta como uma alternativa poderosa.
+
+Protobuf é um formato binário de serialização de dados desenvolvido pelo Google, que permite uma codificação e decodificação mais rápida e compacta do que o JSON. Ao contrário do JSON, que é um formato de texto, o Protobuf armazena os dados de forma binária, o que reduz o tamanho do arquivo e melhora o desempenho em operações de leitura e escrita, especialmente quando lidamos com grandes volumes de dados.
+
+\subsubsection{Vantagens do Protobuf}
+
+O uso do Protobuf para persistência de dados oferece várias vantagens:
+\begin{itemize}
+	\item \textbf{Eficiência de Espaço}: Como o Protobuf é um formato binário, ele é muito mais compacto em comparação ao JSON, o que resulta em menos uso de espaço de armazenamento.
+	\item \textbf{Desempenho Superior}: O Protobuf oferece tempos de leitura e escrita mais rápidos devido à sua natureza binária, tornando-o adequado para sistemas com alto tráfego de dados.
+	\item \textbf{Compatibilidade entre Linguagens}: O Protobuf é suportado por uma ampla gama de linguagens de programação, facilitando a integração entre sistemas escritos em diferentes linguagens.
+	\item \textbf{Versatilidade}: O Protobuf oferece suporte para esquemas evolutivos, permitindo adicionar novos campos aos dados sem quebrar a compatibilidade com versões anteriores.
+\end{itemize}
+
+\subsubsection{Importação e Exportação de Dados com Protobuf}
+
+Para integrar o Protobuf à persistência de dados, os dados são convertidos para o formato binário utilizando os métodos de serialização e desserialização do Protobuf. O código a seguir mostra como importar e exportar dados de clientes usando Protobuf.
+
+\paragraph{Importação de Dados com Protobuf}
+
+O método \texttt{ImportProtobuf} permite importar uma lista de clientes a partir de um arquivo binário Protobuf. Caso o arquivo seja inválido ou os dados não possam ser desserializados, são lançadas exceções específicas.
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Método Import para Importar Clientes com Protobuf}, 
+	label={lst:protobuf-import}]
+public void ImportProtobuf(string filePath)
+{
+	if (string.IsNullOrEmpty(filePath))
+	{
+		throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
+	}
+	
+	byte[] data = File.ReadAllBytes(filePath);
+	
+	try
+	{
+		var clients = ProtobufHelper.DeserializeFromProtobuf<List<Client>>(data);
+		foreach (var client in clients)
+		{
+			_clientDictionary[client.Id] = client;
+		}
+	}
+	catch (Exception ex)
+	{
+		throw new InvalidOperationException("Failed to deserialize Protobuf data", ex);
+	}
+}
+\end{lstlisting}
+
+O método \texttt{ImportProtobuf} realiza as seguintes operações:
+\begin{itemize}
+	\item Verifica se o caminho do arquivo fornecido é válido.
+	\item Lê os bytes do arquivo binário e tenta desserializar os dados usando o método auxiliar \texttt{DeserializeFromProtobuf}.
+	\item Para cada cliente deserializado, o cliente é adicionado ao dicionário \texttt{\_clientDictionary}.
+\end{itemize}
+
+\paragraph{Exportação de Dados com Protobuf}
+
+O método \texttt{ExportProtobuf} permite exportar a lista de clientes para um arquivo binário Protobuf. O código a seguir mostra como implementar essa funcionalidade.
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Método Export para Exportar Clientes com Protobuf},
+	label={lst:C}]
+	public void ExportProtobuf(string filePath)
+	{
+		var clients = _clientDictionary.Values.ToList();
+		byte[] data = ProtobufHelper.SerializeToProtobuf(clients);
+		
+		File.WriteAllBytes(filePath, data);
+	}
+\end{lstlisting}
+
+O método \texttt{ExportProtobuf} realiza as seguintes operações:
+\begin{itemize}
+	\item Converte a lista de clientes do dicionário \texttt{\_clientDictionary} em um formato adequado para serialização.
+	\item Serializa os dados usando o método auxiliar \texttt{SerializeToProtobuf}.
+	\item Escreve os dados serializados no arquivo especificado.
+\end{itemize}
+
+\subsubsection{Tratamento de Exceções na Persistência com Protobuf}
+
+Assim como no caso do JSON, é importante tratar as exceções adequadas durante a importação e exportação de dados com Protobuf. As exceções mais comuns são:
+\begin{itemize}
+	\item \textbf{ArgumentException}: Lançada quando o caminho do arquivo fornecido é nulo ou vazio.
+	\item \textbf{InvalidOperationException}: Lançada quando ocorre um erro ao tentar ler ou escrever os dados no formato Protobuf, como falha na desserialização ou serialização.
+	\item \textbf{FileNotFoundException}: Lançada quando o arquivo especificado não é encontrado durante a leitura.
+\end{itemize}
+
+Essas exceções garantem que qualquer erro no processo de leitura ou escrita dos dados seja tratado de forma controlada.
+
+\subsection{Considerações Finais sobre o Uso do Protobuf}
+
+O uso do Protobuf para persistência de dados pode ser uma excelente escolha em cenários que exigem maior eficiência de desempenho e menor uso de espaço. Embora o formato binário possa ser mais difícil de depurar em comparação ao JSON, ele oferece vantagens consideráveis em termos de desempenho e escalabilidade, tornando-o ideal para aplicações de grande escala ou sistemas distribuídos. A integração do Protobuf à persistência de dados, juntamente com a validação e tratamento de exceções, permite criar um sistema robusto, eficiente e escalável.
 
 \newpage
 \section{Testes Unitários}
