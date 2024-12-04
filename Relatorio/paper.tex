@@ -1299,7 +1299,7 @@ A escolha do \texttt{xUnit} foi motivada pela sua popularidade na comunidade .NE
 
 \begin{lstlisting}[
 	language=csh, 
-	caption={Teste do Construtor da Classe \texttt{Client}},
+	caption={Teste do Construtor da Classe Client},
 	label={lst:client-constructor-test}]
 [Fact]
 public void Constructor_ValidParameters_InitializesClient()
@@ -1406,6 +1406,59 @@ builder.Services.AddSingleton<BookingManager>();
 Ao adicionar o \texttt{BookingManager} como um serviço singleton no container de DI, a aplicação garante que uma única instância da classe \texttt{BookingManager} seja criada e utilizada durante toda a execução da aplicação. Isto permite que o Razor tenha acesso às regras de negócio necessárias para processar as reservas, sem a necessidade de criar novas instâncias do \texttt{BookingManager} diretamente nas páginas Razor.
 
 Esta abordagem facilita a gestão de dependências e contribui para uma maior organização e flexibilidade no código. Além disso, a injeção de dependências torna a aplicação mais fácil de testar, uma vez que podemos simular ou substituir as dependências nas classes de teste.
+
+\subsection{Uso de Tailwind CSS e Flowbite}
+
+Uma das escolhas importantes no desenvolvimento da interface do utilizador foi a substituição do \texttt{Bootstrap} pelo \texttt{Tailwind CSS}, uma framework de CSS altamente personalizável. A principal razão para esta escolha foi a flexibilidade que o \texttt{Tailwind} oferece em comparação com o \texttt{Bootstrap}, permitindo um controlo muito mais preciso sobre o design e estilo da aplicação. 
+
+Enquanto o \texttt{Bootstrap} fornece um conjunto de componentes predefinidos com um estilo determinado, o \texttt{Tailwind} permite que se defina cada parte do layout utilizando uma abordagem de \textit{utility-first}. Com \texttt{Tailwind}, podemos aplicar classes utilitárias diretamente aos elementos HTML, o que resulta em código mais conciso e altamente configurável. Esta abordagem ajuda a evitar o uso excessivo de classes personalizadas e reduz a necessidade de escrever CSS adicional, tornando o processo de estilização mais ágil e eficiente.
+
+\subsubsection{Integração com Flowbite}
+
+Embora o \texttt{Tailwind CSS} forneça uma base sólida para a construção da interface, optei por integrar o \texttt{Flowbite}, uma biblioteca de componentes construídos em cima do \texttt{Tailwind}, para acelerar ainda mais o desenvolvimento. O \texttt{Flowbite} oferece uma série de componentes prontos para uso, como botões, modais, tabelas, menus de navegação e muito mais, todos desenhados para se integrarem perfeitamente com o \texttt{Tailwind}. 
+
+O uso do \texttt{Flowbite} não só poupou tempo no desenvolvimento, mas também garantiu que a interface tivesse um design moderno e funcional, com componentes que seguem as melhores práticas de design responsivo e acessibilidade. Além disso, como o \texttt{Flowbite} é construído em cima do \texttt{Tailwind}, não houve conflito entre os estilos e foi fácil de personalizar os componentes conforme as necessidades do projeto.
+
+Para integrar o \texttt{Flowbite} com o projeto, foi necessário instalar a biblioteca e configurá-la no ficheiro de recursos do projeto. O processo de instalação foi simples e envolveu a adição do \texttt{Flowbite} através de \texttt{npm}. Abaixo está um exemplo de como a integração foi realizada no ficheiro \_Layout.cshtml:
+
+\begin{lstlisting}[
+	language=html, 
+	caption={Integração do Flowbite},
+	label={lst:flowbite-integration}]
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<base href="~/" />
+	<link href="~/css/app.min.css" rel="stylesheet" />
+	<link href="SmartStay.App.styles.css" rel="stylesheet" />
+	<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+</head>
+<body>
+	@RenderBody()
+	
+	<div id="blazor-error-ui">
+		<environment include="Staging,Production">
+		An error has occurred. This application may no longer respond until reloaded.
+		</environment>
+		<environment include="Development">
+		An unhandled exception has occurred. See browser dev tools for details.
+		</environment>
+		<a href="" class="reload">Reload</a>
+		<a class="dismiss">X</a>
+	</div>
+	
+	<script src="_framework/blazor.server.js"></script>
+	<script 
+	src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js">
+	</script>
+</body>
+</html>
+\end{lstlisting}
+
+Com esta integração, foi possível melhorar a experiência do utilizador e otimizar o tempo de desenvolvimento, aproveitando os componentes de UI prontos do \texttt{Flowbite} enquanto ainda mantinha a flexibilidade do \texttt{Tailwind}.
 
 \newpage
 \section{Conclusão}
