@@ -10,8 +10,10 @@
 /// <date>07/10/2024</date>
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ProtoBuf;
 using SmartStay.Common.Enums;
+using SmartStay.Core.Repositories;
 using SmartStay.Validation.Validators;
 
 /// <summary>
@@ -36,12 +38,20 @@ public class Client
     static int _lastClientId = 0; // Last assigned client ID
 
     /// <summary>
-    /// JSON Serializer options used for formatting client data in JSON (for example, write-indented for readability),
-    /// and allowing unsafe characters in the JSON string (such as `<>`).
+    /// JSON serializer options used for formatting and serializing client data in JSON.
+    /// <para>
+    /// - <see cref="WriteIndented"/> is enabled to improve readability with indented formatting.
+    /// - <see cref="Encoder"/> is set to <see cref="JavaScriptEncoder.UnsafeRelaxedJsonEscaping"/> to allow unsafe
+    /// characters
+    ///   (such as `<`, `>`, and other special characters) to be included without escaping.
+    /// - <see cref="Converters"/> contains a <see cref="JsonStringEnumConverter"/> to serialize enum values as their
+    /// string names
+    ///   instead of integer values.
+    /// </para>
     /// </summary>
-    static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() {
-        WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-    }; // JSON Serializer options
+    static readonly JsonSerializerOptions _jsonOptions =
+        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                                      Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique identifier for this client. This ID is used to distinguish one client from another.
@@ -180,12 +190,46 @@ public class Client
     }
 
     /// <summary>
+    /// Constructor to initialize a new <see cref="Client"/> with all details, including a manually specified ID,
+    /// first name, last name, email, phone number, address, and preferred payment method. <b>This constructor should be
+    /// avoided in normal cases</b> as it allows manual assignment of the client ID, which can lead to conflicts and
+    /// issues with ID uniqueness. The system is designed to automatically handle unique ID assignment, and using other
+    /// constructors is recommended for creating client objects to ensure proper handling of IDs. <br/>This constructor
+    /// is marked with <see cref="[JsonConstructor]"/> so it will be used for JSON deserialization purposes, but it
+    /// should not be used when creating new client objects manually.
+    /// </summary>
+    /// <param name="id">The manually specified ID of the client. This should not be used under normal circumstances as
+    /// the system handles ID assignment automatically.</param>
+    /// <param name="firstName">The first name of the client.</param>
+    /// <param name="lastName">The last name of the client.</param>
+    /// <param name="email">The email address of the client.</param>
+    /// <param name="phoneNumber">The phone number of the client.</param>
+    /// <param name="address">The residential address of the client.</param>
+    /// <param name="preferredPaymentMethod">The preferred payment method of the client.</param>
+    [JsonConstructor]
+    public Client(int id, string firstName, string lastName, string email, string phoneNumber, string address,
+                  PaymentMethod preferredPaymentMethod)
+    {
+        _id = id;
+        UpdateLastClientId(id);
+        _firstName = firstName;
+        _lastName = lastName;
+        _email = email;
+        _phoneNumber = phoneNumber;
+        _address = address;
+        _preferredPaymentMethod = preferredPaymentMethod;
+    }
+
+    /// <summary>
     /// Public getter and setter for the last assigned ID.
     /// </summary>
     public static int LastAssignedId
     {
         get => _lastClientId;
-        set => _lastClientId = value;
+        set {
+            if (_lastClientId < value)
+                _lastClientId = value;
+        }
     }
 
     /// <summary>
@@ -267,6 +311,18 @@ public class Client
         }
 
         return Interlocked.Increment(ref _lastClientId);
+    }
+
+    /// <summary>
+    /// Method to ensure _lastClientId is up-to-date after deserialization or manual assignment
+    /// </summary>
+    /// <param name="id">Manually given ID</param>
+    private static void UpdateLastClientId(int id)
+    {
+        if (id > _lastClientId)
+        {
+            _lastClientId = id; // Update the last assigned client ID if the new ID is larger
+        }
     }
 
     /// <summary>

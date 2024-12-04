@@ -8,7 +8,9 @@
 /// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation;
@@ -34,10 +36,20 @@ public class Accommodation
     static int _lastAccommodationId = 0; // Last assigned accommodation ID
 
     /// <summary>
-    /// JSON Serializer options used for formatting accommodation data in JSON (for example, write-indented for
-    /// readability).
+    /// JSON serializer options used for formatting and serializing client data in JSON.
+    /// <para>
+    /// - <see cref="WriteIndented"/> is enabled to improve readability with indented formatting.
+    /// - <see cref="Encoder"/> is set to <see cref="JavaScriptEncoder.UnsafeRelaxedJsonEscaping"/> to allow unsafe
+    /// characters
+    ///   (such as `<`, `>`, and other special characters) to be included without escaping.
+    /// - <see cref="Converters"/> contains a <see cref="JsonStringEnumConverter"/> to serialize enum values as their
+    /// string names
+    ///   instead of integer values.
+    /// </para>
     /// </summary>
-    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
+    static readonly JsonSerializerOptions _jsonOptions =
+        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                                      Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique identifier for this accommodation. This ID is used to distinguish one accommodation from another.
@@ -122,12 +134,47 @@ public class Accommodation
     }
 
     /// <summary>
+    /// Constructor to initialize a new <see cref="Accommodation"/> with all details, including a manually specified ID,
+    /// owner ID, type, name, address, and list of rooms. <b>This constructor should be avoided in normal cases</b> as
+    /// it allows manual assignment of the accommodation ID, which can lead to conflicts and issues with ID uniqueness.
+    /// The system is designed to automatically handle unique ID assignment, and using other constructors is recommended
+    /// for creating accommodation objects to ensure proper handling of IDs. <br/>This constructor is marked with <see
+    /// cref="[JsonConstructor]"/> so it will be used for JSON deserialization purposes, but it should not be used when
+    /// creating new accommodation objects manually.
+    /// </summary>
+    /// <param name="id">The manually specified ID of the accommodation. This should not be used under normal
+    /// circumstances as the system handles ID assignment automatically.</param>
+    /// <param name="ownerId">The ID of the
+    /// owner of the accommodation.</param>
+    /// <param name="type">The type of accommodation (e.g., hotel, apartment,
+    /// etc.).</param>
+    /// <param name="name">The name of the accommodation.</param>
+    /// <param name="address">The residential
+    /// address of the accommodation.</param>
+    /// <param name="rooms">The list of rooms available in the
+    /// accommodation.</param>
+    [JsonConstructor]
+    public Accommodation(int id, int ownerId, AccommodationType type, string name, string address, List<Room> rooms)
+    {
+        _id = id;
+        UpdateLastAccommodationId(id);
+        _ownerId = ownerId;
+        _type = type;
+        _name = name;
+        _address = address;
+        _rooms = rooms;
+    }
+
+    /// <summary>
     /// Public getter and setter for the last assigned ID.
     /// </summary>
     public static int LastAssignedId
     {
         get => _lastAccommodationId;
-        set => _lastAccommodationId = value;
+        set {
+            if (_lastAccommodationId < value)
+                _lastAccommodationId = value;
+        }
     }
 
     /// <summary>
@@ -172,18 +219,9 @@ public class Accommodation
     }
 
     /// <summary>
-    /// Public getter and setter for the list of rooms in the accommodation.
+    /// Public getter for the list of rooms in the accommodation.
     /// </summary>
-    public List<Room> Rooms
-    {
-        get => _rooms;
-        set => _rooms = value;
-    }
-
-    /// <summary>
-    /// Gets the total number of rooms in the accommodation.
-    /// </summary>
-    public int TotalRooms => Rooms.Count;
+    public List<Room> Rooms => _rooms;
 
     /// <summary>
     /// Finds and returns a room from the accommodation by its room ID.
@@ -192,7 +230,41 @@ public class Accommodation
     /// <returns>The room with the specified ID, or null if not found.</returns>
     public Room? FindRoomById(int roomId)
     {
-        return Rooms.Find(room => room.Id == roomId);
+        return _rooms.Find(room => room.Id == roomId);
+    }
+
+    /// <summary>
+    /// Adds a new room to the accommodation.
+    /// </summary>
+    /// <param name="room">The <see cref="Room"/> object to be added to the accommodation's room list.</param>
+    /// <returns>true if the room was added successfully; otherwise, false.</returns>
+    public bool AddRoom(Room room)
+    {
+        if (room == null)
+        {
+            return false; // If the room is null, return false
+        }
+
+        _rooms.Add(room);
+        return true; // Successfully added the room
+    }
+
+    /// <summary>
+    /// Deletes a room from the accommodation's room list.
+    /// </summary>
+    /// <param name="roomId">The ID of the <see cref="Room"/> to be removed from the accommodation.</param>
+    /// <returns>true if the room was found and removed; otherwise, false.</returns>
+    public bool DeleteRoom(int roomId)
+    {
+        var roomToDelete = _rooms.Find(r => r.Id == roomId);
+
+        if (roomToDelete == null)
+        {
+            return false; // Return false if the room with the given ID is not found
+        }
+
+        _rooms.Remove(roomToDelete);
+        return true; // Successfully removed the room
     }
 
     /// <summary>
@@ -209,6 +281,18 @@ public class Accommodation
         }
 
         return Interlocked.Increment(ref _lastAccommodationId);
+    }
+
+    /// <summary>
+    /// Method to ensure _lastAccommodationId is up-to-date after deserialization or manual assignment
+    /// </summary>
+    /// <param name="id">Manually given ID</param>
+    private static void UpdateLastAccommodationId(int id)
+    {
+        if (id > _lastAccommodationId)
+        {
+            _lastAccommodationId = id; // Update the last assigned client ID if the new ID is larger
+        }
     }
 
     /// <summary>

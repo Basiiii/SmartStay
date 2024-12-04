@@ -9,7 +9,9 @@
 /// <author>Enrique Rodrigues</author>
 /// <date>11/11/2024</date>
 using System.ComponentModel.DataAnnotations;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Validation;
@@ -33,9 +35,20 @@ public class Payment
     static int _lastPaymentId = 0;
 
     /// <summary>
-    /// JSON serializer options used for serializing the payment data.
+    /// JSON serializer options used for formatting and serializing client data in JSON.
+    /// <para>
+    /// - <see cref="WriteIndented"/> is enabled to improve readability with indented formatting.
+    /// - <see cref="Encoder"/> is set to <see cref="JavaScriptEncoder.UnsafeRelaxedJsonEscaping"/> to allow unsafe
+    /// characters
+    ///   (such as `<`, `>`, and other special characters) to be included without escaping.
+    /// - <see cref="Converters"/> contains a <see cref="JsonStringEnumConverter"/> to serialize enum values as their
+    /// string names
+    ///   instead of integer values.
+    /// </para>
     /// </summary>
-    static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions() { WriteIndented = true };
+    static readonly JsonSerializerOptions _jsonOptions =
+        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                                      Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique ID of the payment. This ID is used to identify the payment.
@@ -47,25 +60,25 @@ public class Payment
     /// The unique ID of the reservation for which the payment was made.
     /// </summary>
     [ProtoMember(2)]
-    readonly int _reservationId; // ID of the reservation being paid
+    int _reservationId; // ID of the reservation being paid
 
     /// <summary>
     /// The amount paid in this payment transaction.
     /// </summary>
     [ProtoMember(3)]
-    readonly decimal _amount; // Amount of the payment
+    decimal _amount; // Amount of the payment
 
     /// <summary>
     /// The date the payment was made.
     /// </summary>
     [ProtoMember(4)]
-    readonly DateTime _date; // Date the payment was made
+    DateTime _date; // Date the payment was made
 
     /// <summary>
     /// The payment method used for the transaction (e.g., PayPal, Bank Transfer).
     /// </summary>
     [ProtoMember(5)]
-    readonly PaymentMethod _method; // Payment Method used
+    PaymentMethod _method; // Payment Method used
 
     /// <summary>
     /// The current status of the payment (e.g., Pending, Completed, Failed).
@@ -113,12 +126,43 @@ public class Payment
     }
 
     /// <summary>
+    /// Constructor to initialize a new <see cref="Payment"/> with all details, including a manually specified ID,
+    /// reservation ID, amount, date, payment method, and payment status. <b>This constructor should be avoided in
+    /// normal cases</b> as it allows manual assignment of the payment ID, which can lead to conflicts and issues with
+    /// ID uniqueness. The system is designed to automatically handle unique ID assignment, and other constructors
+    /// should be used for creating payment objects to ensure proper handling of IDs. <br/>This constructor is marked
+    /// with <see cref="[JsonConstructor]"/> so it will be used for JSON deserialization purposes, but it should not be
+    /// used when creating new payment objects manually.
+    /// </summary>
+    /// <param name="id">The manually specified ID of the payment. This should not be used under normal circumstances as
+    /// the system handles ID assignment automatically.</param>
+    /// <param name="reservationId">The ID of the reservation associated with the payment.</param>
+    /// <param name="amount">The amount paid for the reservation.</param>
+    /// <param name="date">The date when the payment was made.</param>
+    /// <param name="method">The payment method used for the transaction.</param>
+    /// <param name="status">The status of the payment (e.g., Pending, Completed, Failed).</param>
+    [JsonConstructor]
+    public Payment(int id, int reservationId, decimal amount, DateTime date, PaymentMethod method, PaymentStatus status)
+    {
+        _id = id;
+        UpdateLastPaymentId(id);
+        _reservationId = reservationId;
+        _amount = amount;
+        _date = date;
+        _method = method;
+        _status = status;
+    }
+
+    /// <summary>
     /// Public getter and setter for the last assigned ID.
     /// </summary>
     public static int LastAssignedId
     {
         get => _lastPaymentId;
-        set => _lastPaymentId = value;
+        set {
+            if (_lastPaymentId < value)
+                _lastPaymentId = value;
+        }
     }
 
     /// <summary>
@@ -142,7 +186,7 @@ public class Payment
     public DateTime Date => _date;
 
     /// <summary>
-    /// Gets the method used for the payment (e.g., Credit Card, Bank Transfer).
+    /// Gets the method used for the payment (e.g., PayPal, Bank Transfer).
     /// </summary>
     public PaymentMethod Method => _method;
 
@@ -174,6 +218,18 @@ public class Payment
         }
 
         return Interlocked.Increment(ref _lastPaymentId);
+    }
+
+    /// <summary>
+    /// Method to ensure _lastPaymentId is up-to-date after deserialization or manual assignment.
+    /// </summary>
+    /// <param name="id">Manually given ID.</param>
+    private static void UpdateLastPaymentId(int id)
+    {
+        if (id > _lastPaymentId)
+        {
+            _lastPaymentId = id; // Update the last assigned owner ID if the new ID is larger
+        }
     }
 
     /// <summary>

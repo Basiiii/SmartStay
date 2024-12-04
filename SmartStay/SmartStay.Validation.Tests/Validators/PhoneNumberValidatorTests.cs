@@ -32,7 +32,7 @@ public class PhoneNumberValidatorTests
     public void ValidatePhoneNumber_ValidPhoneNumber_ReturnsPhoneNumber()
     {
         // Arrange
-        string validPhoneNumber = "+1234567890";
+        string validPhoneNumber = "+351777888999";
 
         // Act
         var result = PhoneNumberValidator.ValidatePhoneNumber(validPhoneNumber);

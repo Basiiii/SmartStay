@@ -81,31 +81,6 @@ public class BookingManager
 
 #endregion
 
-#region Helper Functions
-
-    /// <summary>
-    /// Helper function to set a field's value if it is not the default value.
-    /// </summary>
-    /// <typeparam name="T">The type of the field (e.g., string, PaymentMethod).</typeparam>
-    /// <param name="fieldValue">The value to set for the field.</param>
-    /// <param name="defaultValue">The default value (e.g., empty string or PaymentMethod.Unchanged).</param>
-    /// <param name="setterAction">The action to set the field if the value is not default.</param>
-    public void SetField<T>(T fieldValue, T defaultValue, Action<T> setterAction)
-    {
-        // Only set the field if the value is not the default value
-        if (!EqualityComparer<T>.Default.Equals(fieldValue, defaultValue))
-        {
-            setterAction(fieldValue); // Call the setter action with the field value
-            _logger.LogInformation("Field set to {FieldValue}.", fieldValue); // Log the field change
-        }
-        else
-        {
-            _logger.LogInformation($"Field value is unchanged, remaining as default.");
-        }
-    }
-
-#endregion
-
 #region Accessors for Repositories
 
     /// <summary>
@@ -127,6 +102,31 @@ public class BookingManager
     /// Exposes the `Accommodations` repository as a read-only property.
     /// </summary>
     public Accommodations Accommodations => _accommodations;
+
+#endregion
+
+#region Helper Functions
+
+    /// <summary>
+    /// Helper function to set a field's value if it is not the default value.
+    /// </summary>
+    /// <typeparam name="T">The type of the field (e.g., string, PaymentMethod).</typeparam>
+    /// <param name="fieldValue">The value to set for the field.</param>
+    /// <param name="defaultValue">The default value (e.g., empty string or PaymentMethod.Unchanged).</param>
+    /// <param name="setterAction">The action to set the field if the value is not default.</param>
+    private void SetField<T>(T fieldValue, T defaultValue, Action<T> setterAction)
+    {
+        // Only set the field if the value is not the default value
+        if (!EqualityComparer<T>.Default.Equals(fieldValue, defaultValue))
+        {
+            setterAction(fieldValue); // Call the setter action with the field value
+            _logger.LogInformation("Field set to {FieldValue}.", fieldValue); // Log the field change
+        }
+        else
+        {
+            _logger.LogInformation($"Field value is unchanged, remaining as default.");
+        }
+    }
 
 #endregion
 
@@ -334,8 +334,8 @@ public class BookingManager
     /// If any of the fields fail validation, the corresponding error code is returned. If all validations pass,
     /// the client details are updated, and <see cref="UpdateClientResult.Success"/> is returned.
     /// </remarks>
-    public UpdateClientResult UpdateClient(int clientId, string firstName = "", string lastName = "", string email = "",
-                                           string phoneNumber = "", string address = "",
+    public UpdateClientResult UpdateClient(int clientId, string firstName = null, string lastName = null,
+                                           string email = null, string phoneNumber = null, string address = null,
                                            PaymentMethod paymentMethod = PaymentMethod.Unchanged)
     {
         _logger.LogInformation("Attempting to update client with ID: {ClientId}.", clientId);
@@ -348,38 +348,39 @@ public class BookingManager
             return UpdateClientResult.ClientNotFound;
         }
 
-        // Validate information before updating
-        if (!Validation.Validators.NameValidator.IsValidName(firstName))
+        // Validate information before updating (only if not null or default value)
+        if (firstName != null && !Validation.Validators.NameValidator.IsValidName(firstName))
         {
             _logger.LogError("Invalid first name provided for client ID: {ClientId}.", clientId);
             return UpdateClientResult.InvalidFirstName;
         }
 
-        if (!Validation.Validators.NameValidator.IsValidName(lastName))
+        if (lastName != null && !Validation.Validators.NameValidator.IsValidName(lastName))
         {
             _logger.LogError("Invalid last name provided for client ID: {ClientId}.", clientId);
             return UpdateClientResult.InvalidLastName;
         }
 
-        if (!Validation.Validators.EmailValidator.IsValidEmail(email))
+        if (email != null && !Validation.Validators.EmailValidator.IsValidEmail(email))
         {
             _logger.LogError("Invalid email provided for client ID: {ClientId}.", clientId);
             return UpdateClientResult.InvalidEmail;
         }
 
-        if (!Validation.Validators.PhoneNumberValidator.IsValidPhoneNumber(phoneNumber))
+        if (phoneNumber != null && !Validation.Validators.PhoneNumberValidator.IsValidPhoneNumber(phoneNumber))
         {
             _logger.LogError("Invalid phone number provided for client ID: {ClientId}.", clientId);
             return UpdateClientResult.InvalidPhoneNumber;
         }
 
-        if (!Validation.Validators.AddressValidator.IsValidAddress(address))
+        if (address != null && !Validation.Validators.AddressValidator.IsValidAddress(address))
         {
             _logger.LogError("Invalid address provided for client ID: {ClientId}.", clientId);
             return UpdateClientResult.InvalidAddress;
         }
 
-        if (!Validation.Validators.PaymentValidator.IsValidPaymentMethod(paymentMethod))
+        if (paymentMethod != PaymentMethod.Unchanged &&
+            !Validation.Validators.PaymentValidator.IsValidPaymentMethod(paymentMethod))
         {
             _logger.LogError("Invalid payment method provided for client ID: {ClientId}.", clientId);
             return UpdateClientResult.InvalidPaymentMethod;
@@ -388,13 +389,43 @@ public class BookingManager
         // Log success before updating
         _logger.LogInformation("Validations passed. Updating details for client ID: {ClientId}.", clientId);
 
-        // Update client information with given fields
-        SetField(firstName, "", value => client.FirstName = value);
-        SetField(lastName, "", value => client.LastName = value);
-        SetField(email, "", value => client.Email = value);
-        SetField(phoneNumber, "", value => client.PhoneNumber = value);
-        SetField(address, "", value => client.Address = value);
-        SetField(paymentMethod, PaymentMethod.Unchanged, value => client.PreferredPaymentMethod = value);
+        // Update client information with given fields, if not null or default
+        SetField(firstName, null,
+                 value =>
+                 {
+                     if (firstName != null)
+                         client.FirstName = value;
+                 });
+        SetField(lastName, null,
+                 value =>
+                 {
+                     if (lastName != null)
+                         client.LastName = value;
+                 });
+        SetField(email, null,
+                 value =>
+                 {
+                     if (email != null)
+                         client.Email = value;
+                 });
+        SetField(phoneNumber, null,
+                 value =>
+                 {
+                     if (phoneNumber != null)
+                         client.PhoneNumber = value;
+                 });
+        SetField(address, null,
+                 value =>
+                 {
+                     if (address != null)
+                         client.Address = value;
+                 });
+        SetField(paymentMethod, PaymentMethod.Unchanged,
+                 value =>
+                 {
+                     if (paymentMethod != PaymentMethod.Unchanged)
+                         client.PreferredPaymentMethod = value;
+                 });
 
         _logger.LogInformation("Successfully updated client details for client ID: {ClientId}.", clientId);
 
@@ -569,8 +600,8 @@ public class BookingManager
     /// If any of the fields fail validation, the corresponding error code is returned. If all validations pass,
     /// the owner details are updated, and <see cref="UpdateOwnerResult.Success"/> is returned.
     /// </remarks>
-    public UpdateOwnerResult UpdateOwner(int ownerId, string firstName = "", string lastName = "", string email = "",
-                                         string phoneNumber = "", string address = "")
+    public UpdateOwnerResult UpdateOwner(int ownerId, string firstName = null, string lastName = null,
+                                         string email = null, string phoneNumber = null, string address = null)
     {
         _logger.LogInformation("Attempting to update owner with ID: {OwnerId}.", ownerId);
 
@@ -582,32 +613,32 @@ public class BookingManager
             return UpdateOwnerResult.OwnerNotFound;
         }
 
-        // Validate information before updating
-        if (!Validation.Validators.NameValidator.IsValidName(firstName))
+        // Validate information before updating (only if not null)
+        if (firstName != null && !Validation.Validators.NameValidator.IsValidName(firstName))
         {
             _logger.LogError("Invalid first name provided for owner ID: {OwnerId}.", ownerId);
             return UpdateOwnerResult.InvalidFirstName;
         }
 
-        if (!Validation.Validators.NameValidator.IsValidName(lastName))
+        if (lastName != null && !Validation.Validators.NameValidator.IsValidName(lastName))
         {
             _logger.LogError("Invalid last name provided for owner ID: {OwnerId}.", ownerId);
             return UpdateOwnerResult.InvalidLastName;
         }
 
-        if (!Validation.Validators.EmailValidator.IsValidEmail(email))
+        if (email != null && !Validation.Validators.EmailValidator.IsValidEmail(email))
         {
             _logger.LogError("Invalid email provided for owner ID: {OwnerId}.", ownerId);
             return UpdateOwnerResult.InvalidEmail;
         }
 
-        if (!Validation.Validators.PhoneNumberValidator.IsValidPhoneNumber(phoneNumber))
+        if (phoneNumber != null && !Validation.Validators.PhoneNumberValidator.IsValidPhoneNumber(phoneNumber))
         {
             _logger.LogError("Invalid phone number provided for owner ID: {OwnerId}.", ownerId);
             return UpdateOwnerResult.InvalidPhoneNumber;
         }
 
-        if (!Validation.Validators.AddressValidator.IsValidAddress(address))
+        if (address != null && !Validation.Validators.AddressValidator.IsValidAddress(address))
         {
             _logger.LogError("Invalid address provided for owner ID: {OwnerId}.", ownerId);
             return UpdateOwnerResult.InvalidAddress;
@@ -616,12 +647,37 @@ public class BookingManager
         // Log success before updating
         _logger.LogInformation("Validations passed. Updating details for owner ID: {OwnerId}.", ownerId);
 
-        // Update owner information with given fields
-        SetField(firstName, "", value => owner.FirstName = value);
-        SetField(lastName, "", value => owner.LastName = value);
-        SetField(email, "", value => owner.Email = value);
-        SetField(phoneNumber, "", value => owner.PhoneNumber = value);
-        SetField(address, "", value => owner.Address = value);
+        // Update owner information with given fields, only if not null
+        SetField(firstName, null,
+                 value =>
+                 {
+                     if (firstName != null)
+                         owner.FirstName = value;
+                 });
+        SetField(lastName, null,
+                 value =>
+                 {
+                     if (lastName != null)
+                         owner.LastName = value;
+                 });
+        SetField(email, null,
+                 value =>
+                 {
+                     if (email != null)
+                         owner.Email = value;
+                 });
+        SetField(phoneNumber, null,
+                 value =>
+                 {
+                     if (phoneNumber != null)
+                         owner.PhoneNumber = value;
+                 });
+        SetField(address, null,
+                 value =>
+                 {
+                     if (address != null)
+                         owner.Address = value;
+                 });
 
         _logger.LogInformation("Successfully updated owner details for owner ID: {OwnerId}.", ownerId);
 
@@ -1252,7 +1308,7 @@ public class BookingManager
     /// </remarks>
     public UpdateAccommodationResult UpdateAccommodation(int accommodationId,
                                                          AccommodationType type = AccommodationType.None,
-                                                         string name = "", string address = "")
+                                                         string name = null, string address = null)
     {
         _logger.LogInformation("Attempting to update accommodation with ID: {AccommodationId}.", accommodationId);
 
@@ -1264,21 +1320,21 @@ public class BookingManager
             return UpdateAccommodationResult.AccommodationNotFound;
         }
 
-        // Validate information before updating
-        if (!Validation.Validators.AccommodationValidator.IsValidAccommodationType(type) &&
-            type != AccommodationType.None)
+        // Validate information before updating (only if not default value)
+        if (type != AccommodationType.None &&
+            !Validation.Validators.AccommodationValidator.IsValidAccommodationType(type))
         {
             _logger.LogError("Invalid type provided for accommodation ID: {AccommodationId}.", accommodationId);
             return UpdateAccommodationResult.InvalidType;
         }
 
-        if (!Validation.Validators.NameValidator.IsValidAccommodationName(name))
+        if (name != null && !Validation.Validators.NameValidator.IsValidAccommodationName(name))
         {
             _logger.LogError("Invalid name provided for accommodation ID: {AccommodationId}.", accommodationId);
             return UpdateAccommodationResult.InvalidName;
         }
 
-        if (!Validation.Validators.AddressValidator.IsValidAddress(address))
+        if (address != null && !Validation.Validators.AddressValidator.IsValidAddress(address))
         {
             _logger.LogError("Invalid address provided for accommodation ID: {AccommodationId}.", accommodationId);
             return UpdateAccommodationResult.InvalidAddress;
@@ -1288,10 +1344,25 @@ public class BookingManager
         _logger.LogInformation("Validations passed. Updating details for accommodation ID: {AccommodationId}.",
                                accommodationId);
 
-        // Use the SetField helper to update fields only if they are not the default
-        SetField(type, AccommodationType.None, value => accommodation.Type = value);
-        SetField(name, "", value => accommodation.Name = value);
-        SetField(address, "", value => accommodation.Address = value);
+        // Update accommodation information with given fields, only if not default
+        SetField(type, AccommodationType.None,
+                 value =>
+                 {
+                     if (type != AccommodationType.None)
+                         accommodation.Type = value;
+                 });
+        SetField(name, null,
+                 value =>
+                 {
+                     if (name != null)
+                         accommodation.Name = value;
+                 });
+        SetField(address, null,
+                 value =>
+                 {
+                     if (address != null)
+                         accommodation.Address = value;
+                 });
 
         // Log success after updating
         _logger.LogInformation("Successfully updated accommodation details for accommodation ID: {AccommodationId}.",

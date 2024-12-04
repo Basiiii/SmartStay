@@ -35,7 +35,7 @@ public class Clients : IManageableEntity<Client>
     /// <summary>
     /// Internal dictionary to store clients by their unique ID.
     /// </summary>
-    readonly Dictionary<int, Client> _clientDictionary = new Dictionary<int, Client>();
+    readonly Dictionary<int, Client> _clientDictionary = new();
 
     /// <summary>
     /// A temporary list used for serialization by Protobuf. This list holds the clients

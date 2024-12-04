@@ -8,7 +8,9 @@
 /// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ProtoBuf;
 using SmartStay.Common.Enums;
 using SmartStay.Core.Utilities;
@@ -29,20 +31,51 @@ namespace SmartStay.Core.Models
 [ProtoContract]
 public class Room
 {
-    static int _lastRoomId = 0;                                                          // Last assigned room ID
-    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
+    /// <summary>
+    /// The last assigned room ID, used for tracking the most recent room ID.
+    /// </summary>
+    static int _lastRoomId = 0; // Last assigned room ID
 
+    /// <summary>
+    /// JSON serializer options used for formatting and serializing client data in JSON.
+    /// <para>
+    /// - <see cref="WriteIndented"/> is enabled to improve readability with indented formatting.
+    /// - <see cref="Encoder"/> is set to <see cref="JavaScriptEncoder.UnsafeRelaxedJsonEscaping"/> to allow unsafe
+    /// characters
+    ///   (such as `<`, `>`, and other special characters) to be included without escaping.
+    /// - <see cref="Converters"/> contains a <see cref="JsonStringEnumConverter"/> to serialize enum values as their
+    /// string names
+    ///   instead of integer values.
+    /// </para>
+    /// </summary>
+    static readonly JsonSerializerOptions _jsonOptions =
+        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                                      Converters = { new JsonStringEnumConverter() } };
+
+    /// <summary>
+    /// The unique ID of the room. This ID is used to uniquely identify the room.
+    /// </summary>
     [ProtoMember(1)]
     readonly int _id; // ID of the room
 
+    /// <summary>
+    /// The type of room (e.g., Single, Double, Suite). Defines the kind of accommodation provided.
+    /// </summary>
     [ProtoMember(2)]
     RoomType _type; // Type of room (Single, Double, Suite, etc.)
 
+    /// <summary>
+    /// The price per night for the room. This is the cost for one night of accommodation in this room.
+    /// </summary>
     [ProtoMember(3)]
     decimal _pricePerNight; // Price per night for the room
 
+    /// <summary>
+    /// A sorted set of <see cref="DateRange"/> objects representing the reservation dates for this room.
+    /// The sorted set allows for efficient checking of availability and conflicts in reservations.
+    /// </summary>
     [ProtoMember(4)]
-    readonly SortedSet<DateRange> _reservationDates = new(); // Sorted set for efficient availability check
+    SortedSet<DateRange> _reservationDates = new(); // Sorted set for efficient availability check
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Room"/> class.
@@ -75,6 +108,42 @@ public class Room
     }
 
     /// <summary>
+    /// Constructor to initialize a new <see cref="Room"/> with all details, including a manually specified ID, room
+    /// type, price per night, and a set of reservation dates. <b>This constructor should be avoided in normal cases</b>
+    /// as it allows manual assignment of the room ID, which can lead to conflicts and issues with ID uniqueness. The
+    /// system is designed to automatically handle unique ID assignment, and other constructors should be used for
+    /// creating room objects to ensure proper handling of IDs. <br/>This constructor is marked with <see
+    /// cref="[JsonConstructor]"/> so it will be used for JSON deserialization purposes, but it should not be used when
+    /// creating new room objects manually.
+    /// </summary>
+    /// <param name="id">The manually specified ID of the room. This should not be used under normal circumstances as
+    /// the system handles ID assignment automatically.</param>
+    /// <param name="type">The type of the room (e.g., Single, Double, Suite).</param>
+    /// <param name="pricePerNight">The price charged per night for the room.</param>
+    /// <param name="reservationDates">The list of reserved date ranges for the room.</param>
+    [JsonConstructor]
+    public Room(int id, RoomType type, decimal pricePerNight, SortedSet<DateRange> reservationDates)
+    {
+        _id = id;
+        UpdateLastRoomId(id);
+        _type = type;
+        _pricePerNight = pricePerNight;
+        _reservationDates = reservationDates;
+    }
+
+    /// <summary>
+    /// Public getter and setter for the last assigned ID.
+    /// </summary>
+    public static int LastAssignedId
+    {
+        get => _lastRoomId;
+        set {
+            if (_lastRoomId < value)
+                _lastRoomId = value;
+        }
+    }
+
+    /// <summary>
     /// Public getter for the room ID.
     /// </summary>
     public int Id => _id;
@@ -98,12 +167,9 @@ public class Room
     }
 
     /// <summary>
-    /// Public getter for the ReservationDates DateRange as a readonly collection.
+    /// Public getter for the ReservationDates.
     /// </summary>
-    public IReadOnlyCollection<DateRange> ReservationDates
-    {
-        get => _reservationDates.ToList().AsReadOnly();
-    }
+    public SortedSet<DateRange> ReservationDates => _reservationDates;
 
     /// <summary>
     /// Checks if a given date range is available for a new reservation, ensuring there are no overlaps with existing
@@ -234,6 +300,18 @@ public class Room
             throw new InvalidOperationException("Room ID limit exceeded.");
 
         return Interlocked.Increment(ref _lastRoomId);
+    }
+
+    /// <summary>
+    /// Method to ensure _lastRoomId is up-to-date after deserialization or manual assignment.
+    /// </summary>
+    /// <param name="id">Manually given ID.</param>
+    private static void UpdateLastRoomId(int id)
+    {
+        if (id > _lastRoomId)
+        {
+            _lastRoomId = id; // Update the last assigned owner ID if the new ID is larger
+        }
     }
 
     /// <summary>
