@@ -441,7 +441,7 @@
 \renewcommand{\abstractname}{Resumo.} % Change the abstract title to "Resumo"
 \begin{abstract}
 	
-Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gestão de alojamentos turísticos, permitindo a administração eficiente de registos, reservas e consultas relacionadas com clientes e alojamentos. A solução foi implementada em C\#, utilizando o paradigma de programação orientada a objetos, de forma a garantir uma estrutura modular e escalável. As principais funcionalidades incluem o registo de clientes, a gestão de reservas, o processamento de check-ins e check-outs, bem como o controlo de pagamentos. A aplicação destaca-se pelo uso de dicionários como estruturas de dados eficientes, permitindo um acesso rápido e otimizado a registos de clientes, reservas e alojamentos, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. A persistência de dados é gerida em formato JSON, proporcionando uma solução leve e prática para operadores turísticos.
+Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gestão de alojamentos turísticos, permitindo a administração eficiente de registos, reservas e consultas relacionadas com clientes e alojamentos. A solução foi implementada em C\#, utilizando o paradigma de programação orientada a objetos, de forma a garantir uma estrutura modular e escalável. As principais funcionalidades incluem o registo de clientes, a gestão de reservas, o processamento de check-ins e check-outs, bem como o controlo de pagamentos. A aplicação destaca-se pelo uso de dicionários como estruturas de dados eficientes, permitindo um acesso rápido e otimizado a registos de clientes, reservas e alojamentos, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. A persistência de dados é gerida em formato JSON e binária, proporcionando uma solução leve e prática para operadores turísticos.
 
 \renewcommand{\abstractname}{Resumo}
 
@@ -1279,13 +1279,133 @@ public class Client
 
 \newpage
 \section{Testes Unitários}
-\label{sec:testesunitarios}
 
-\subsection{CI/CD Pipeline}
+\subsection{Introdução aos Testes Unitários}
+
+Os testes unitários são uma parte essencial do desenvolvimento de software porque garantem que as funções e os métodos tenham o correto comporamento. O principal objetivo é validar o comportamento de cada parte do sistema de forma isolada, o que permite identificar e corrigir erros de maneira eficaz. Para implementar estes testes, usei o framework \texttt{xUnit}, que é uma escolha popular no ecossistema .NET devido à sua simplicidade e integração fácil com outras ferramentas.
+
+\subsection{Razões para Utilizar Testes Unitários}
+
+Os testes unitários ajudam a assegurar a qualidade do código, fornecendo uma camada extra de segurança ao desenvolvimento. No meu projeto, a utilização de testes permitiu:
+\begin{itemize}
+	\item \textbf{Detecção de erros}: Ao testar cada unidade de código de forma isolada, é possível identificar erros, evitando que se propaguem para outras partes do sistema.
+	\item \textbf{Facilidade de refatoração}: Com testes automatizados, é possível refatorar o código com maior confiança, pois sabemos que os testes garantirão que as funcionalidades existentes não sejam comprometidas.
+	\item \textbf{Documentação do comportamento esperado}: Os testes servem como uma forma de documentação do comportamento das funcionalidades, tornando o código mais compreensível.
+\end{itemize}
+
+\subsection{Implementação dos Testes com xUnit}
+
+A escolha do \texttt{xUnit} foi motivada pela sua popularidade na comunidade .NET, bem como pela sua sintaxe simples e pela facilidade de integração com outros frameworks e ferramentas, como o \texttt{GitHub Actions} para CI/CD. Abaixo segue um exemplo de um teste unitário implementado com \texttt{xUnit}.
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Teste do Construtor da Classe \texttt{Client}},
+	label={lst:client-constructor-test}]
+[Fact]
+public void Constructor_ValidParameters_InitializesClient()
+{
+	// Arrange
+	var firstName = "Enrique";
+	var lastName = "Rodrigues";
+	var email = "Enrique.Rodrigues@example.com";
+	
+	// Act
+	var client = new Client(firstName, lastName, email);
+	
+	// Assert
+	Assert.Equal(firstName, client.FirstName);
+	Assert.Equal(lastName, client.LastName);
+	Assert.Equal(email, client.Email);
+	Assert.Equal(PaymentMethod.None, client.PreferredPaymentMethod); // Default value
+	Assert.NotEqual(0, client.Id);                                   // ID should be auto-assigned
+}
+\end{lstlisting}
+
+Este teste verifica o comportamento do construtor da classe \texttt{Client}, garantindo que os parâmetros fornecidos sejam corretamente atribuídos às propriedades da classe e que o valor do \texttt{ID} seja atribuído automaticamente.
+
+\subsection{Integração com CI/CD}
+
+A integração de testes unitários num pipeline CI/CD é uma prática recomendada para garantir que o código seja validado automaticamente em cada mudança ou atualização. No meu projeto, configurei um pipeline de integração contínua utilizando \texttt{GitHub Actions}, permitindo que os testes fossem executados automaticamente sempre que alterações fossem feitas no repositório.
+
+O ficheiro \texttt{dotnet.yml}, que configura o pipeline de CI, é o seguinte:
+
+\begin{lstlisting}[
+	language=C, 
+	caption={Configuração do Pipeline CI com GitHub Actions},
+	label={lst:C}]
+name: .NET CI
+
+on:
+push:
+branches:
+- main
+pull_request:
+branches:
+- main
+
+jobs:
+build-and-test:
+runs-on: ubuntu-latest
+
+steps:
+- name: Checkout code
+uses: actions/checkout@v3
+
+- name: Setup .NET
+uses: actions/setup-dotnet@v3
+with:
+dotnet-version: 8.0.x
+
+- name: Restore dependencies
+working-directory: ./SmartStay
+run: dotnet restore SmartStay.sln
+
+- name: Build solution
+working-directory: ./SmartStay
+run: dotnet build SmartStay.sln --no-restore --configuration Release
+
+- name: Run tests
+working-directory: ./SmartStay
+run: dotnet test --no-build --verbosity normal --configuration Release
+\end{lstlisting}
+
+Este ficheiro configura o pipeline para que, sempre que houver um \texttt{push} ou um \texttt{pull request} na branch \texttt{main}, o código seja compilado e os testes sejam executados de forma automática.
+
+\subsection{Vantagens da Integração Contínua e Testes Automatizados}
+
+Integrar os testes unitários com um pipeline CI/CD oferece várias vantagens:
+\begin{itemize}
+	\item \textbf{Automação}: A execução dos testes é automática sempre que há uma alteração no código, garantindo que nada seja esquecido.
+	\item \textbf{Detecção rápida de falhas}: Caso algum teste falhe, o pipeline falha imediatamente, permitindo que os desenvolvedores corrijam os problemas de forma rápida.
+	\item \textbf{Consistência}: Os testes são executados nas mesmas condições em cada execução do pipeline, assegurando que o comportamento do sistema seja consistente ao longo do tempo.
+\end{itemize}
+
+A utilização de testes unitários combinada com um pipeline de CI/CD robusto oferece uma solução eficiente e confiável para garantir a qualidade e a estabilidade do código durante todo o ciclo de desenvolvimento.
 
 \newpage
 \section{Desenvolvimento da Interface}
 \label{sec:desenvolvimentoui}
+
+\subsection{Introdução ao Razor Server App}
+
+Para o desenvolvimento da interface do utilizador, optei por criar uma aplicação \textit{Razor Server App}. Esta escolha foi motivada pela minha experiência com \texttt{HTML} e \texttt{CSS}, tecnologias que já conhecia, e que me permitiram explorar as funcionalidades do Razor de forma eficiente. O \texttt{Razor} é uma engine de templates do .NET que facilita a criação de páginas dinâmicas ao integrar HTML com código C\# de maneira fluida. A sintaxe do Razor permite misturar de forma simples as estruturas de HTML com código C\#, oferecendo uma experiência de desenvolvimento mais rápida e intuitiva para aplicações web.
+
+\subsection{Dependency Injection e Integração com o Backend}
+
+No que diz respeito à arquitetura da aplicação, utilizei o \textit{Dependency Injection} (DI), uma prática recomendada no desenvolvimento de aplicações .NET para promover a inversão de controlo e facilitar a manutenção e testabilidade do código. O \textit{Dependency Injection} permite que os serviços e dependências da aplicação sejam injetados automaticamente nas classes que as necessitam, em vez de serem instanciados diretamente dentro dessas classes.
+
+No meu projeto, o backend é composto por bibliotecas \texttt{DLL}, que são responsáveis pelas regras de negócio. Para integrar estas bibliotecas com o front-end Razor, configurei a injeção das dependências no \texttt{Program.cs}. O serviço \texttt{BookingManager}, responsável pela gestão das reservas, é injetado no container de serviços da aplicação da seguinte forma:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Configuração de Dependency Injection},
+	label={lst:di-config}]
+builder.Services.AddSingleton<BookingManager>();
+\end{lstlisting}
+
+Ao adicionar o \texttt{BookingManager} como um serviço singleton no container de DI, a aplicação garante que uma única instância da classe \texttt{BookingManager} seja criada e utilizada durante toda a execução da aplicação. Isto permite que o Razor tenha acesso às regras de negócio necessárias para processar as reservas, sem a necessidade de criar novas instâncias do \texttt{BookingManager} diretamente nas páginas Razor.
+
+Esta abordagem facilita a gestão de dependências e contribui para uma maior organização e flexibilidade no código. Além disso, a injeção de dependências torna a aplicação mais fácil de testar, uma vez que podemos simular ou substituir as dependências nas classes de teste.
 
 \newpage
 \section{Conclusão}
