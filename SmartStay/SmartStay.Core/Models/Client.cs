@@ -50,8 +50,8 @@ public class Client
     /// </para>
     /// </summary>
     static readonly JsonSerializerOptions _jsonOptions =
-        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                      Converters = { new JsonStringEnumConverter() } };
+        new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique identifier for this client. This ID is used to distinguish one client from another.

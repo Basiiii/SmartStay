@@ -15,6 +15,7 @@
 /// </summary>
 namespace SmartStay.Core.Tests.Repositories
 {
+using System.Globalization;
 using SmartStay.Common.Enums;
 using SmartStay.Core.Models;
 using SmartStay.Core.Repositories;
@@ -140,7 +141,7 @@ public class AccommodationsTests
 
         // Assert: Verify that rooms are properly imported
         Assert.Single(importedAccommodation.Rooms); // Only 1 room
-        var importedRoom = importedAccommodation.Rooms.First();
+        var importedRoom = importedAccommodation.Rooms[0];
         Assert.Equal(101, importedRoom.Id);
         Assert.Equal(RoomType.Single, importedRoom.Type);
         Assert.Equal(250.00m, importedRoom.PricePerNight);
@@ -148,8 +149,10 @@ public class AccommodationsTests
         // Assert: Verify ReservationDates for the room
         Assert.Single(importedRoom.ReservationDates); // Only 1 reservation date for the room
         var reservationDate = importedRoom.ReservationDates.First();
-        Assert.Equal(DateTime.Parse("2024-12-10T14:00:00"), reservationDate.Start);
-        Assert.Equal(DateTime.Parse("2024-12-15T11:00:00"), reservationDate.End);
+        var format = "yyyy-MM-ddTHH:mm:ss";         // Define the expected format
+        var culture = CultureInfo.InvariantCulture; // Use a culture-insensitive format provider
+        Assert.Equal(DateTime.ParseExact("2024-12-10T14:00:00", format, culture), reservationDate.Start);
+        Assert.Equal(DateTime.ParseExact("2024-12-15T11:00:00", format, culture), reservationDate.End);
 
         // Verify the total number of rooms
         Assert.Single(importedAccommodation.Rooms);
@@ -165,20 +168,23 @@ public class AccommodationsTests
         var accommodationRepo = new Accommodations();
 
         // Create DateRange objects for the rooms' reservation dates
-        var reservationDate1 =
-            new DateRange(DateTime.Parse("2024-12-10T14:00:00"), DateTime.Parse("2024-12-15T11:00:00"));
-        var reservationDate2 =
-            new DateRange(DateTime.Parse("2024-12-20T14:00:00"), DateTime.Parse("2024-12-25T11:00:00"));
+        var format = "yyyy-MM-ddTHH:mm:ss";         // Define the expected format
+        var culture = CultureInfo.InvariantCulture; // Use a culture-insensitive format provider
+
+        var reservationDate1 = new DateRange(DateTime.ParseExact("2024-12-10T14:00:00", format, culture),
+                                             DateTime.ParseExact("2024-12-15T11:00:00", format, culture));
+
+        var reservationDate2 = new DateRange(DateTime.ParseExact("2024-12-20T14:00:00", format, culture),
+                                             DateTime.ParseExact("2024-12-25T11:00:00", format, culture));
 
         // Create rooms and add reservation dates as SortedSet<DateRange>
-        var room1 = new Room(101, RoomType.Single, 250.0m, new SortedSet<DateRange> { reservationDate1 });
-        var room2 = new Room(201, RoomType.Double, 350.0m, new SortedSet<DateRange> { reservationDate2 });
+        var room1 = new Room(101, RoomType.Single, 250.0m, [reservationDate1]);
+        var room2 = new Room(201, RoomType.Double, 350.0m, [reservationDate2]);
 
         // Create accommodations and add rooms
-        var accommodation1 =
-            new Accommodation(1, 1, AccommodationType.Hotel, "Grand Hotel", "456 Luxury Ave", new List<Room> { room1 });
-        var accommodation2 = new Accommodation(2, 2, AccommodationType.Apartment, "Luxury Suites", "789 Elite St",
-                                               new List<Room> { room2 });
+        var accommodation1 = new Accommodation(1, 1, AccommodationType.Hotel, "Grand Hotel", "456 Luxury Ave", [room1]);
+        var accommodation2 =
+            new Accommodation(2, 2, AccommodationType.Apartment, "Luxury Suites", "789 Elite St", [room2]);
 
         accommodationRepo.Add(accommodation1);
         accommodationRepo.Add(accommodation2);

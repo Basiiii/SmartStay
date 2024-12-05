@@ -32,10 +32,6 @@ namespace SmartStay.Core.Services
 /// This class offers a unified interface for handling key booking operations and data entities, facilitating
 /// integrations with other system components or external applications.
 /// </remarks>
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static",
-    Justification = "This class cannot be static becacuse the Razor App requires direct injection, thus needs to " +
-                    "create an instance of this class.")]
 public class BookingManager
 {
 #region Fields and Properties
@@ -218,7 +214,7 @@ public class BookingManager
                 lastName, email);
 
             // Create a new client
-            Client client = new Client(firstName, lastName, email); // May throw exception
+            Client client = new(firstName, lastName, email); // May throw exception
 
             // Add client to the system
             _clients.Add(client);
@@ -267,7 +263,7 @@ public class BookingManager
                 firstName, lastName, email, phoneNumber, address);
 
             // Create a new client with the provided information
-            Client client = new Client(firstName, lastName, email, phoneNumber, address); // May throw exception
+            Client client = new(firstName, lastName, email, phoneNumber, address); // May throw exception
 
             // Add client to the system
             _clients.Add(client);
@@ -334,8 +330,8 @@ public class BookingManager
     /// If any of the fields fail validation, the corresponding error code is returned. If all validations pass,
     /// the client details are updated, and <see cref="UpdateClientResult.Success"/> is returned.
     /// </remarks>
-    public UpdateClientResult UpdateClient(int clientId, string firstName = null, string lastName = null,
-                                           string email = null, string phoneNumber = null, string address = null,
+    public UpdateClientResult UpdateClient(int clientId, string? firstName = null, string? lastName = null,
+                                           string? email = null, string? phoneNumber = null, string? address = null,
                                            PaymentMethod paymentMethod = PaymentMethod.Unchanged)
     {
         _logger.LogInformation("Attempting to update client with ID: {ClientId}.", clientId);
@@ -393,31 +389,31 @@ public class BookingManager
         SetField(firstName, null,
                  value =>
                  {
-                     if (firstName != null)
+                     if (firstName != null && value != null)
                          client.FirstName = value;
                  });
         SetField(lastName, null,
                  value =>
                  {
-                     if (lastName != null)
+                     if (lastName != null && value != null)
                          client.LastName = value;
                  });
         SetField(email, null,
                  value =>
                  {
-                     if (email != null)
+                     if (email != null && value != null)
                          client.Email = value;
                  });
         SetField(phoneNumber, null,
                  value =>
                  {
-                     if (phoneNumber != null)
+                     if (phoneNumber != null && value != null)
                          client.PhoneNumber = value;
                  });
         SetField(address, null,
                  value =>
                  {
-                     if (address != null)
+                     if (address != null && value != null)
                          client.Address = value;
                  });
         SetField(paymentMethod, PaymentMethod.Unchanged,
@@ -483,7 +479,7 @@ public class BookingManager
                 lastName, email);
 
             // Create a new owner
-            Owner owner = new Owner(firstName, lastName, email); // May throw exception
+            Owner owner = new(firstName, lastName, email); // May throw exception
 
             // Add owner to the system
             _owners.Add(owner);
@@ -532,7 +528,7 @@ public class BookingManager
                 firstName, lastName, email, phoneNumber, address);
 
             // Create a new owner with the provided information
-            Owner owner = new Owner(firstName, lastName, email, phoneNumber, address); // May throw exception
+            Owner owner = new(firstName, lastName, email, phoneNumber, address); // May throw exception
 
             // Add owner to the system
             _owners.Add(owner);
@@ -600,8 +596,8 @@ public class BookingManager
     /// If any of the fields fail validation, the corresponding error code is returned. If all validations pass,
     /// the owner details are updated, and <see cref="UpdateOwnerResult.Success"/> is returned.
     /// </remarks>
-    public UpdateOwnerResult UpdateOwner(int ownerId, string firstName = null, string lastName = null,
-                                         string email = null, string phoneNumber = null, string address = null)
+    public UpdateOwnerResult UpdateOwner(int ownerId, string? firstName = null, string? lastName = null,
+                                         string? email = null, string? phoneNumber = null, string? address = null)
     {
         _logger.LogInformation("Attempting to update owner with ID: {OwnerId}.", ownerId);
 
@@ -651,31 +647,31 @@ public class BookingManager
         SetField(firstName, null,
                  value =>
                  {
-                     if (firstName != null)
+                     if (firstName != null && value != null)
                          owner.FirstName = value;
                  });
         SetField(lastName, null,
                  value =>
                  {
-                     if (lastName != null)
+                     if (lastName != null && value != null)
                          owner.LastName = value;
                  });
         SetField(email, null,
                  value =>
                  {
-                     if (email != null)
+                     if (email != null && value != null)
                          owner.Email = value;
                  });
         SetField(phoneNumber, null,
                  value =>
                  {
-                     if (phoneNumber != null)
+                     if (phoneNumber != null && value != null)
                          owner.PhoneNumber = value;
                  });
         SetField(address, null,
                  value =>
                  {
-                     if (address != null)
+                     if (address != null && value != null)
                          owner.Address = value;
                  });
 
@@ -786,7 +782,7 @@ public class BookingManager
         }
 
         // Calculate the total cost of the reservation
-        decimal totalCost = 0;
+        decimal totalCost;
         try
         {
             totalCost = room.CalculateTotalCost(checkIn, checkOut);
@@ -1045,7 +1041,7 @@ public class BookingManager
         if (newEnd <= newStart)
             throw new ArgumentException("New check-out date must be after the new check-in date.");
 
-        DateRange existingReservation = new DateRange(currentStart, currentEnd);
+        DateRange existingReservation = new(currentStart, currentEnd);
 
         _logger?.LogDebug("Checking availability for update: Current [{CurrentStart} - {CurrentEnd}], Proposed " +
                               "[{NewStart} - {NewEnd}].",
@@ -1308,7 +1304,7 @@ public class BookingManager
     /// </remarks>
     public UpdateAccommodationResult UpdateAccommodation(int accommodationId,
                                                          AccommodationType type = AccommodationType.None,
-                                                         string name = null, string address = null)
+                                                         string? name = null, string? address = null)
     {
         _logger.LogInformation("Attempting to update accommodation with ID: {AccommodationId}.", accommodationId);
 
@@ -1354,13 +1350,13 @@ public class BookingManager
         SetField(name, null,
                  value =>
                  {
-                     if (name != null)
+                     if (name != null && value != null)
                          accommodation.Name = value;
                  });
         SetField(address, null,
                  value =>
                  {
-                     if (address != null)
+                     if (address != null && value != null)
                          accommodation.Address = value;
                  });
 

@@ -47,8 +47,8 @@ public class Owner
     /// </para>
     /// </summary>
     static readonly JsonSerializerOptions _jsonOptions =
-        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                      Converters = { new JsonStringEnumConverter() } };
+        new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique ID of the owner. This field uniquely identifies each owner.
@@ -93,7 +93,7 @@ public class Owner
     /// with.
     /// </summary>
     [ProtoMember(7)]
-    List<Accommodation> _accommodationsOwned = new(); // List of accommodations owned by the owner
+    readonly List<Accommodation> _accommodationsOwned = []; // List of accommodations owned by the owner
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Owner"/> class.
@@ -259,7 +259,15 @@ public class Owner
     /// <summary>
     /// Public getter for the list of accommodations owned by the owner.
     /// </summary>
-    public List<Accommodation> AccommodationsOwned => _accommodationsOwned;
+    /// <remarks>
+    /// This property creates and returns a deep copy of the underlying accommodations collection.
+    /// Modifications to the returned list or its elements will not affect the original data.
+    /// <para>
+    /// **Performance Note**: Creating a deep copy can incur a performance cost, especially for
+    /// large collections. Use this property sparingly if performance is critical.
+    /// </para>
+    /// </remarks>
+    public List<Accommodation> AccommodationsOwned => GetAccommodationsCopy();
 
     /// <summary>
     /// Adds the specified accommodation to the list of accommodations owned by the owner.
@@ -329,6 +337,16 @@ public class Owner
         {
             _lastOwnerId = id; // Update the last assigned owner ID if the new ID is larger
         }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the accommodations list.
+    /// </summary>
+    /// <returns>A deep copy of the list of accommodations.</returns>
+    private List<Accommodation> GetAccommodationsCopy()
+    {
+        // Deep copy each room
+        return _accommodationsOwned.Select(accommodation => accommodation.Clone()).ToList();
     }
 
     /// <summary>

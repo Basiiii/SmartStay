@@ -48,8 +48,8 @@ public class Accommodation
     /// </para>
     /// </summary>
     static readonly JsonSerializerOptions _jsonOptions =
-        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                      Converters = { new JsonStringEnumConverter() } };
+        new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique identifier for this accommodation. This ID is used to distinguish one accommodation from another.
@@ -86,7 +86,7 @@ public class Accommodation
     /// and other features.
     /// </summary>
     [ProtoMember(6)]
-    List<Room> _rooms = new(); // List of rooms
+    readonly List<Room> _rooms = []; // List of rooms
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Accommodation"/> class.
@@ -219,9 +219,17 @@ public class Accommodation
     }
 
     /// <summary>
-    /// Public getter for the list of rooms in the accommodation.
+    /// Gets a deep copy of the list of rooms in the accommodation.
     /// </summary>
-    public List<Room> Rooms => _rooms;
+    /// <remarks>
+    /// This property creates and returns a deep copy of the underlying rooms collection.
+    /// Modifications to the returned list or its elements will not affect the original data.
+    /// <para>
+    /// **Performance Note**: Creating a deep copy can incur a performance cost, especially for
+    /// large collections. Use this property sparingly if performance is critical.
+    /// </para>
+    /// </remarks>
+    public List<Room> Rooms => GetRoomsCopy();
 
     /// <summary>
     /// Finds and returns a room from the accommodation by its room ID.
@@ -293,6 +301,32 @@ public class Accommodation
         {
             _lastAccommodationId = id; // Update the last assigned client ID if the new ID is larger
         }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the rooms list.
+    /// </summary>
+    /// <returns>A deep copy of the list of rooms.</returns>
+    private List<Room> GetRoomsCopy()
+    {
+        // Deep copy each room
+        return _rooms.Select(room => room.Clone()).ToList();
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the current <see cref="Accommodation"/> instance.
+    /// </summary>
+    /// <returns>A new <see cref="Accommodation"/> instance with identical data to the current instance.</returns>
+    public Accommodation Clone()
+    {
+        // Create a new instance of Accommodation and deep copy the fields
+        return new Accommodation(_id,                                                // Immutable
+                                 _ownerId,                                           // Immutable
+                                 _type,                                              // Enum, can be directly copied
+                                 _name,                                              // String, can be directly copied
+                                 _address,                                           // String, can be directly copied
+                                 new List<Room>(_rooms.Select(room => room.Clone())) // Deep copy of Room objects
+        );
     }
 
     /// <summary>

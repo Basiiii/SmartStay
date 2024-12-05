@@ -49,8 +49,8 @@ public class Room
     /// </para>
     /// </summary>
     static readonly JsonSerializerOptions _jsonOptions =
-        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                      Converters = { new JsonStringEnumConverter() } };
+        new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique ID of the room. This ID is used to uniquely identify the room.
@@ -75,7 +75,7 @@ public class Room
     /// The sorted set allows for efficient checking of availability and conflicts in reservations.
     /// </summary>
     [ProtoMember(4)]
-    SortedSet<DateRange> _reservationDates = new(); // Sorted set for efficient availability check
+    readonly SortedSet<DateRange> _reservationDates = []; // Sorted set for efficient availability check
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Room"/> class.
@@ -83,9 +83,7 @@ public class Room
     /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
     /// parameters for creating instances of <see cref="Room"/>.</para>
     /// </summary>
-#pragma warning disable CS8618
     public Room()
-#pragma warning restore CS8618
     {
         // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
     }
@@ -167,9 +165,17 @@ public class Room
     }
 
     /// <summary>
-    /// Public getter for the ReservationDates.
+    /// Gets a deep copy of the collection of reservation dates for the accommodation.
     /// </summary>
-    public SortedSet<DateRange> ReservationDates => _reservationDates;
+    /// <remarks>
+    /// This property creates and returns a deep copy of the underlying reservation dates collection.
+    /// Modifications to the returned collection or its elements will not affect the original data.
+    /// <para>
+    /// **Performance Note**: Creating a deep copy can incur a performance cost, especially for
+    /// large collections. Use this property sparingly if performance is critical.
+    /// </para>
+    /// </remarks>
+    public SortedSet<DateRange> ReservationDates => GetReservationDatesCopy();
 
     /// <summary>
     /// Checks if a given date range is available for a new reservation, ensuring there are no overlaps with existing
@@ -312,6 +318,31 @@ public class Room
         {
             _lastRoomId = id; // Update the last assigned owner ID if the new ID is larger
         }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the reservation dates collection.
+    /// </summary>
+    /// <returns>A deep copy of the <see cref="SortedSet{DateRange}"/> of reservation dates.</returns>
+    private SortedSet<DateRange> GetReservationDatesCopy()
+    {
+        // Deep copy each DateRange in the collection
+        return new SortedSet<DateRange>(_reservationDates.Select(dateRange => dateRange.Clone()));
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the current <see cref="Room"/> instance.
+    /// </summary>
+    /// <returns>A new <see cref="Room"/> instance with identical data to the current instance.</returns>
+    public Room Clone()
+    {
+        // Create a new instance of Room and deep copy the fields
+        return new Room(
+            _id,                                                                 // Immutable
+            _type,                                                               // Immutable
+            _pricePerNight,                                                      // Value type, directly copy
+            new SortedSet<DateRange>(_reservationDates.Select(dr => dr.Clone())) // Deep copy of DateRange objects
+        );
     }
 
     /// <summary>
