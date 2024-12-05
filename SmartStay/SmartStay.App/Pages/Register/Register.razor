@@ -1,71 +1,15 @@
 ﻿@page "/register"
-@using SmartStay.App.Pages.Components
 @using SmartStay.App.Data
+@using SmartStay.App.Pages.Components
 @using SmartStay.Core.Models
 @using SmartStay.Core.Services
+@using SmartStay.App.ViewModels
+@using SmartStay.Validation
 @layout PublicLayout
 
 @inject BookingManager bookingManager
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-
-@code {
-    private AccountModel accountModel = new AccountModel();
-
-    private async void HandleSubmit()
-    {
-        LogFormSubmissionDetails();
-
-        if (accountModel.IsHost)
-        {
-            var client = CreateClient();
-            if (client != null)
-            {
-                await StoreUserIdAndRedirect(client.Id);
-            }
-        }
-        else
-        {
-            var owner = CreateOwner();
-            if (owner != null)
-            {
-                await StoreUserIdAndRedirect(owner.Id);
-            }
-        }
-    }
-
-    private void LogFormSubmissionDetails()
-    {
-        Console.WriteLine($"Creating a new user: {accountModel.FirstName} {accountModel.LastName}, Email: {accountModel.Email}, Phone: {accountModel.Phone}, Address: {accountModel.Address}, Is Host: {accountModel.IsHost}");
-    }
-
-    private bool HasOptionalFields() =>
-        !string.IsNullOrWhiteSpace(accountModel.Phone) && !string.IsNullOrWhiteSpace(accountModel.Address);
-
-    private Client CreateClient()
-    {
-        return HasOptionalFields()
-            ? bookingManager.CreateCompleteClient(accountModel.FirstName, accountModel.LastName, accountModel.Email, accountModel.Phone, accountModel.Address)
-            : bookingManager.CreateBasicClient(accountModel.FirstName, accountModel.LastName, accountModel.Email);
-    }
-
-    private Owner CreateOwner()
-    {
-        return HasOptionalFields()
-            ? bookingManager.CreateCompleteOwner(accountModel.FirstName, accountModel.LastName, accountModel.Email, accountModel.Phone, accountModel.Address)
-            : bookingManager.CreateBasicOwner(accountModel.FirstName, accountModel.LastName, accountModel.Email);
-    }
-
-    private async Task StoreUserIdAndRedirect(int? userId)
-    {
-        if (userId.HasValue)
-        {
-            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "UserID", userId.ToString());
-            NavigationManager.NavigateTo("/home");
-        }
-    }
-
-}
 
 <section class="bg-gray-50 dark:bg-gray-900">
     <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
@@ -80,16 +24,19 @@
 
                 <!-- Form -->
                 <EditForm Model="accountModel" OnValidSubmit="HandleSubmit" class="space-y-4 md:space-y-4">
+                    <DataAnnotationsValidator />
 
                     <!-- First Name and Last Name Fields -->
                     <div class="flex space-x-4">
                         <div class="flex-1">
                             <label for="first-name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">First Name</label>
                             <InputText @bind-Value="accountModel.FirstName" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="John" />
+                            <ValidationMessage For="@(() => accountModel.FirstName)" class="text-red-500 text-sm" />
                         </div>
                         <div class="flex-1">
                             <label for="last-name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
                             <InputText @bind-Value="accountModel.LastName" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Doe" />
+                            <ValidationMessage For="@(() => accountModel.LastName)" class="text-red-500 text-sm" />
                         </div>
                     </div>
 
@@ -97,23 +44,26 @@
                     <div class="flex-1">
                         <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                         <InputText @bind-Value="accountModel.Email" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" />
+                        <ValidationMessage For="@(() => accountModel.Email)" class="text-red-500 text-sm" />
                     </div>
 
                     <!-- Password Field -->
                     <div class="flex-1">
                         <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                        <InputText @bind-Value="accountModel.Password" type="password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="••••••••" />
+                        <input type="password" name="password" id="password" placeholder="••••••••" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
                     </div>
 
                     <!-- Phone Number and Address Fields -->
                     <div class="flex space-x-4">
                         <div class="flex-1">
                             <label for="phone" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Phone Number (Optional)</label>
-                            <InputText @bind-Value="accountModel.Phone" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="+1 (123) 456-7890" />
+                            <InputText @bind-Value="accountModel.PhoneNumber" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="+1 (123) 456-7890" />
+                            <ValidationMessage For="@(() => accountModel.PhoneNumber)" class="text-red-500 text-sm" />
                         </div>
                         <div class="flex-1">
                             <label for="address" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Address (Optional)</label>
                             <InputText @bind-Value="accountModel.Address" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1234 Main St, City, Country" />
+                            <ValidationMessage For="@(() => accountModel.Address)" class="text-red-500 text-sm" />
                         </div>
                     </div>
 
@@ -155,3 +105,58 @@
         </div>
     </div>
 </section>
+
+@code {
+    private AccountViewModel accountModel = new AccountViewModel();
+
+    // List to store validation error messages
+    private List<ValidationErrorCode> validationErrors = new List<ValidationErrorCode>();
+
+    private async void HandleSubmit()
+    {
+        Console.WriteLine($"Creating a new user: {accountModel.FirstName} {accountModel.LastName}, Email: {accountModel.Email}, Phone: {accountModel.PhoneNumber}, Address: {accountModel.Address}, Is Host: {accountModel.IsHost}");
+
+        if (!accountModel.IsHost)
+        {
+            var client = CreateClient();
+            if (client != null)
+            {
+                await StoreUserIdAndRedirect(client.Id);
+            }
+        }
+        else
+        {
+            var owner = CreateOwner();
+            if (owner != null)
+            {
+                await StoreUserIdAndRedirect(owner.Id);
+            }
+        }
+    }
+
+    private bool HasOptionalFields() =>
+        !string.IsNullOrWhiteSpace(accountModel.PhoneNumber) && !string.IsNullOrWhiteSpace(accountModel.Address);
+
+    private Client CreateClient()
+    {
+        return HasOptionalFields()
+            ? bookingManager.CreateCompleteClient(accountModel.FirstName, accountModel.LastName, accountModel.Email, accountModel.PhoneNumber, accountModel.Address)
+            : bookingManager.CreateBasicClient(accountModel.FirstName, accountModel.LastName, accountModel.Email);
+    }
+
+    private Owner CreateOwner()
+    {
+        return HasOptionalFields()
+            ? bookingManager.CreateCompleteOwner(accountModel.FirstName, accountModel.LastName, accountModel.Email, accountModel.PhoneNumber, accountModel.Address)
+            : bookingManager.CreateBasicOwner(accountModel.FirstName, accountModel.LastName, accountModel.Email);
+    }
+
+    private async Task StoreUserIdAndRedirect(int? userId)
+    {
+        if (userId.HasValue)
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "UserID", userId.ToString());
+            NavigationManager.NavigateTo("/home");
+        }
+    }
+}

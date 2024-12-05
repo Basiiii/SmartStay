@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.App", "SmartStay.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Core.Tests", "SmartStay.Core.Tests\SmartStay.Core.Tests.csproj", "{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Api", "SmartStay.Api\SmartStay.Api.csproj", "{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
