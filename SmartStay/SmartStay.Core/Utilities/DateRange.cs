@@ -1,4 +1,7 @@
-﻿/// <copyright file="DateRange.cs">
+﻿
+using ProtoBuf;
+
+/// <copyright file="DateRange.cs">
 /// Copyright (c) 2024 All Rights Reserved
 /// </copyright>
 /// <file>
@@ -6,7 +9,6 @@
 /// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>21/11/2024</date>
-using System;
 
 /// <summary>
 /// The <c>SmartStay.Utilities</c> namespace provides helper functions and utility classes used throughout the SmartStay
@@ -19,17 +21,22 @@ namespace SmartStay.Core.Utilities
 /// Represents a range of dates with a start and end date.
 /// Implements <see cref="IComparable{DateRange}"/> to allow sorting and comparisons.
 /// </summary>
+[ProtoContract]
 public class DateRange : IComparable<DateRange>
 {
     /// <summary>
     /// Gets or sets the start date of the range.
     /// </summary>
+    [ProtoMember(1)]
     public DateTime Start { get; set; }
 
     /// <summary>
     /// Gets or sets the end date of the range.
     /// </summary>
-    public DateTime End { get; set; }
+    [ProtoMember(2)]
+    public DateTime End {
+        get; set;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DateRange"/> class.

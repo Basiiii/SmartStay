@@ -17,6 +17,8 @@
 /// </summary>
 namespace SmartStay.Core.Models.Interfaces
 {
+using SmartStay.Common.Models;
+
 /// <summary>
 /// Defines the <see cref="IManageableEntity{T}" /> interface for managing a collection of entities
 /// of type <typeparamref name="T"/>. This interface standardizes methods for adding, removing,
@@ -43,12 +45,24 @@ public interface IManageableEntity<in T>
     /// Imports a list of items from a serialized string.
     /// </summary>
     /// <param name="data">The serialized string representing a collection of items.</param>
-    void Import(string data);
+    ImportResult Import(string data);
 
     /// <summary>
     /// Exports the current list of items as a serialized string.
     /// </summary>
     /// <returns>A serialized string representing the collection of items.</returns>
     string Export();
+
+    /// <summary>
+    /// Saves the collection to a binary file.
+    /// </summary>
+    /// <param name="filePath">The file path to save the collection to.</param>
+    void Save(string filePath);
+
+    /// <summary>
+    /// Loads the collection from a binary file.
+    /// </summary>
+    /// <param name="filePath">The file path to load the collection from.</param>
+    void Load(string filePath);
 }
 }

@@ -441,7 +441,7 @@
 \renewcommand{\abstractname}{Resumo.} % Change the abstract title to "Resumo"
 \begin{abstract}
 	
-Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gestão de alojamentos turísticos, permitindo a administração eficiente de registos, reservas e consultas relacionadas com clientes e alojamentos. A solução foi implementada em C\#, utilizando o paradigma de programação orientada a objetos, de forma a garantir uma estrutura modular e escalável. As principais funcionalidades incluem o registo de clientes, a gestão de reservas, o processamento de check-ins e check-outs, bem como o controlo de pagamentos. A aplicação destaca-se pelo uso de dicionários como estruturas de dados eficientes, permitindo um acesso rápido e otimizado a registos de clientes, reservas e alojamentos, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. A persistência de dados é gerida em formato JSON, proporcionando uma solução leve e prática para operadores turísticos.
+Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gestão de alojamentos turísticos, permitindo a administração eficiente de registos, reservas e consultas relacionadas com clientes e alojamentos. A solução foi implementada em C\#, utilizando o paradigma de programação orientada a objetos, de forma a garantir uma estrutura modular e escalável. As principais funcionalidades incluem o registo de clientes, a gestão de reservas, o processamento de check-ins e check-outs, bem como o controlo de pagamentos. A aplicação destaca-se pelo uso de dicionários como estruturas de dados eficientes, permitindo um acesso rápido e otimizado a registos de clientes, reservas e alojamentos, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. A persistência de dados é gerida em formato JSON e binária, proporcionando uma solução leve e prática para operadores turísticos.
 
 \renewcommand{\abstractname}{Resumo}
 
@@ -477,8 +477,10 @@ Este projeto tem como objetivo o desenvolvimento de uma aplicação para a gest�
 \subsection{Contexto e Motivação}
 O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamentos, exigindo soluções que garantam agilidade, precisão e uma experiência satisfatória para os clientes. Este projeto visa desenvolver um sistema de gestão de alojamentos turísticos que permita a administração eficaz de registos de clientes, reservas e alojamentos. A implementação foi realizada em C\#, uma linguagem reconhecida pela sua robustez e flexibilidade, permitindo o desenvolvimento de aplicações escaláveis e eficientes.
 
-\subsection{Estrutura de Dados e Persistência}
-Para garantir um desempenho otimizado, o sistema utiliza dicionários como estruturas de dados principais, que se baseiam em tabelas de hash, proporcionando acesso rápido e eficiente a informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção. Além disso, a persistência de dados é gerida em formato JSON, facilitando a integração e manipulação das informações.
+\subsection{Estrutura de Dados e Persistência}  
+Para garantir um desempenho optimizado, o sistema utiliza dicionários como estruturas de dados principais, baseados em tabelas de hash, que proporcionam um acesso rápido e eficiente às informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção.  
+
+Adicionalmente, a persistência de dados é gerida em formato JSON, o que facilita a integração com outros sistemas e a manipulação dos dados de forma legível e estruturada. No entanto, para operações que exigem maior eficiência em termos de tempo de leitura/escrita, como guardar ou carregar rapidamente os dados sem necessidade de exportação ou importação, utilizamos o \textbf{protobuf-net} para serializar e desserializar os dados em formato binário. Esta abordagem combina a flexibilidade do JSON com a velocidade do formato binário, garantindo um equilíbrio entre interoperabilidade e desempenho.  
 
 \subsection{Boas Práticas de Programação}
 Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
@@ -501,6 +503,7 @@ A adoção de uma convenção de nomeação clara melhora a clareza do código. 
 	\item \textbf{Métodos}: \texttt{MethodName()}
 	\item \textbf{Propriedades}: \texttt{PropertyName}
 	\item \textbf{Variáveis de Instância e Locais}: \texttt{variableName}
+	\item \textbf{Variáveis privadas}: \texttt{\_variableName}
 	\item \textbf{Constantes}: \texttt{CONSTANT\_NAME}
 	\item \textbf{Parâmetros}: \texttt{parameterName}
 	\item \textbf{Enums}: \texttt{EnumName}
@@ -552,19 +555,82 @@ Utiliza-se \textit{XML Documentation Comments} para documentar o código, permit
 	\item Define-se o autor nos comentários de cabeçalho de classes para novos ficheiros ou seções significativas de código.
 \end{itemize}
 
+\subsection{Padrões de Design Utilizados}
+
+O sistema implementado segue princípios sólidos de engenharia de software, recorrendo a padrões de design bem estabelecidos para garantir uma arquitectura modular, reutilizável e fácil de manter. Dois dos principais padrões utilizados foram:
+
+\begin{itemize}
+	\item \textbf{MVC (Model-View-Controller)}: Este padrão foi utilizado para separar as preocupações do sistema. O backend implementa as regras de negócio e a manipulação de dados no modelo (Model), enquanto o frontend é responsável pela apresentação visual (View) e interage com o modelo através de controladores (Controllers). Este design melhora a organização do código e facilita a introdução de alterações numa camada sem impactar as outras.
+	
+	\item \textbf{Facade (Face)}: Uma classe face do sistema foi utilizada para simplificar e abstrair interações complexas entre diferentes componentes do sistema. Este padrão oferece uma interface simples e clara para funcionalidades comuns.
+\end{itemize}
+
+Estes padrões permitiram a divisão eficiente do código em duas camadas principais: backend e frontend, promovendo um design coeso e robusto.
+
+\subsection{Funções Lambda}
+
+O sistema também aproveita as funções lambda para simplificar a manipulação de coleções e propriedades. Estas expressões são frequentemente utilizadas para criar acessores e transformar coleções de forma concisa e eficiente. Seguem dois exemplos ilustrativos:
+
+\vspace*{15pt}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Getter e Setter com Função Lambda}, 
+	label={lst:lambdaGetterSetter}]
+public static int LastAssignedId
+{
+	get => _lastAccommodationId;
+	set => _lastAccommodationId = value;
+}
+\end{lstlisting}
+
+No exemplo acima, as expressões lambda proporcionam uma forma compacta e clara de definir os métodos de acesso para propriedades.
+
+Outro uso comum de funções lambda é na transformação de colecções:
+
+\vspace*{15pt}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Transformação de Colecções com Funções Lambda}, 
+	label={lst:lambdaTransformation}]
+var accommodationData = new 
+{ 
+	Id = _id, 
+	Type = _type.ToString(), 
+	Name = _name, 
+	Address = _address,
+	Rooms = _rooms.Select(room => new 
+	{
+		room.Id,
+		room.PricePerNight,
+		room.Type,
+	}) 
+};
+\end{lstlisting}
+
+Neste caso, as funções lambda são utilizadas em combinação com o método \texttt{Select} para transformar uma lista de quartos, criando um novo objecto para cada elemento com os atributos seleccionados.
+
+Estas utilizações ilustram como as funções lambda podem tornar o código mais legível e expressivo, reduzindo a necessidade de estruturas explícitas de loops.
+
 \newpage
 \section{Diagrama de Classes}
 \label{sec:classes}
 
 \subsection{Introdução ao Sistema}
-O diagrama de classes apresentado descreve a estrutura lógica do sistema de gestão de reservas para alojamentos turísticos, com uma arquitetura desenhada para centralizar e organizar informações essenciais sobre clientes, reservas, alojamentos e pagamentos. Este modelo, por além de otimizar o fluxo de trabalho, promove a extensibilidade e modularidade, facilitando tanto as expansões futuras como a manutenção do sistema.
+O diagrama de classes descreve a estrutura lógica do sistema de gestão de reservas para alojamentos turísticos, com uma arquitetura desenhada para centralizar e organizar informações essenciais sobre clientes, proprietários, reservas, alojamentos e pagamentos. Este modelo, por além de otimizar o fluxo de trabalho, promove a extensibilidade e modularidade, facilitando tanto as expansões futuras como a manutenção do sistema.
 
 \subsection{Classes Principais}
-No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail e endereço. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para armazenar e organizar várias instâncias da classe \textit{Client}. Esta coleção é implementada através de um dicionário, permitindo o acesso eficiente e rápido aos dados dos clientes.
 
-A classe \textit{Accommodation} (alojamento) representa as propriedades ou quartos disponíveis para reserva, com informações como o tipo de alojamento, a disponibilidade e o preço por noite. Parecida à classe \textit{Clients}, o sistema utiliza a classe \textit{Accommodations}, que também serve como uma coleção para armazenar e gerir vários alojamentos, sendo implementada através de um dicionário para facilitar a consulta e a manipulação dos dados.
+No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail e morada. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para organizar e armazenar várias instâncias da classe \textit{Client}. Esta coleção é implementada como um dicionário, permitindo acesso rápido e eficiente aos dados.
 
-A classe \textit{Reservation} (reserva) liga os clientes aos alojamentos, registando os detalhes da estadia, incluindo as datas de check-in e check-out, o custo total e o estado do pagamento. Tal como as classes \textit{Clients} e \textit{Accommodations}, o sistema utiliza a classe \textit{Reservations}, que guarda uma coleção de reservas, também gerida por um dicionário, permitindo a manipulação eficiente de múltiplas instâncias de reservas.
+De forma semelhante, a classe \textit{Owner} (proprietário) guarda informações relacionadas com os proprietários das propriedades disponíveis no sistema. A classe \textit{Owners} funciona como uma coleção que organiza e gere as instâncias de \textit{Owner}, também utilizando um dicionário para facilitar a consulta e manipulação.
+
+A classe \textit{Accommodation} (alojamento) representa as propriedades ou unidades disponíveis para reserva, com dados como o tipo de alojamento, a disponibilidade e o preço por noite. Cada instância de \textit{Accommodation} contém uma lista de quartos (\textit{Room}), representados pela classe \textit{Room}, que armazena detalhes específicos de cada quarto, como a sua capacidade ou características. Para gerir vários alojamentos, existe a classe \textit{Accommodations}, que é uma coleção de \textit{Accommodation} e utiliza um dicionário para manipulação eficiente.
+
+A classe \textit{Reservation} (reserva) estabelece a ligação entre clientes e alojamentos, registando os detalhes da estadia, incluindo datas de check-in e check-out, o custo total e o estado do pagamento. Adicionalmente, cada reserva contém uma lista de pagamentos (\textit{Payment}), geridos pela classe \textit{Payment}, que regista os valores pagos, datas e métodos de pagamento. Tal como as outras coleções, a classe \textit{Reservations} guarda várias reservas utilizando um dicionário.
+
+Para garantir uma gestão consistente e extensível, o sistema define uma interface comum, \textit{ManageableEntity}, que fornece funcionalidades partilhadas pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Accommodations} e \textit{Reservations}). Esta interface inclui métodos como \textit{Add}, \textit{Remove}, \textit{Import}, \textit{Export}, \textit{Save} e \textit{Load}, permitindo operações uniformes e reutilizáveis.
+
+Por fim, o sistema integra a classe \textit{BookingManager}, uma classe face que centraliza e simplifica operações comuns do sistema. Esta classe fornece métodos como por exemplo, \textit{CreateBasicClient} (criar um cliente básico), \textit{SaveAll} (guardar todos os dados do sistema) e \textit{LoadAll} (carregar todos os dados do sistema), promovendo uma interface unificada e de fácil utilização para as operações mais frequentes.
 
 \subsection{Processamento de Pagamentos}
 A classe \textit{Payment} (pagamento) tem como objetivo guardar informações detalhadas sobre cada transação associada a uma reserva, incluindo o montante pago, a data do pagamento e o método utilizado. A classe \textit{Reservation} mantém uma coleção de instâncias da classe \textit{Payment}, permitindo registar todos os pagamentos realizados para uma determinada reserva.
@@ -575,9 +641,9 @@ A classe \textit{BookingManager} (gestor de reservas) atua como o controlador pr
 O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. 
 
 \subsection{Padrão de Face (Facade Pattern)}
-O \textit{BookingManager} atua como a face do sistema, permitindo simplificar a interação ao consolidar várias chamadas de funções numa única operação. Por exemplo, em vez de chamar funções separadas para criar um objeto \textit{Client} e adicioná-lo ao dicionário de \textit{clients}, a função única \texttt{CreateClient} realiza ambas as operações de forma transparente. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que fornece uma interface única e centralizada para interagir com o sistema, abstraindo a complexidade interna e promovendo uma maior simplicidade no uso.
+O \textit{BookingManager} atua como a face do sistema, permitindo simplificar a interação ao consolidar várias chamadas de funções numa única operação. Por exemplo, em vez de chamar funções separadas para criar um objeto \textit{Client} e adicioná-lo ao dicionário de \textit{clients}, a função única \texttt{CreateClient} realiza ambas as operações de forma transparente. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que fornece uma interface única e centralizada para interagir com o sistema, abstraindo a complexidade interna e promovendo uma maior simplicidade de uso.
 
-Ao centralizar essas operações, o \textit{Facade} melhora a modularidade e extensibilidade do sistema, permitindo que alterações internas sejam realizadas sem impacto na interface externa. Assim, o \textit{BookingManager} fornece um ponto de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
+Ao centralizar estas operações, o \textit{Facade} melhora a modularidade e extensibilidade do sistema, permitindo que alterações internas sejam realizadas sem impacto na interface externa. Assim, o \textit{BookingManager} fornece um ponto de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
 
 \begin{figure}[h!]
 	\centering
@@ -601,30 +667,75 @@ A \textit{Common Language Specification (CLS)} define um conjunto de regras e pa
 
 Dentro deste contexto, o tipo \texttt{decimal} foi escolhido para operações financeiras e monetárias devido à sua alta precisão e, também, por ser um tipo que segue as normas da CLS. Esta conformidade permite que o sistema mantenha uma representação exata de valores monetários e seja facilmente reutilizável em outros ambientes e linguagens que suportem .NET. 
 
-Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — por exemplo, tipos inteiros não-assinados (\textit{unsigned}) como \texttt{uint} e \texttt{ulong} não são CLS-compliant e podem apresentar problemas de interoperabilidade em algumas linguagens. A escolha de tipos compatíveis com a CLS reforça o compromisso com a robustez e a acessibilidade do sistema em um ambiente .NET multi-linguagem.
+Cabe destacar que nem todos os tipos numéricos são compatíveis com a CLS — por exemplo, tipos inteiros não-assinados (\textit{unsigned}) como \texttt{uint} e \texttt{ulong} não são \textit{CLS-compliant} e podem apresentar problemas de interoperabilidade em algumas linguagens. A escolha de tipos compatíveis com a CLS reforça o compromisso com a robustez e a acessibilidade do sistema em um ambiente .NET multi-linguagem.
 
-\subsection{Models} A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Esses modelos são frequentemente utilizados para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento e recuperação de dados. Além disso, os modelos podem incluir validações de dados e regras de negócio específicas, facilitando a comunicação entre as diferentes camadas.
+\subsection{Models}
+A camada de \textit{Models} é responsável por representar os dados essenciais do sistema. Nesta camada, as classes de modelo (como \textit{Owner}, \textit{Client}, \textit{Accommodation} e \textit{Reservation}) são definidas com propriedades e comportamentos relacionados aos dados que representam. Estes modelos são utilizados frequentemente para mapear as entidades que serão manipuladas pela aplicação, sendo a base para as operações de armazenamento de dados.
 
-\subsection{Repositories} A camada de \textit{Repositories} no nosso sistema é responsável por guardar e organizar listas de objetos de diferentes tipos, como Clientes, Alojamentos e Reservas. Esta camada serve como um \textit{container} centralizado para gerir estes conjuntos de dados durante a execução do programa, proporcionando um acesso estruturado e consistente às informações.
+\subsection{Repositories}
+A camada de \textit{Repositories} no nosso sistema é responsável por guardar e organizar listas de objetos de diferentes tipos, como Proprietários, Clientes, Alojamentos e Reservas. Esta camada serve como um \textit{container} centralizado para gerir estes conjuntos de dados durante a execução do programa, proporcionando um acesso estruturado e consistente às informações.
 
-\subsection{Services} A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois gere o processo de reservas, incluindo a criação, validação e processamento de pagamentos.
+\subsection{Services}
+A camada de \textit{Services} contém a lógica de negócio principal da aplicação. Os serviços orquestram as interações entre os modelos e os repositórios, executando operações mais complexas que envolvem várias entidades ou ações. No contexto do nosso sistema de gestão de reservas, o \textit{BookingManager} pode ser considerado um serviço, pois gere todos os processos complexos de dados.
 
-\subsection{Utilities} A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. Exemplos típicos incluem ferramentas de validação, manipulação de strings, loggers e geradores de relatórios. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação. Por exemplo, um validador de datas ou um utilitário de formatação de preços pode ser usado em diferentes componentes, como na criação de reservas e no processamento de pagamentos.
+\subsection{Utilities}
+A camada de \textit{Utilities} contém classes e métodos auxiliares que oferecem funcionalidades que podem ser usadas em diferentes partes do sistema. As \textit{Utilities} ajudam a manter o código limpo e reutilizável, evitando a duplicação de lógica em várias partes da aplicação.
 
 \subsection{Bibliotecas}  
-A organização do código também foi complementada com a utilização de bibliotecas específicas, armazenadas na pasta \texttt{Libraries}, para promover a separação de responsabilidades e a modularidade do sistema. Estas bibliotecas foram estruturadas para encapsular diferentes funcionalidades do sistema, permitindo uma gestão mais clara e eficiente das preocupações. Abaixo descrevemos as principais bibliotecas criadas:  
+A organização do código também foi complementada com a utilização de bibliotecas específicas, guardadas na pasta \texttt{Libraries}, para promover a separação de responsabilidades e a modularidade do sistema. Estas bibliotecas foram estruturadas para encapsular diferentes funcionalidades do sistema, permitindo uma gestão mais clara e eficiente das preocupações. Abaixo descrevemos as principais bibliotecas criadas:  
 
 \begin{itemize}  
-	\item \textbf{SmartStay.Common}: Esta biblioteca foi criada para conter elementos comuns que são utilizados por todas as partes do sistema. Ela inclui definições de \textit{enums}, constantes e outros componentes genéricos que podem ser reutilizados de maneira transversal. Ao centralizar esses elementos na biblioteca \texttt{SmartStay.Common}, é possível reduzir a redundância de código e melhorar a consistência em diferentes partes da aplicação.  
+	\item \textbf{SmartStay.Common}: Esta biblioteca foi criada para conter elementos comuns que são utilizados por todas as partes do sistema. Ela inclui definições de \textit{enums}, \textit{exceptions} e outros componentes genéricos que podem ser reutilizados de maneira transversal. Ao centralizar esses elementos na biblioteca \texttt{SmartStay.Common}, é possível reduzir a redundância de código e melhorar a consistência em diferentes partes da aplicação.
 	
 	\item \textbf{SmartStay.Core}: A biblioteca central do sistema, \texttt{SmartStay.Core}, agrupa os modelos, repositórios, serviços e utilitários. Esta biblioteca encapsula a lógica de negócio principal e os elementos estruturais do sistema, assegurando uma clara separação entre os dados e as operações que os manipulam. Por exemplo, todas as classes de modelo, como \texttt{Client} e \texttt{Reservation}, bem como os repositórios que armazenam listas de objetos, estão organizados nesta biblioteca.
 	
-	\item \textbf{SmartStay.IO}: A biblioteca \texttt{SmartStay.IO} é responsável por lidar com operações de entrada e saída, particularmente o gerenciamento de dados em formato \textit{JSON}. Ela encapsula toda a lógica relacionada à leitura e escrita de informações, permitindo que o sistema realize a persistência de dados de maneira modular. Esta abordagem melhora a manutenção, pois mudanças na forma como os dados são armazenados ou carregados podem ser feitas exclusivamente nesta biblioteca, sem impactar outras partes do sistema.  
+	\item \textbf{SmartStay.IO}: A biblioteca \texttt{SmartStay.IO} é responsável por lidar com operações de entrada e saída, particularmente o gerenciamento de dados em formato \textit{JSON}. Ela encapsula toda a lógica relacionada à leitura e escrita de informações, permitindo que o sistema realize a persistência de dados de maneira modular. Esta abordagem melhora a manutenção, pois mudanças na forma como os dados são armazenados ou carregados podem ser feitas exclusivamente nesta biblioteca, sem impactar outras partes do sistema.
 	
 	\item \textbf{SmartStay.Validation}: A biblioteca \texttt{SmartStay.Validation} foi projetada para centralizar toda a lógica de validação de dados do sistema. Ela inclui regras específicas para garantir a integridade dos dados inseridos e manipulados pelo sistema, como validações de datas e formatos de entrada. Este design promove a reutilização de lógica de validação em diferentes componentes, aumentando a consistência e facilitando futuras alterações ou expansões nas regras de validação.
 \end{itemize}  
 
 A utilização destas bibliotecas reflete um compromisso com a separação de preocupações (\textit{Separation of Concerns}), promovendo uma arquitetura limpa, extensível e de fácil manutenção. Cada biblioteca tem um propósito bem definido e pode ser atualizada ou substituída de forma independente, reduzindo a complexidade e os riscos associados a alterações no sistema.  
+
+\newpage
+\section{Arquitetura em Camadas (Layered Architecture)}
+\label{sec:arquiteturacamadas}
+
+A adoção de uma arquitetura em camadas é uma prática muito reconhecida para organizar e estruturar o código de uma aplicação, visando separar responsabilidades e promover escalabilidade e manutenção. Dentro desta abordagem, o padrão de \textbf{Model-View-Controller (MVC)} \cite{mvc} foi escolhido para gerir a interface de utilizador e a lógica de aplicação. Este padrão permite uma divisão clara entre as camadas que lidam com os dados, a lógica de negócio e a apresentação visual, facilitando o desenvolvimento modular e a evolução do sistema ao longo do tempo.
+
+\subsection{Camadas da Arquitetura}
+
+A arquitetura do sistema é composta pelas seguintes camadas principais:
+
+\begin{itemize}
+	 \item \textbf{Model}: Representa os dados do sistema e encapsula a lógica de negócios principal. 
+	 \item \textbf{View}: Responsável pela apresentação visual e interação com o utilizador. 
+	 \item \textbf{Controller}: Atua como intermediário entre a interface de utilizador e a lógica de negócios, processando interações e executando as operações necessárias.
+	 \item \textbf{Repository e Service}: Fornecem suporte adicional à lógica do \textit{Model}, gerindo persistência de dados e operações de negócios específicas. 
+\end{itemize}
+
+Esta estrutura modular assegura que cada componente tem um papel claramente definido, facilitando a manutenção e evolução do sistema.
+
+\subsection{Escolha do Padrão MVC}
+
+O padrão MVC foi escolhido pelas suas características de modularidade e flexibilidade, ideais para sistemas com alta interação entre utilizadores, dados e regras de negócio. A separação entre Model, View e Controller garante que as alterações em uma camada não impactam diretamente as demais, promovendo robustez no desenvolvimento.
+
+As vantagens do MVC incluem:
+
+\begin{itemize} 
+	\item \textbf{Facilidade de manutenção}: Cada camada pode ser atualizada ou substituída independentemente. 
+	\item \textbf{Escalabilidade}: O sistema pode ser expandido de forma simples. 
+	\item \textbf{Testabilidade}: As regras de negócio e os dados podem ser testados separadamente da interface de utilizador. 
+\end{itemize}
+
+\subsection{Desenvolvimento Progressivo}
+
+O desenvolvimento foi conduzido de forma progressiva, com as camadas das regras de negócios implementadas antes da camada de apresentação:
+
+\begin{enumerate} 
+	\item \textbf{Camadas Fundamentais}: O desenvolvimento inicial focou-se em \textit{Model}, \textit{Repository}, \textit{Service}, \textit{Utility} e \textit{Validation}. Estas camadas foram projetadas, implementadas e testadas de forma independente, garantindo uma base sólida para o sistema. \item \textbf{Camada de Interface (View)}: Após a conclusão das camadas fundamentais, a interface de utilizador foi integrada, utilizando a lógica já validada para proporcionar uma experiência intuitiva aos utilizadores.	
+\end{enumerate}
+
+Este fluxo de desenvolvimento garantiu que as regras de negócio estivessem bem estruturadas e funcionais antes da criação da interface, permitindo uma evolução coesa do sistema.
 
 \newpage
 \section{Estruturas de Dados Utilizadas}
@@ -643,53 +754,69 @@ readonly Dictionary<int, Client> _clientDictionary = new Dictionary<int, Client>
 
 O uso do \textit{Dictionary} garante que as operações de inserção e remoção de clientes sejam realizadas de forma rápida, com um tempo médio de execução constante $O(1)$, o que melhora a escalabilidade do sistema à medida que mais clientes são adicionados.
 
-\subsection{Utilização de List e Pesquisa Binária}
+\subsection{Utilização de SortedSet}
 
-Para a classe \textit{Reservation}, foi utilizada uma \textit{List} de tuplas para guardar intervalos de datas de reservas, o que permite gerir as datas de forma eficiente. A lista é ordenada, e para verificar a disponibilidade de um alojamento, utiliza-se a técnica de \textit{pesquisa binária}, que permite encontrar rapidamente se há sobreposição de datas entre reservas. Abaixo está um exemplo de como o sistema verifica se existe disponibilidade:
+Para a classe \textit{Room}, foi utilizada a estrutura \textit{SortedSet<DateRange>} para guardar os intervalos de datas das reservas. O \textit{SortedSet} é uma coleção que mantém os elementos em ordem, o que permite realizar buscas e consultas de maneira eficiente. A principal vantagem do \textit{SortedSet} sobre outras estruturas, como listas ou dicionários, é que ele mantém a ordem dos elementos automaticamente e proporciona operações eficientes de inserção, remoção e busca.
+
+O \textit{SortedSet} é baseado numa árvore binária balanceada, tipicamente uma árvore vermelho-preta (\textit{Red-Black Tree}), que garante um tempo de execução logarítmico para as operações básicas: inserção, remoção e busca, ou seja, $O(log n)$. Isto acontece porque, ao usar uma árvore binária balanceada, o \textit{SortedSet} mantém o conjunto de dados ordenados, sem a necessidade de reordenar os elementos manualmente a cada operação.
+
+Abaixo está um exemplo de como o sistema verifica a disponibilidade de um alojamento utilizando o \textit{SortedSet<DateRange>}:
 
 \vspace*{15pt}
-\renewcommand{\lstlistingname}{Amostra de Código}
 \begin{lstlisting}[ 
 	language=csh, 
-	caption={Uso de Pesquisa Binária}, 
+	caption={Verificação da Disponibilidade de um Alojamento}, 
 	label={lst:C}]
-public bool IsAvailable(DateTime startDate, DateTime endDate)
+public bool IsAvailable(DateTime startDate, DateTime endDate, DateRange? existingReservationRange = null)
 {
 	if (endDate <= startDate)
 	throw new ArgumentException("End date must be after the start date.");
 	
-	int index = _reservedDates.BinarySearch((startDate, endDate), new DateRangeComparer());
-	if (index < 0)
-	index = ~index; // A pesquisa binária retorna o complemento do índice de inserção
+	var newReservation = new DateRange(startDate, endDate);
 	
-	if (index > 0 && _reservedDates[index - 1].End > startDate)
+	// Get potential conflicting reservations within the requested range
+	var potentialConflicts = _reservationDates.GetViewBetween(
+	new DateRange(DateTime.MinValue, startDate), // All reservations that end before the start
+	new DateRange(DateTime.MaxValue, endDate)    // All reservations that start after the end
+	);
+	
+	// Check if there are any overlapping reservations
+	foreach (var existingReservation in potentialConflicts)
 	{
-		return false; // Sobreposição com a reserva anterior
-	}
-	if (index < _reservedDates.Count && _reservedDates[index].Start < endDate)
-	{
-		return false; // Sobreposição com a reserva seguinte
+		// Skip the existing reservation if it's the one we're trying to modify
+		if (existingReservation.Equals(existingReservationRange))
+		{
+			continue; // Skip this reservation as it's the one we're modifying
+		}
+		
+		// An overlap occurs if the start date is before the end date, and the end date is after the start date
+		if ((newReservation.Start < existingReservation.End) && (newReservation.End > existingReservation.Start))
+		{
+			return false; // There's an overlap, so the accommodation is not available
+		}
 	}
 	
-	return true; // Não há sobreposição, o alojamento está disponível
+	return true; // No overlap found, accommodation is available
 }
-
-return true; // Não há sobreposição, o alojamento está disponível
 \end{lstlisting}
 
-Ao utilizar a \textit{List} de tuplas para armazenar intervalos de datas e a pesquisa binária para verificar a disponibilidade, o sistema é capaz de realizar verificações de disponibilidade de maneira muito mais eficiente do que uma busca linear. A \textit{pesquisa binária} reduz o tempo de busca de $O(n)$ para $O(\textit{log}(n))$, o que é um ganho significativo em termos de desempenho, principalmente em sistemas com muitas reservas.
+O uso do \textit{SortedSet} permite que o sistema verifique rapidamente se há conflitos de datas para uma nova reserva. Quando uma nova reserva é solicitada, o método \texttt{GetViewBetween} é utilizado para obter apenas as reservas que podem potencialmente se sobrepor com a nova reserva, o que torna o processo de verificação muito mais eficiente.
+
+A principal vantagem do \textit{SortedSet} é que ele mantém os dados ordenados automaticamente, e as operações de busca e inserção são realizadas em tempo $O(log n)$, o que é muito mais eficiente do que um algoritmo de busca linear que teria um custo de $O(n)$. Em sistemas com muitas reservas, isto resulta num ganho de desempenho significativo.
+
+Além disso, a estrutura \textit{SortedSet} oferece uma forma eficiente de lidar com a inserção de novos intervalos de datas, pois a árvore binária balanceada garante que as operações de inserção e remoção também sejam realizadas de maneira logarítmica. Isso é fundamental para garantir que o sistema permaneça escalável à medida que o número de reservas aumenta.
 
 \subsection{Vantagens das Estruturas de Dados Escolhidas}
 
-As escolhas de \textit{Dictionary} e \textit{List} oferecem várias vantagens para o sistema:
+As escolhas do \textit{Dictionary} e \textit{SortedSet} refletem uma análise cuidadosa das necessidades do sistema, como a eficiência de acesso, a escalabilidade e a organização dos dados. Abaixo, destacam-se as principais vantagens dessas escolhas:
 
 \begin{itemize}
-	\item \textbf{Eficiência de Acesso}: O \textit{Dictionary} permite acesso rápido às entidades, como clientes e reservas, através de suas chaves únicas. Isto melhora a performance, especialmente quando o sistema lida com um grande volume de dados.
-	\item \textbf{Organização e Escalabilidade}: O uso do \textit{Dictionary} para armazenar entidades e o \textit{List} para reservas garante que o sistema seja facilmente escalável. À medida que o número de clientes ou reservas cresce, o desempenho do sistema permanece estável devido à eficiência destas estruturas.
-	\item \textbf{Pesquisa Rápida de Intervalos de Datas}: A combinação de \textit{List} com pesquisa binária permite que a verificação de disponibilidade de um alojamento seja realizada de forma muito mais eficiente do que outras abordagens. A inserção das reservas na lista ordenada mantém a integridade dos dados e facilita a verificação de conflitos de datas.
+	\item \textbf{Eficiência de Acesso}: O \textit{Dictionary} permite acesso rápido às entidades, como clientes e reservas, através de chaves únicas. Esta característica é fundamental para garantir o bom desempenho do sistema, especialmente quando precisa de lidar com grandes volumes de dados.
+	\item \textbf{Escalabilidade}: O uso do \textit{Dictionary} para guardar entidades e do \textit{SortedSet} para as datas das reservas garante um sistema escalável. À medida que o número de clientes ou reservas aumenta, o desempenho mantém-se estável devido à eficiência destas estruturas.
+	\item \textbf{Verificação Rápida de Conflitos de Datas}: O \textit{SortedSet} facilita a verificação de conflitos de datas de reservas, graças à sua capacidade de manter os dados ordenados automaticamente. A combinação com a operação \texttt{GetViewBetween} reduz significativamente o tempo de busca e garante uma execução eficiente mesmo com um número elevado de reservas.
 \end{itemize}
 
-Estas escolhas refletem uma consideração cuidadosa da necessidade de desempenho e eficiência, ao mesmo tempo que garantem uma implementação simples e direta, essencial para manter o sistema modular e fácil de manter.
+Estas escolhas refletem uma análise cuidadosa dos requisitos de desempenho e eficiência do sistema, buscando sempre o equilíbrio entre a simplicidade na implementação o alto desempenho. Isto garante um sistema não apenas eficaz, mas também fácil de manter e escalar ao longo do tempo.
 
 \newpage
 \section{Uso de LINQ}
@@ -702,7 +829,7 @@ No desenvolvimento do sistema, foi utilizado o LINQ (\textit{Language Integrated
 O LINQ oferece várias vantagens, entre as quais se destacam:
 
 \begin{itemize}
-	\item \textbf{Sintaxe Concisa e Legível}: Permite escrever consultas de forma mais direta e legível, o que resulta em um código mais limpo e fácil de entender.
+	\item \textbf{Sintaxe Concisa e Legível}: Permite escrever consultas de forma mais direta e legível, o que resulta em código mais limpo e fácil de entender.
 	\item \textbf{Integração com Coleções de Dados}: Pode ser utilizado diretamente sobre coleções de objetos como listas, arrays, e dicionários, o que facilita a manipulação de dados sem recorrer a ferramentas externas.
 	\item \textbf{Redução de Erros e Complexidade}: Ao abstrair a complexidade da consulta e manipulação de dados, o LINQ reduz as possibilidades de erros e torna o código mais modular e menos propenso a falhas.
 	\item \textbf{Execução Diferida}: O LINQ utiliza execução diferida, ou seja, a consulta só é executada quando necessário, o que pode melhorar o desempenho, especialmente quando se lida com um volume grande de dados.
@@ -713,7 +840,6 @@ O LINQ oferece várias vantagens, entre as quais se destacam:
 A seguir, são apresentados exemplos de como o LINQ foi utilizado no código para realizar operações de filtragem em coleções de dados.
 
 O primeiro exemplo mostra como o LINQ é usado para encontrar todas as reservas associadas a um cliente, dado o seu ID único. A função `\textit{FindReservationsByClientId()}` filtra o dicionário de reservas, retornando apenas as reservas que correspondem ao `\textit{clientId}` fornecido.
-
 
 \vspace*{15pt}
 \renewcommand{\lstlistingname}{Amostra de Código}
@@ -756,27 +882,23 @@ A principal característica da \texttt{ValidationException} é que ela recebe um
 	language=csh, 
 	caption={Classe ValidationException}, 
 	label={lst:C}]
-namespace SmartStay.Validation
+public class ValidationException : Exception
 {
-	public class ValidationException : Exception
+	public ValidationErrorCode ErrorCode { get; }
+	
+	public ValidationException(ValidationErrorCode errorCode) : base(ValidationErrorMessages.GetErrorMessage(errorCode))
 	{
-		public ValidationException(ValidationErrorCode errorCode) 
-		: base(ValidationErrorMessages.GetErrorMessage(errorCode))
-		{
-			ErrorCode = errorCode;
-		}
-		
-		public ValidationErrorCode ErrorCode { get; }
+		ErrorCode = errorCode;
 	}
 }
 \end{lstlisting}
 
-Como pode ser observado, ao receber um \texttt{ValidationErrorCode}, a classe \texttt{ValidationException} utiliza o método \texttt{GetErrorMessage} da classe \texttt{ValidationErrorMessages} para obter a mensagem correspondente ao erro, evitando a necessidade de codificar as mensagens diretamente na aplicação.
+Como pode ser visto, ao receber um \texttt{ValidationErrorCode}, a classe \texttt{ValidationException} utiliza o método \texttt{GetErrorMessage} da classe \texttt{ValidationErrorMessages} para obter a mensagem correspondente ao erro, evitando a necessidade de codificar as mensagens diretamente na aplicação.
 
 \subsection{Definição dos Códigos de Erro}
 A enumeração \texttt{ValidationErrorCode} é responsável por definir os diferentes tipos de erros que podem ocorrer durante a validação dos dados. Cada valor desta enumeração é associado a um código numérico único, o que permite identificar de forma eficiente qual validação falhou.
 
-Abaixo, apresentamos um exemplo simplificado dessa enumeração:
+Abaixo está um exemplo simplificado desta enumeração:
 
 \begin{lstlisting}[
 	language=csh, 
@@ -793,35 +915,29 @@ namespace SmartStay.Validation
 }
 \end{lstlisting}
 
-Cada valor da enumeração representa um tipo específico de erro de validação, como por exemplo, nome inválido, e-mail inválido, ou número de telefone inválido. Esta enumeração é usada na classe \texttt{ValidationException} para determinar o erro que ocorreu.
-
 \subsection{Mensagens de Erro Dinâmicas}
-A classe \texttt{ValidationErrorMessages} é responsável por mapear cada código de erro para uma mensagem descritiva correspondente. Em vez de codificar as mensagens diretamente nas classes de validação ou nas exceções, as mensagens são armazenadas em um dicionário, o que facilita a manutenção e a atualização das mensagens de erro.
+A classe \texttt{ValidationErrorMessages} é responsável por buscar as mensagens de erro localizadas a partir de ficheiros de recursos. Em vez de guardar as mensagens diretamente no código, as mensagens são mantidas em ficheiros de recursos (.resx), o que facilita a tradução e manutenção das mensagens de erro, especialmente em sistemas com muitos idiomas.
 
-Veja abaixo um exemplo simplificado dessa classe:
+Veja abaixo um exemplo simplificado da classe \textit{ValidationErrorMessages}:
 
 \begin{lstlisting}[
 	language=csh, 
 	caption={Classe ValidationErrorMessages}, 
 	label={lst:C}]
-namespace SmartStay.Validation
+public static class ValidationErrorMessages
 {
-	public static class ValidationErrorMessages
+	private static readonly ResourceManager _resourceManager = new ResourceManager(
+	"SmartStay.Validation.Resources.ValidationMessages", typeof(ValidationErrorMessages).Assembly);
+	
+	public static string GetErrorMessage(ValidationErrorCode errorCode)
 	{
-		private static readonly Dictionary<ValidationErrorCode, string> ErrorMessages = new() {
-			{ ValidationErrorCode.InvalidName, "O nome deve ser uma string não vazia e não exceder 50 caracteres." },
-			{ ValidationErrorCode.InvalidEmail, "O endereço de e-mail é inválido ou não corresponde ao formato exigido." }
-		};
-		
-		public static string GetErrorMessage(ValidationErrorCode errorCode)
-		{
-			return ErrorMessages.TryGetValue(errorCode, out var message) ? message : "Erro de validação desconhecido.";
-		}
+		return _resourceManager.GetString(errorCode.ToString(), CultureInfo.CurrentCulture) ??
+		"Unknown validation error.";
 	}
 }
 \end{lstlisting}
 
-Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é buscada dinamicamente a partir do dicionário. Caso o código de erro não esteja mapeado, uma mensagem padrão ``Erro de validação desconhecido`` será retornada, garantindo que todas as exceções sejam tratadas de forma consistente.
+Desta forma, quando uma exceção de validação é gerada, a mensagem correspondente ao código de erro é obtida dinamicamente a partir do ficheiro de recursos com base na cultura atual. Caso o código de erro não esteja mapeado, uma mensagem padrão ''Unknown validation error.'' \textit{(Erro de validação desconhecido)} será devolvida, garantindo que todas as exceções são tratadas de forma consistente e traduzidas corretamente para o idioma apropriado.
 
 \subsection{Benefícios da Abordagem}
 A utilização de códigos de erro e mensagens dinâmicas traz uma série de benefícios para o sistema:
@@ -833,76 +949,162 @@ A utilização de códigos de erro e mensagens dinâmicas traz uma série de ben
 	\item \textbf{Consistência}: Ao utilizar códigos de erro numéricos e associar cada um a uma mensagem específica, garantimos que o tratamento de exceções será consistente ao longo de toda a aplicação.
 \end{itemize}
 
-\subsection{Exemplo de Uso}
-Abaixo, é apresentado um exemplo de como as exceções de validação são utilizadas no código. Neste exemplo, caso o nome fornecido por um cliente seja inválido, uma exceção de validação é gerada e a mensagem correspondente é retornada:
-
-\begin{lstlisting}[
-	language=csh, 
-	caption={Uso da Exceção de Validação}, 
-	label={lst:C}]
-try
-{
-	ValidateClientName(client.Name);
-}
-catch (ValidationException ex)
-{
-	Console.WriteLine($"Erro de validação: {ex.Message}");
-}
-\end{lstlisting}
-
-Neste exemplo, se o nome do cliente for inválido, a exceção \texttt{ValidationException} será lançada, e a mensagem de erro correspondente ao código de erro será mostrada ao utilizador.
-
 \newpage
 \section{Tratamento de Logs}
 \label{sec:tratamentologs}
 
-\subsection{Objetivo de Logs}
+O tratamento de logs é uma componente essencial para monitorizar o funcionamento do sistema, detetar erros e analisar o comportamento das operações realizadas. Nesta aplicação, utilizou-se a biblioteca \textit{Microsoft.Extensions.Logging}, que oferece uma solução integrada e extensível para registo de eventos. 
 
-\subsection{Exemplos de Logging no Código}
+A abordagem adotada inclui a injeção direta do \textit{logger} através de dependência, garantindo que todas as classes que necessitam de registo de eventos podem utilizá-lo de forma centralizada e consistente.
+
+\subsection{Injeção do Logger}
+
+A injeção do logger é realizada diretamente no construtor da classe, utilizando a interface \texttt{ILogger<T>}, onde \texttt{T} é o tipo da classe onde o logger será utilizado. Este mecanismo permite associar o logger ao contexto específico da classe, proporcionando mensagens de log detalhadas e informativas.
+
+O exemplo abaixo demonstra como o logger é injetado na classe \texttt{BookingManager}:
+
+\vspace*{15pt}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Injeção do Logger no Construtor}, 
+	label={lst:LoggerInjection}]
+public BookingManager(ILogger<BookingManager> logger)
+{
+	_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+	_logger.LogInformation("BookingManager initialized.");
+}
+\end{lstlisting}
+
+No exemplo acima, o logger é atribuído a uma variável privada e utilizado para registar uma mensagem de informação na inicialização da classe.
+
+\subsection{Exemplo de Utilização}
+
+O logger é usado para registar informações importantes durante a execução do sistema, tais como:
+
+\begin{itemize}
+	\item \textbf{Mensagens de informação} (\texttt{LogInformation}), para registar o estado e progresso de operações.
+	\item \textbf{Mensagens de erro} (\texttt{LogError}), para reportar exceções e falhas.
+	\item \textbf{Mensagens de \textit{debug}} (\texttt{LogDebug}), para análise detalhada durante o desenvolvimento.
+\end{itemize}
+
+Segue um exemplo do logger no código.
+
+\vspace*{15pt}
+\begin{lstlisting}[ 
+	language=csh, 
+	caption={Exemplo de Utilização do Logger}, 
+	label={lst:LoggerUsage}]
+public Client CreateBasicClient(string firstName, string lastName, string email)
+{
+	try
+	{
+		// Log information before creating the client
+		_logger.LogInformation(
+		"Attempting to create a new client with Name: {FirstName} {LastName}, Email: {Email}.", firstName,
+		lastName, email);
+		
+		// Create a new client
+		Client client = new Client(firstName, lastName, email); // May throw exception
+		
+		// Add client to the system
+		_clients.Add(client);
+		
+		// Log success information
+		_logger.LogInformation("Successfully created client: {FirstName} {LastName}, Email: {Email}.", firstName,
+		lastName, email);
+		
+		// Return the created client
+		return client;
+	}
+	catch (ValidationException ex)
+	{
+		// Log the exception with details
+		_logger.LogError(ex, "Error while creating client with Name: {FirstName} {LastName}, Email: {Email}.",
+		firstName, lastName, email);
+		
+		// Throw a new exception with more context
+		throw new ClientCreationException("An error occurred while creating the client due to invalid input.", ex);
+	}
+}
+\end{lstlisting}
+
+Neste exemplo:
+
+\begin{itemize}
+	\item Antes de criar o cliente, é registada uma mensagem de informação com os detalhes fornecidos.
+	\item Em caso de sucesso, uma mensagem de confirmação é registada.
+	\item Se ocorrer uma exceção, é registada como erro, juntamente com os detalhes do contexto.
+\end{itemize}
+
+\subsection{Benefícios do Uso de Logs}
+
+\begin{itemize}
+	\item \textbf{Monitorização}: Os logs permitem monitorizar o estado da aplicação em tempo real, registando operações críticas e sucessos.
+	\item \textbf{Diagnóstico de erros}: As mensagens de erro detalhadas ajudam na identificação e resolução de problemas rapidamente.
+	\item \textbf{Auditoria}: O histórico de operações registado pelos logs permite analisar as ações realizadas.
+	\item \textbf{Facilidade de depuração}: Durante o desenvolvimento, as mensagens de \textit{debug} podem fornecer informações detalhadas sobre o comportamento do sistema.
+\end{itemize}
+
+\subsection{Estratégias de Log no Sistema}
+
+\begin{itemize}
+	\item \textbf{Níveis de log}: Configurar os níveis de log (\texttt{Information}, \texttt{Debug}, \texttt{Error}) para evitar excesso de registos e manter a relevância das mensagens.
+	\item \textbf{Persistência}: Utilizar \textit{providers} de log (ficheiros, bases de dados ou sistemas como o Serilog) para guardar logs persistentes, facilitando a análise a longo prazo.
+	\item \textbf{Consistência}: Garantir que todas as classes seguem um padrão uniforme na utilização do logger, melhorando a legibilidade e a manutenção.
+\end{itemize}
+
+Com estas práticas, o sistema assegura um tratamento de logs robusto, contribuindo para a estabilidade, transparência e eficiência do desenvolvimento.
 
 \newpage
 \section{Persistência de Dados com Ficheiros}
 \label{sec:persistenciadados}
 
-A persistência de dados é uma componente essencial para qualquer sistema de gestão de informações. No caso deste projeto, optei por utilizar ficheiros JSON para armazenar os dados do sistema, como clientes, acomodações e reservas. O formato JSON foi escolhido devido à sua popularidade em aplicações web, móveis e desktop, à facilidade de leitura e escrita e ao seu suporte em diversas linguagens de programação.
+A persistência de dados desempenha um papel crucial em qualquer sistema de gestão. Neste projeto, foi adotada a utilização de ficheiros JSON para a importação e exportação de dados, complementada por ficheiros binários baseados em \texttt{Protocol Buffers} (Protobuf). O formato JSON foi selecionado para a importação e exportação devido à sua popularidade e facilidade de utilização, especialmente em aplicações web, móveis e \textit{desktop}. Além disso, a sua legibilidade elevada torna-o ideal para a manipulação e \textit{debugging} de dados de forma simples e eficiente. Por outro lado, o formato binário com Protobuf foi escolhido para guardar e carregar dados, garantindo eficiência e desempenho superiores em termos de armazenamento e velocidade de processamento.
 
-\subsection{Escolha do Formato de Armazenamento}
+Para a persistência binária, foi escolhido o \texttt{Protobuf}, em vez dos métodos tradicionais binários como o \texttt{BinaryFormatter}, que é obsoleto e apresenta vulnerabilidades de segurança. O \texttt{BinaryFormatter} tem riscos significativos na desserialização de dados, o que pode resultar em falhas de segurança, como execução remota de código. O \texttt{Protobuf}, por outro lado, oferece uma solução mais segura, eficiente e compacta para armazenar dados de forma binária. Além disso, é compatível com diversas linguagens e plataformas, o que facilita a integração com outros sistemas.
 
-Optou-se pelo formato JSON para persistir os dados devido a vários fatores:
+Portanto, enquanto o JSON é utilizado para a leitura e manipulação de dados de forma mais acessível, o \texttt{Protobuf} é usado para a gravação e carregamento eficiente de dados binários, garantindo melhor desempenho e menor tamanho de ficheiro. Este equilíbrio entre formatos textuais e binários permite que o sistema aproveite o melhor de ambos os mundos: a simplicidade e flexibilidade do JSON para operações de importação/exportação e a eficiência do \texttt{Protobuf} para persistência binária.
 
-\begin{itemize}
-	\item \textbf{Simplicidade e Legibilidade}: O JSON é um formato de texto simples, que pode ser facilmente lido por humanos e máquinas. Isso facilita tanto a depuração durante o desenvolvimento quanto a análise de dados.
-	\item \textbf{Compatibilidade Universal}: O JSON é amplamente suportado por diversas plataformas e frameworks, tornando-o ideal para integração com sistemas externos e APIs.
-	\item \textbf{Estrutura Flexível}: O JSON oferece uma estrutura de dados hierárquica e facilmente extensível, o que é vantajoso para representar dados complexos como clientes, reservas e acomodações de forma clara e eficiente.
-	\item \textbf{Desempenho}: As bibliotecas modernas de manipulação de JSON são muito eficientes, permitindo uma rápida serialização e desserialização dos dados.
-\end{itemize}
+\subsection{Importação e Exportação de Dados em JSON}
 
-\subsection{Importação e Exportação de Dados}
+A importação e exportação de dados são funcionalidades essenciais para assegurar que a informação possa ser manipulada de forma eficaz em diferentes contextos. Neste projeto, optou-se pelo uso do formato JSON para estas operações, devido à sua legibilidade e ampla adoção em diversas plataformas. O formato JSON permite que os dados sejam facilmente lidos, editados e transferidos, sendo particularmente útil em ambientes que exigem interação com outras aplicações ou serviços.
 
-Para garantir que os dados possam ser facilmente armazenados e recuperados de forma persistente, implementaram-se métodos para exportar e importar os dados para e a partir de JSON. A seguir, são apresentados os métodos utilizados para a importação e exportação da lista de clientes, com a mesma abordagem sendo aplicada para acomodações e reservas.
+\subsubsection{Exemplo de Importação de Dados em JSON}
 
-\subsubsection{Importação de Dados}
-
-O método \texttt{Import} permite importar uma lista de clientes a partir de uma string JSON. Caso a string JSON seja inválida ou nula, são lançadas exceções específicas para garantir que os dados sejam válidos antes de serem inseridos na coleção. O código do método é o seguinte:
+O método \texttt{Import} permite importar uma lista de objetos a partir de uma string JSON. Caso a string JSON seja inválida ou nula, são lançadas exceções específicas para garantir que os dados sejam válidos antes de serem inseridos na coleção. O código seguinte apresenta um exemplo do método \textit{Import} dos clientes:
 
 \begin{lstlisting}[
 	language=csh, 
 	caption={Método Import para Importar Clientes}, 
 	label={lst:C}]
-public void Import(string data)
+public ImportResult Import(string data)
 {
 	if (string.IsNullOrEmpty(data))
 	{
 		throw new ArgumentException("Data cannot be null or empty", nameof(data));
 	}
 	
+	// Deserialize the data into a List<Client> instead of a single Client
 	var clients = JsonHelper.DeserializeFromJson<Client>(data) ??
 	throw new ArgumentException("Deserialized client data cannot be null", nameof(data));
 	
+	int replacedCount = 0;
+	int importedCount = 0;
+	
 	foreach (var client in clients)
 	{
-		_clientDictionary[client.Id] = client; // Inserção direta para maior eficiência
+		if (_clientDictionary.ContainsKey(client.Id))
+		{
+			replacedCount++;
+		}
+		else
+		{
+			importedCount++;
+		}
+		_clientDictionary[client.Id] = client; // Direct insertion for efficiency
 	}
+	
+	return new ImportResult { ImportedCount = importedCount, ReplacedCount = replacedCount };
 }
 \end{lstlisting}
 
@@ -911,11 +1113,12 @@ No método \texttt{Import}, são realizadas as seguintes validações:
 	\item Se a string \texttt{data} for nula ou vazia, uma exceção \texttt{ArgumentException} é lançada.
 	\item A deserialização do JSON é realizada utilizando um método auxiliar (\texttt{DeserializeFromJson}), e, caso falhe, outra exceção \texttt{ArgumentException} é gerada.
 	\item Para cada cliente na lista importada, o cliente é adicionado ao dicionário \texttt{\_clientDictionary}, substituindo qualquer cliente existente com o mesmo ID.
+	\item O método \texttt{Import} retorna um objeto \texttt{ImportResult}, que contém a quantidade de clientes importados e substituídos, proporcionando informações úteis sobre o processo de importação.
 \end{itemize}
 
-\subsubsection{Exportação de Dados}
+\subsubsection{Exemplo de Exportação de Dados em JSON}
 
-O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada num ficheiro ou enviada para outros sistemas. A implementação do método é simples:
+O método \texttt{Export} permite exportar a lista atual de clientes para uma string JSON, que pode ser armazenada num ficheiro ou enviada para outros sistemas. O código do método é o seguinte:
 
 \begin{lstlisting}[
 	language=csh, 
@@ -927,9 +1130,11 @@ public string Export()
 }
 \end{lstlisting}
 
-O método \texttt{Export} converte os valores armazenados no dicionário \texttt{\_clientDictionary} numa string JSON utilizando o método auxiliar \texttt{SerializeToJson}. Se o dicionário estiver vazio, é retornada uma coleção vazia para garantir que o formato JSON seja válido.
+O método \texttt{Export} converte os valores guardados no dicionário \texttt{\_clientDictionary} numa string JSON utilizando o método auxiliar \texttt{SerializeToJson}. Se o dicionário estiver vazio, é retornada uma coleção vazia para garantir que o formato JSON seja válido.
 
-\subsection{Validação e Exceções na Persistência de Dados}
+Neste método, os valores do dicionário \texttt{\_clientDictionary} são serializados diretamente para uma string JSON. O uso de \texttt{Enumerable.Empty<Client>()} garante que, caso não existam clientes no dicionário, uma lista vazia seja serializada, evitando problemas com a estrutura JSON.
+
+\subsubsection{Validação e Exceções na Persistência de Dados}
 
 É importante garantir que os dados sejam consistentes e válidos antes de serem persistidos no formato JSON. Para isso, o sistema inclui verificações e exceções que asseguram que a importação e exportação dos dados sejam feitas corretamente.
 
@@ -941,57 +1146,319 @@ As exceções tratadas nas operações de importação e exportação incluem:
 
 Estas exceções permitem que o sistema lide com dados inválidos de forma controlada, sem causar falhas inesperadas. Além disso, a validação dos dados durante a importação e exportação impede que dados corrompidos ou malformados sejam persistidos, garantindo a integridade do sistema.
 
-\subsection{Considerações Finais sobre a Persistência de Dados}
+\subsection{Persistência de Dados em Formato Binário com Protobuf}
 
-A escolha pelo formato JSON para persistência de dados oferece diversas vantagens em termos de simplicidade, flexibilidade e compatibilidade. A utilização de métodos de importação e exportação bem definidos, aliados ao tratamento de exceções para garantir a validade dos dados, proporciona um sistema robusto e fácil de manter. Além disso, a escolha de um formato de dados leve e amplamente suportado como o JSON garante que o sistema possa ser facilmente integrado a outras plataformas e serviços.
+Embora o formato JSON seja simples e eficaz, em alguns casos, como sistemas com grandes volumes de dados ou requisitos de desempenho mais exigentes, pode ser vantajoso utilizar um formato binário mais compacto e eficiente. Nesse contexto, o \texttt{Protocol Buffers} (Protobuf) apresenta-se como uma alternativa poderosa.
 
-\newpage
-\section{Qualidade do Código e Boas Práticas}
-\label{sec:qualidadecodigo}
+Protobuf é um formato binário de serialização de dados desenvolvido pela Google, que permite uma codificação e decodificação mais rápida e compacta do que o JSON. Ao contrário do JSON, que é um formato de texto, o Protobuf armazena os dados de forma binária, o que reduz o tamanho do ficheiro e melhora o desempenho de operações de leitura e escrita, especialmente quando lidamos com muitos dados.
 
-\subsection{Testes Unitários}
+\subsubsection{Vantagens do Protobuf}
 
-\subsection{CI/CD Pipeline}
-
-\subsection{Padrões de Design Utilizados}
-
-\subsection{Lambda Functions}
-
-\newpage
-\section{Arquitetura em Camadas (Layered Architecture)}
-\label{sec:arquiteturacamadas}
-
-A adoção de uma arquitetura em camadas é uma prática muito reconhecida para organizar e estruturar o código de uma aplicação, visando separar responsabilidades e promover escalabilidade e manutenção. Dentro desta abordagem, o padrão de \textbf{Model-View-Controller (MVC)} \cite{mvc} foi escolhido para gerir a interface de utilizador e a lógica de aplicação. Este padrão permite uma divisão clara entre as camadas que lidam com os dados, a lógica de negócio e a apresentação visual, facilitando o desenvolvimento modular e a evolução do sistema ao longo do tempo.
-
-\subsection{Escolha da Arquitetura}
-
-O padrão \textbf{MVC (Model-View-Controller)} \cite{mvc} foi escolhido pela sua capacidade de simplificar o desenvolvimento de interfaces de utilizador complexas ao isolar as responsabilidades de cada componente. No contexto de um sistema de gestão de alojamentos, onde há interações contínuas entre utilizadores, dados e regras de negócio, o MVC destaca-se pela facilidade com que permite adicionar ou modificar funcionalidades na interface sem impactar diretamente a lógica de negócio ou a camada de dados.
-
-As vantagens do MVC incluem:
-
+O uso do Protobuf para persistência de dados oferece várias vantagens:
 \begin{itemize}
-	\item \textbf{Modularidade e Reutilização}: A estrutura do MVC facilita a reutilização de código, pois a lógica de negócio (Controller) e os dados (Model) são isolados da camada de apresentação (View), permitindo que o sistema suporte múltiplas interfaces ou plataformas sem duplicação de lógica.
-	\item \textbf{Facilidade de Testes e Manutenção}: A divisão de responsabilidades permite testes mais eficazes em cada camada, especialmente na camada de lógica (Controller), que pode ser isolada para testes unitários sem necessidade de interações com a interface.
-	\item \textbf{Escalabilidade}: O MVC permite que o sistema se expanda de forma coesa, com cada camada sendo ampliada ou substituída sem impacto nas demais, essencial em sistemas que requerem evolução contínua.
+	\item \textbf{Eficiência de Espaço}: Como o Protobuf é um formato binário, ele é muito mais compacto em comparação ao JSON, o que resulta em menos espaço de armazenamento.
+	\item \textbf{Desempenho Superior}: O Protobuf oferece tempos de leitura e escrita mais rápidos devido à sua natureza binária, tornando-o adequado para sistemas com alto tráfego de dados.
 \end{itemize}
 
-\subsection{Desenvolvimento Backend Inicial e Adição de UI}
+\subsubsection{Carregamento de Dados com Protobuf}
 
-O desenvolvimento deste sistema começou com a implementação das camadas fundamentais, como \textit{Model}, \textit{Repository}, \textit{Service}, \textit{Utility} e \textit{Validation}. Estas camadas representam a lógica de negócios central e a persistência de dados, que são independentes da interface de utilizador. Iniciar com estas camadas permitiu que a lógica essencial fosse desenvolvida, testada e validada antes da introdução da interface visual.
+O método \texttt{Load} permite carregar uma coleção de clientes a partir de um ficheiro binário utilizando o formato \texttt{Protocol Buffers} (Protobuf). Caso ocorra algum erro durante o processo de leitura ou desserialização, são lançadas exceções específicas para diagnosticar o problema.
 
-Esta abordagem foi adotada com os seguintes benefícios:
+\begin{lstlisting}[
+	language=csh, 
+	caption={Método Load para Carregar Clientes com Protobuf}, 
+	label={lst:protobuf-load}]
+public void Load(string filePath)
+{
+	try
+	{
+		// Open the file stream for reading
+		using (var fileStream = File.OpenRead(filePath))
+		{
+			// Deserialize the clients object from the file
+			var clients = Serializer.Deserialize<Clients>(fileStream);
+			
+			// Copy the data from the deserialized object to the current instance
+			_clientDictionary.Clear();
+			foreach (var client in clients._clientDictionary)
+			{
+				_clientDictionary[client.Key] = client.Value;
+			}
+		}
+	}
+	catch (IOException ioEx)
+	{
+		throw new IOException("An error occurred while loading the clients data.", ioEx);
+	}
+	catch (SerializationException serEx)
+	{
+		throw new SerializationException("An error occurred during deserialization while loading the clients data.",
+		serEx);
+	}
+}
+\end{lstlisting}
 
+O método \texttt{Load} realiza as seguintes operações:
 \begin{itemize}
-	\item \textbf{Foco na Lógica de Negócio}: Começar com a implementação das camadas de Model, Repository, Service e Validation permitiu concentrar esforços na criação e validação da lógica de negócios antes de adicionar a complexidade da interface de utilizador.
-	
-	\item \textbf{Testabilidade}: A ausência de uma interface de utilizador no início permitiu que as camadas de lógica fossem testadas de forma independente e unitária, garantindo que a interação entre elas funcionasse corretamente antes de integrar a UI.
-	
-	\item \textbf{Facilidade de Evolução}: Ao desenvolver a lógica de negócios separadamente da UI, foi possível garantir que o sistema estivesse bem estruturado e funcional antes de se preocupar com a apresentação visual. Isso permitiu que a interface fosse adicionada posteriormente de forma coesa, sem impactar as camadas já implementadas.
+	\item Abre o ficheiro especificado para leitura, utilizando uma \textit{stream} do ficheiro.
+	\item Desserializa os dados utilizando \texttt{Protocol Buffers}, recriando o objeto de clientes.
+	\item Substitui os dados atuais na instância com os dados carregados do ficheiro.
+	\item Lança exceções detalhadas em caso de falha na leitura ou na desserialização dos dados.
 \end{itemize}
 
-Depois de garantir que as camadas essenciais estavam a funcionar corretamente, a camada de View (UI) foi então integrada ao sistema. O Controller e a View passaram a interagir com as camadas de \textit{Model}, \textit{Repository} e \textit{Service}, proporcionando a interface de utilizador que permite aos utilizadores interagir com o sistema de maneira intuitiva.
+\subsubsection{Gravação de Dados com Protobuf}
 
-Este processo progressivo de desenvolvimento inicial das camadas fundamentais, seguido pela implementação da interface de utilizador, proporcionou uma base sólida e escalável para o sistema.
+O método \texttt{Save} permite guardar o estado atual da coleção de clientes num ficheiro binário utilizando o formato \texttt{Protocol Buffers} (Protobuf). Em caso de erro durante o processo de escrita ou serialização, são lançadas exceções adequadas.
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Método Save para Guardar Clientes com Protobuf}, 
+	label={lst:protobuf-save}]
+public void Save(string filePath)
+{
+	try
+	{
+		// Prepare for serialization by copying the dictionary contents to the temporary list
+		PrepareForSerialization();
+		
+		// Open the file stream for saving the data to the specified file
+		using (var fileStream = File.Create(filePath))
+		{
+			// Serialize the clients object and write it to the file stream
+			Serializer.Serialize(fileStream, this);
+		}
+	}
+	catch (IOException ioEx)
+	{
+		throw new IOException("An error occurred while saving the clients data.", ioEx);
+	}
+	catch (SerializationException serEx)
+	{
+		throw new SerializationException("An error occurred during serialization while saving the clients data.",
+		serEx);
+	}
+}
+\end{lstlisting}
+
+O método \texttt{Save} realiza as seguintes operações:
+\begin{itemize}
+	\item Prepara os dados para serialização, copiando os conteúdos do dicionário para uma estrutura temporária, caso necessário.
+	\item Abre uma \textit{stream} do ficheiro no caminho especificado para guardar os dados.
+	\item Serializa os dados no formato \texttt{Protocol Buffers} e escreve-os no ficheiro.
+	\item Lança exceções detalhadas em caso de falha na escrita ou na serialização dos dados.
+\end{itemize}
+
+\subsubsection{Decoração de Classes para Protobuf}
+
+Para utilizar o \texttt{Protocol Buffers} (Protobuf) como mecanismo de serialização, as classes a serem serializadas precisam de ser decoradas com atributos específicos fornecidos pela biblioteca. Estes atributos definem como os dados serão organizados e manipulados durante os processos de serialização e desserialização. No caso deste projeto, as classes como \texttt{Client} foram configuradas utilizando os atributos \texttt{[ProtoContract]} e \texttt{[ProtoMember]}.
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Classe Client Decorada para Protobuf}, 
+	label={lst:protobuf-decoration}]
+[ProtoContract]
+public class Client
+{
+	[ProtoMember(1)]
+	readonly int _id; // ID of the client
+	
+	[ProtoMember(2)]
+	string _firstName; // First name of the client
+	
+	[ProtoMember(3)]
+	string _lastName; // Last name of the client
+	
+	(...)
+\end{lstlisting}
+
+\textbf{Atributos Principais}
+\begin{itemize}
+	\item \texttt{[ProtoContract]}: Este atributo marca a classe como serializável com Protobuf. Sem ele, a classe não será processada pelo mecanismo de Protobuf.
+	\item \texttt{[ProtoMember(n)]}: Atributo utilizado para especificar a ordem dos campos durante a serialização. Cada membro deve ser associado a um número único que define sua posição na estrutura de dados serializada.
+\end{itemize}
+
+\newpage
+\section{Testes Unitários}
+
+\subsection{Introdução aos Testes Unitários}
+
+Os testes unitários são uma parte essencial do desenvolvimento de software porque garantem que as funções e os métodos tenham o correto comporamento. O principal objetivo é validar o comportamento de cada parte do sistema de forma isolada, o que permite identificar e corrigir erros de maneira eficaz. Para implementar estes testes, usei o framework \texttt{xUnit}, que é uma escolha popular no ecossistema .NET devido à sua simplicidade e integração fácil com outras ferramentas.
+
+\subsection{Razões para Utilizar Testes Unitários}
+
+Os testes unitários ajudam a assegurar a qualidade do código, fornecendo uma camada extra de segurança ao desenvolvimento. No meu projeto, a utilização de testes permitiu:
+\begin{itemize}
+	\item \textbf{Detecção de erros}: Ao testar cada unidade de código de forma isolada, é possível identificar erros, evitando que se propaguem para outras partes do sistema.
+	\item \textbf{Facilidade de refatoração}: Com testes automatizados, é possível refatorar o código com maior confiança, pois sabemos que os testes garantirão que as funcionalidades existentes não sejam comprometidas.
+	\item \textbf{Documentação do comportamento esperado}: Os testes servem como uma forma de documentação do comportamento das funcionalidades, tornando o código mais compreensível.
+\end{itemize}
+
+\subsection{Implementação dos Testes com xUnit}
+
+A escolha do \texttt{xUnit} foi motivada pela sua popularidade na comunidade .NET, bem como pela sua sintaxe simples e pela facilidade de integração com outros frameworks e ferramentas, como o \texttt{GitHub Actions} para CI/CD. Abaixo segue um exemplo de um teste unitário implementado com \texttt{xUnit}.
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Teste do Construtor da Classe Client},
+	label={lst:client-constructor-test}]
+[Fact]
+public void Constructor_ValidParameters_InitializesClient()
+{
+	// Arrange
+	var firstName = "Enrique";
+	var lastName = "Rodrigues";
+	var email = "Enrique.Rodrigues@example.com";
+	
+	// Act
+	var client = new Client(firstName, lastName, email);
+	
+	// Assert
+	Assert.Equal(firstName, client.FirstName);
+	Assert.Equal(lastName, client.LastName);
+	Assert.Equal(email, client.Email);
+	Assert.Equal(PaymentMethod.None, client.PreferredPaymentMethod); // Default value
+	Assert.NotEqual(0, client.Id);                                   // ID should be auto-assigned
+}
+\end{lstlisting}
+
+Este teste verifica o comportamento do construtor da classe \texttt{Client}, garantindo que os parâmetros fornecidos sejam corretamente atribuídos às propriedades da classe e que o valor do \texttt{ID} seja atribuído automaticamente.
+
+\subsection{Integração com CI/CD}
+
+A integração de testes unitários num pipeline CI/CD é uma prática recomendada para garantir que o código seja validado automaticamente em cada mudança ou atualização. No meu projeto, configurei um pipeline de integração contínua utilizando \texttt{GitHub Actions}, permitindo que os testes fossem executados automaticamente sempre que alterações fossem feitas no repositório.
+
+O ficheiro \texttt{dotnet.yml}, que configura o pipeline de CI, é o seguinte:
+
+\begin{lstlisting}[
+	language=C, 
+	caption={Configuração do Pipeline CI com GitHub Actions},
+	label={lst:C}]
+name: .NET CI
+
+on:
+push:
+branches:
+- main
+pull_request:
+branches:
+- main
+
+jobs:
+build-and-test:
+runs-on: ubuntu-latest
+
+steps:
+- name: Checkout code
+uses: actions/checkout@v3
+
+- name: Setup .NET
+uses: actions/setup-dotnet@v3
+with:
+dotnet-version: 8.0.x
+
+- name: Restore dependencies
+working-directory: ./SmartStay
+run: dotnet restore SmartStay.sln
+
+- name: Build solution
+working-directory: ./SmartStay
+run: dotnet build SmartStay.sln --no-restore --configuration Release
+
+- name: Run tests
+working-directory: ./SmartStay
+run: dotnet test --no-build --verbosity normal --configuration Release
+\end{lstlisting}
+
+Este ficheiro configura o pipeline para que, sempre que houver um \texttt{push} ou um \texttt{pull request} na branch \texttt{main}, o código seja compilado e os testes sejam executados de forma automática.
+
+\subsection{Vantagens da Integração Contínua e Testes Automatizados}
+
+Integrar os testes unitários com um pipeline CI/CD oferece várias vantagens:
+\begin{itemize}
+	\item \textbf{Automação}: A execução dos testes é automática sempre que há uma alteração no código, garantindo que nada seja esquecido.
+	\item \textbf{Detecção rápida de falhas}: Caso algum teste falhe, o pipeline falha imediatamente, permitindo que os desenvolvedores corrijam os problemas de forma rápida.
+	\item \textbf{Consistência}: Os testes são executados nas mesmas condições em cada execução do pipeline, assegurando que o comportamento do sistema seja consistente ao longo do tempo.
+\end{itemize}
+
+A utilização de testes unitários combinada com um pipeline de CI/CD robusto oferece uma solução eficiente e confiável para garantir a qualidade e a estabilidade do código durante todo o ciclo de desenvolvimento.
+
+\newpage
+\section{Desenvolvimento da Interface}
+\label{sec:desenvolvimentoui}
+
+\subsection{Introdução ao Razor Server App}
+
+Para o desenvolvimento da interface do utilizador, optei por criar uma aplicação \textit{Razor Server App}. Esta escolha foi motivada pela minha experiência com \texttt{HTML} e \texttt{CSS}, tecnologias que já conhecia, e que me permitiram explorar as funcionalidades do Razor de forma eficiente. O \texttt{Razor} é uma engine de templates do .NET que facilita a criação de páginas dinâmicas ao integrar HTML com código C\# de maneira fluida. A sintaxe do Razor permite misturar de forma simples as estruturas de HTML com código C\#, oferecendo uma experiência de desenvolvimento mais rápida e intuitiva para aplicações web.
+
+\subsection{Dependency Injection e Integração com o Backend}
+
+No que diz respeito à arquitetura da aplicação, utilizei o \textit{Dependency Injection} (DI), uma prática recomendada no desenvolvimento de aplicações .NET para promover a inversão de controlo e facilitar a manutenção e testabilidade do código. O \textit{Dependency Injection} permite que os serviços e dependências da aplicação sejam injetados automaticamente nas classes que as necessitam, em vez de serem instanciados diretamente dentro dessas classes.
+
+No meu projeto, o backend é composto por bibliotecas \texttt{DLL}, que são responsáveis pelas regras de negócio. Para integrar estas bibliotecas com o front-end Razor, configurei a injeção das dependências no \texttt{Program.cs}. O serviço \texttt{BookingManager}, responsável pela gestão das reservas, é injetado no container de serviços da aplicação da seguinte forma:
+
+\begin{lstlisting}[
+	language=csh, 
+	caption={Configuração de Dependency Injection},
+	label={lst:di-config}]
+builder.Services.AddSingleton<BookingManager>();
+\end{lstlisting}
+
+Ao adicionar o \texttt{BookingManager} como um serviço singleton no container de DI, a aplicação garante que uma única instância da classe \texttt{BookingManager} seja criada e utilizada durante toda a execução da aplicação. Isto permite que o Razor tenha acesso às regras de negócio necessárias para processar as reservas, sem a necessidade de criar novas instâncias do \texttt{BookingManager} diretamente nas páginas Razor.
+
+Esta abordagem facilita a gestão de dependências e contribui para uma maior organização e flexibilidade no código. Além disso, a injeção de dependências torna a aplicação mais fácil de testar, uma vez que podemos simular ou substituir as dependências nas classes de teste.
+
+\subsection{Uso de Tailwind CSS e Flowbite}
+
+Uma das escolhas importantes no desenvolvimento da interface do utilizador foi a substituição do \texttt{Bootstrap} pelo \texttt{Tailwind CSS}, uma framework de CSS altamente personalizável. A principal razão para esta escolha foi a flexibilidade que o \texttt{Tailwind} oferece em comparação com o \texttt{Bootstrap}, permitindo um controlo muito mais preciso sobre o design e estilo da aplicação. 
+
+Enquanto o \texttt{Bootstrap} fornece um conjunto de componentes predefinidos com um estilo determinado, o \texttt{Tailwind} permite que se defina cada parte do layout utilizando uma abordagem de \textit{utility-first}. Com \texttt{Tailwind}, podemos aplicar classes utilitárias diretamente aos elementos HTML, o que resulta em código mais conciso e altamente configurável. Esta abordagem ajuda a evitar o uso excessivo de classes personalizadas e reduz a necessidade de escrever CSS adicional, tornando o processo de estilização mais ágil e eficiente.
+
+\subsubsection{Integração com Flowbite}
+
+Embora o \texttt{Tailwind CSS} forneça uma base sólida para a construção da interface, optei por integrar o \texttt{Flowbite}, uma biblioteca de componentes construídos em cima do \texttt{Tailwind}, para acelerar ainda mais o desenvolvimento. O \texttt{Flowbite} oferece uma série de componentes prontos para uso, como botões, modais, tabelas, menus de navegação e muito mais, todos desenhados para se integrarem perfeitamente com o \texttt{Tailwind}. 
+
+O uso do \texttt{Flowbite} não só poupou tempo no desenvolvimento, mas também garantiu que a interface tivesse um design moderno e funcional, com componentes que seguem as melhores práticas de design responsivo e acessibilidade. Além disso, como o \texttt{Flowbite} é construído em cima do \texttt{Tailwind}, não houve conflito entre os estilos e foi fácil de personalizar os componentes conforme as necessidades do projeto.
+
+Para integrar o \texttt{Flowbite} com o projeto, foi necessário instalar a biblioteca e configurá-la no ficheiro de recursos do projeto. O processo de instalação foi simples e envolveu a adição do \texttt{Flowbite} através de \texttt{npm}. Abaixo está um exemplo de como a integração foi realizada no ficheiro \_Layout.cshtml:
+
+\begin{lstlisting}[
+	language=html, 
+	caption={Integração do Flowbite},
+	label={lst:flowbite-integration}]
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<base href="~/" />
+	<link href="~/css/app.min.css" rel="stylesheet" />
+	<link href="SmartStay.App.styles.css" rel="stylesheet" />
+	<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+</head>
+<body>
+	@RenderBody()
+	
+	<div id="blazor-error-ui">
+		<environment include="Staging,Production">
+		An error has occurred. This application may no longer respond until reloaded.
+		</environment>
+		<environment include="Development">
+		An unhandled exception has occurred. See browser dev tools for details.
+		</environment>
+		<a href="" class="reload">Reload</a>
+		<a class="dismiss">X</a>
+	</div>
+	
+	<script src="_framework/blazor.server.js"></script>
+	<script 
+	src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js">
+	</script>
+</body>
+</html>
+\end{lstlisting}
+
+Com esta integração, foi possível melhorar a experiência do utilizador e otimizar o tempo de desenvolvimento, aproveitando os componentes de UI prontos do \texttt{Flowbite} enquanto ainda mantinha a flexibilidade do \texttt{Tailwind}.
 
 \newpage
 \section{Conclusão}

@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.App", "SmartStay.App\SmartStay.App.csproj", "{630B6877-214D-4632-9E12-31262F4B97DA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Core", "SmartStay.Core\SmartStay.Core.csproj", "{7FD2B5C1-3C52-4413-B061-BF84B26AB25A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{CDC86562-76F1-4D2D-8DB7-8CEE8B7F9768}"
@@ -21,16 +19,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Validation.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.IO.Tests", "SmartStay.IO.Tests\SmartStay.IO.Tests.csproj", "{37F55275-88FD-46F4-9542-A1B5F25AAEF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.App", "SmartStay.App\SmartStay.App.csproj", "{5715C9F1-3AE9-4853-B19E-995AE5B75B02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Core.Tests", "SmartStay.Core.Tests\SmartStay.Core.Tests.csproj", "{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStay.Api", "SmartStay.Api\SmartStay.Api.csproj", "{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{630B6877-214D-4632-9E12-31262F4B97DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{630B6877-214D-4632-9E12-31262F4B97DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{630B6877-214D-4632-9E12-31262F4B97DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{630B6877-214D-4632-9E12-31262F4B97DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7FD2B5C1-3C52-4413-B061-BF84B26AB25A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FD2B5C1-3C52-4413-B061-BF84B26AB25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FD2B5C1-3C52-4413-B061-BF84B26AB25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,6 +55,18 @@ Global
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5715C9F1-3AE9-4853-B19E-995AE5B75B02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4F2FA05-ED5B-4F08-AF61-AD05D2400624}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +78,6 @@ Global
 		{E7DE446C-5F19-4E3F-81FC-EBC5634D33D2} = {CDC86562-76F1-4D2D-8DB7-8CEE8B7F9768}
 		{9329882D-EFB3-49F2-94BA-755B1D70C8FD} = {EEB42560-D340-4296-8A62-B898F8106DCF}
 		{37F55275-88FD-46F4-9542-A1B5F25AAEF3} = {EEB42560-D340-4296-8A62-B898F8106DCF}
+		{E220FBE9-7670-4E1F-A42A-7F3CC3F52210} = {EEB42560-D340-4296-8A62-B898F8106DCF}
 	EndGlobalSection
 EndGlobal

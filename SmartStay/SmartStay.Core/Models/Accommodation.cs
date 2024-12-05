@@ -8,11 +8,11 @@
 /// </file>
 /// <author>Enrique Rodrigues</author>
 /// <date>10/11/2024</date>
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ProtoBuf;
 using SmartStay.Common.Enums;
-using SmartStay.Core.Repositories;
-using SmartStay.Core.Utilities;
 using SmartStay.Validation;
 using SmartStay.Validation.Validators;
 
@@ -27,24 +27,85 @@ namespace SmartStay.Core.Models
 /// such as its type, name, address, nightly price, and availability status.
 /// This class provides methods to update availability and calculate total cost.
 /// </summary>
-[JsonConverter(typeof(AccommodationConverter))]
+[ProtoContract]
 public class Accommodation
 {
+    /// <summary>
+    /// The last assigned accommodation ID. Used for generating unique IDs for new accommodations.
+    /// </summary>
     static int _lastAccommodationId = 0; // Last assigned accommodation ID
-    static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true }; // JSON Serializer options
 
-    readonly int _id;        // ID of the accommodation
+    /// <summary>
+    /// JSON serializer options used for formatting and serializing client data in JSON.
+    /// <para>
+    /// - <see cref="WriteIndented"/> is enabled to improve readability with indented formatting.
+    /// - <see cref="Encoder"/> is set to <see cref="JavaScriptEncoder.UnsafeRelaxedJsonEscaping"/> to allow unsafe
+    /// characters
+    ///   (such as `<`, `>`, and other special characters) to be included without escaping.
+    /// - <see cref="Converters"/> contains a <see cref="JsonStringEnumConverter"/> to serialize enum values as their
+    /// string names
+    ///   instead of integer values.
+    /// </para>
+    /// </summary>
+    static readonly JsonSerializerOptions _jsonOptions =
+        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                                      Converters = { new JsonStringEnumConverter() } };
+
+    /// <summary>
+    /// The unique identifier for this accommodation. This ID is used to distinguish one accommodation from another.
+    /// </summary>
+    [ProtoMember(1)]
+    readonly int _id; // ID of the accommodation
+
+    /// <summary>
+    /// The unique identifier for the owner of this accommodation. This ID links the accommodation to its owner.
+    /// </summary>
+    [ProtoMember(2)]
+    int _ownerId; // ID of the owner
+
+    /// <summary>
+    /// The type of the accommodation. It could represent categories like Hotel, House, Apartment, etc.
+    /// </summary>
+    [ProtoMember(3)]
     AccommodationType _type; // Type of accommodation (Hotel, House, etc.)
-    string _name;            // Name of the accommodation
-    string _address;         // Address of the accommodation
-    decimal _pricePerNight;  // Price per night for the accommodation
-    readonly SortedSet<DateRange> _reservationDates =
-        new SortedSet<DateRange>(); // Sorted set for efficient availability check
+
+    /// <summary>
+    /// The name of the accommodation. This is typically a name like "Sunset Hotel" or "Oceanview Villa".
+    /// </summary>
+    [ProtoMember(4)]
+    string _name; // Name of the accommodation
+
+    /// <summary>
+    /// The address of the accommodation. This provides the physical location of the accommodation.
+    /// </summary>
+    [ProtoMember(5)]
+    string _address; // Address of the accommodation
+
+    /// <summary>
+    /// A list of rooms associated with the accommodation. Each room can have its own properties like size, bed type,
+    /// and other features.
+    /// </summary>
+    [ProtoMember(6)]
+    List<Room> _rooms = new(); // List of rooms
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Accommodation"/> class.
+    /// <para>This constructor is required for Protobuf-net serialization/deserialization.</para>
+    /// <para>It should **not** be used directly in normal application code. Instead, use the constructor with
+    /// parameters for creating instances of <see cref="Accommodation"/>.</para>
+    /// </summary>
+#pragma warning disable CS8618
+    public Accommodation()
+#pragma warning restore CS8618
+    {
+        // This constructor is intentionally empty and only needed for Protobuf-net deserialization.
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Accommodation"/> class with the specified details: type, name,
     /// address, and price per night.
     /// </summary>
+    /// <param name="ownerId">The ID of the owner of the accommodation.</param>
     /// <param name="type">The type of the accommodation (e.g., Hotel, House).</param>
     /// <param name="name">The name of the accommodation.</param>
     /// <param name="address">The address of the accommodation.</param>
@@ -59,24 +120,76 @@ public class Accommodation
     /// the properties. If any validation fails, a <see cref="ValidationException"/> is thrown with the appropriate
     /// error code.
     /// </remarks>
-    public Accommodation(AccommodationType type, string name, string address, decimal pricePerNight)
+    public Accommodation(int ownerId, AccommodationType type, string name, string address)
     {
         AccommodationValidator.ValidateAccommodationType(type);
         NameValidator.ValidateAccommodationName(name);
         AddressValidator.ValidateAddress(address);
-        PaymentValidator.ValidatePrice(pricePerNight);
 
         _id = GenerateAccommodationId();
+        _ownerId = ownerId;
         _type = type;
         _name = name;
         _address = address;
-        _pricePerNight = pricePerNight;
+    }
+
+    /// <summary>
+    /// Constructor to initialize a new <see cref="Accommodation"/> with all details, including a manually specified ID,
+    /// owner ID, type, name, address, and list of rooms. <b>This constructor should be avoided in normal cases</b> as
+    /// it allows manual assignment of the accommodation ID, which can lead to conflicts and issues with ID uniqueness.
+    /// The system is designed to automatically handle unique ID assignment, and using other constructors is recommended
+    /// for creating accommodation objects to ensure proper handling of IDs. <br/>This constructor is marked with <see
+    /// cref="[JsonConstructor]"/> so it will be used for JSON deserialization purposes, but it should not be used when
+    /// creating new accommodation objects manually.
+    /// </summary>
+    /// <param name="id">The manually specified ID of the accommodation. This should not be used under normal
+    /// circumstances as the system handles ID assignment automatically.</param>
+    /// <param name="ownerId">The ID of the
+    /// owner of the accommodation.</param>
+    /// <param name="type">The type of accommodation (e.g., hotel, apartment,
+    /// etc.).</param>
+    /// <param name="name">The name of the accommodation.</param>
+    /// <param name="address">The residential
+    /// address of the accommodation.</param>
+    /// <param name="rooms">The list of rooms available in the
+    /// accommodation.</param>
+    [JsonConstructor]
+    public Accommodation(int id, int ownerId, AccommodationType type, string name, string address, List<Room> rooms)
+    {
+        _id = id;
+        UpdateLastAccommodationId(id);
+        _ownerId = ownerId;
+        _type = type;
+        _name = name;
+        _address = address;
+        _rooms = rooms;
+    }
+
+    /// <summary>
+    /// Public getter and setter for the last assigned ID.
+    /// </summary>
+    public static int LastAssignedId
+    {
+        get => _lastAccommodationId;
+        set {
+            if (_lastAccommodationId < value)
+                _lastAccommodationId = value;
+        }
     }
 
     /// <summary>
     /// Public getter for the accommodation ID.
     /// </summary>
     public int Id => _id;
+
+    /// <summary>
+    /// Public getter and setter for the Owner ID.
+    /// </summary>
+    public int OwnerId
+    {
+        get => _ownerId;
+        set => _ownerId = OwnerValidator.ValidateOwnerId(value);
+    }
 
     /// <summary>
     /// Public getter and setter for the Type.
@@ -106,149 +219,52 @@ public class Accommodation
     }
 
     /// <summary>
-    /// Public getter and setter for the PricePerNight.
+    /// Public getter for the list of rooms in the accommodation.
     /// </summary>
-    public decimal PricePerNight
+    public List<Room> Rooms => _rooms;
+
+    /// <summary>
+    /// Finds and returns a room from the accommodation by its room ID.
+    /// </summary>
+    /// <param name="roomId">The ID of the room to find.</param>
+    /// <returns>The room with the specified ID, or null if not found.</returns>
+    public Room? FindRoomById(int roomId)
     {
-        get => _pricePerNight;
-        set => _pricePerNight = PaymentValidator.ValidatePrice(value);
+        return _rooms.Find(room => room.Id == roomId);
     }
 
     /// <summary>
-    /// Public getter for the ReservationDates DateRange as readonly collection.
+    /// Adds a new room to the accommodation.
     /// </summary>
-    public IReadOnlyCollection<DateRange> ReservationDates
+    /// <param name="room">The <see cref="Room"/> object to be added to the accommodation's room list.</param>
+    /// <returns>true if the room was added successfully; otherwise, false.</returns>
+    public bool AddRoom(Room room)
     {
-        get {
-            return _reservationDates.ToList().AsReadOnly();
-        }
-    }
-
-    /// <summary>
-    /// Checks if a given date range is available for a new reservation, ensuring there are no overlaps with existing
-    /// reservations.
-    /// </summary>
-    /// <param name="startDate">The start date of the new reservation.</param>
-    /// <param name="endDate">The end date of the new reservation.</param>
-    /// <param name="existingReservationRange">
-    /// Optional parameter representing an existing reservation that can be ignored during the availability check,
-    /// used for modifying reservations.
-    /// </param>
-    /// <returns>
-    /// Returns <c>true</c> if the accommodation is available during the specified date range; otherwise, returns
-    /// <c>false</c>.
-    /// </returns>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="endDate"/> is less than or equal to <paramref
-    /// name="startDate"/>.</exception> <remarks> This method uses a <see cref="SortedSet{T}"/> to efficiently find
-    /// potential conflicting reservations by leveraging the <c>GetViewBetween</c> method, which narrows down the search
-    /// space to reservations potentially overlapping with the requested dates. Overlapping reservations are identified
-    /// based on whether the requested range intersects with any existing reservation.
-    /// </remarks>
-    public bool IsAvailable(DateTime startDate, DateTime endDate, DateRange? existingReservationRange = null)
-    {
-        if (endDate <= startDate)
-            throw new ArgumentException("End date must be after the start date.");
-
-        var newReservation = new DateRange(startDate, endDate);
-
-        // Get potential conflicting reservations within the requested range
-        var potentialConflicts = _reservationDates.GetViewBetween(
-            new DateRange(DateTime.MinValue, startDate), // All reservations that end before the start
-            new DateRange(DateTime.MaxValue, endDate)    // All reservations that start after the end
-        );
-
-        // Check if there are any overlapping reservations
-        foreach (var existingReservation in potentialConflicts)
+        if (room == null)
         {
-            // Skip the existing reservation if it's the one we're trying to modify
-            if (existingReservation.Equals(existingReservationRange))
-            {
-                continue; // Skip this reservation as it's the one we're modifying
-            }
-
-            // An overlap occurs if the start date is before the end date, and the end date is after the start date
-            if ((newReservation.Start < existingReservation.End) && (newReservation.End > existingReservation.Start))
-            {
-                return false; // There's an overlap, so the accommodation is not available
-            }
+            return false; // If the room is null, return false
         }
 
-        return true; // No overlap found, accommodation is available
+        _rooms.Add(room);
+        return true; // Successfully added the room
     }
 
     /// <summary>
-    /// Adds a new reservation to the accommodation, with an optional ability to skip the availability check for faster
-    /// bulk operations.
+    /// Deletes a room from the accommodation's room list.
     /// </summary>
-    /// <param name="startDate">The start date of the reservation.</param>
-    /// <param name="endDate">The end date of the reservation.</param>
-    /// <param name="skipAvailabilityCheck">
-    /// A boolean flag indicating whether to skip the availability check. Set to <c>true</c> during bulk operations or
-    /// trusted inputs where availability is pre-validated.
-    /// </param>
-    /// <returns>
-    /// Returns <c>true</c> if the reservation was successfully added. If <paramref name="skipAvailabilityCheck"/> is
-    /// <c>false</c> and the date range is unavailable, returns <c>false</c>.
-    /// </returns>
-    /// <remarks>
-    /// This method adds the reservation to a <see cref="SortedSet{T}"/> that maintains ordered reservations by date
-    /// range. Skipping the availability check can improve performance significantly during bulk operations but should
-    /// only be used with pre-validated or trusted data.
-    /// </remarks>
-    public bool AddReservation(DateTime startDate, DateTime endDate, bool skipAvailabilityCheck = false)
+    /// <param name="roomId">The ID of the <see cref="Room"/> to be removed from the accommodation.</param>
+    /// <returns>true if the room was found and removed; otherwise, false.</returns>
+    public bool DeleteRoom(int roomId)
     {
-        // If not skipping the availability check, validate the dates
-        if (!skipAvailabilityCheck && !IsAvailable(startDate, endDate))
+        var roomToDelete = _rooms.Find(r => r.Id == roomId);
+
+        if (roomToDelete == null)
         {
-            return false; // If not available, return false
+            return false; // Return false if the room with the given ID is not found
         }
 
-        // Add the new reservation's date range to the SortedSet
-        _reservationDates.Add(new DateRange(startDate, endDate));
-        return true; // Successfully added the reservation
-    }
-
-    /// <summary>
-    /// Removes an existing reservation from the accommodation.
-    /// </summary>
-    /// <param name="startDate">The start date of the reservation to be removed.</param>
-    /// <param name="endDate">The end date of the reservation to be removed.</param>
-    /// <returns>
-    /// Returns <c>true</c> if the reservation was successfully removed; otherwise, returns <c>false</c> if the
-    /// specified reservation was not found.
-    /// </returns>
-    /// <remarks>
-    /// This method uses the <see cref="SortedSet{T}.Remove"/> method to delete a specific reservation by matching its
-    /// <see cref="DateRange"/>. It ensures efficient removal operations due to the underlying data structure.
-    /// </remarks>
-    public bool RemoveReservation(DateTime startDate, DateTime endDate)
-    {
-        // Create the date range object to remove
-        var reservationToRemove = new DateRange(startDate, endDate);
-
-        // Remove the reservation from the SortedSet
-        bool removed = _reservationDates.Remove(reservationToRemove);
-
-        // Return whether the reservation was successfully removed
-        return removed;
-    }
-
-    /// <summary>
-    /// Calculates the total cost for a given stay duration.
-    /// </summary>
-    /// <param name="startDate">The start date of the stay.</param>
-    /// <param name="endDate">The end date of the stay.</param>
-    /// <returns>The total cost for the stay based on the price per night.</returns>
-    /// <exception cref="ArgumentException">Thrown when the end date is before the start date.</exception>
-    public decimal CalculateTotalCost(DateTime startDate, DateTime endDate)
-    {
-        if (endDate <= startDate)
-        {
-            throw new ArgumentException("End date must be after the start date.");
-        }
-
-        int nights = (endDate - startDate).Days;
-        return nights * _pricePerNight;
+        _rooms.Remove(roomToDelete);
+        return true; // Successfully removed the room
     }
 
     /// <summary>
@@ -268,12 +284,33 @@ public class Accommodation
     }
 
     /// <summary>
+    /// Method to ensure _lastAccommodationId is up-to-date after deserialization or manual assignment
+    /// </summary>
+    /// <param name="id">Manually given ID</param>
+    private static void UpdateLastAccommodationId(int id)
+    {
+        if (id > _lastAccommodationId)
+        {
+            _lastAccommodationId = id; // Update the last assigned client ID if the new ID is larger
+        }
+    }
+
+    /// <summary>
     /// Overridden ToString method to provide accommodation information in a readable JSON format.
     /// </summary>
     /// <returns>A JSON string representation of the accommodation object.</returns>
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this, _jsonOptions);
+        // Create a dictionary for the properties you want to serialize
+        var accommodationData = new { Id = _id, Type = _type.ToString(), Name = _name, Address = _address,
+                                      Rooms = _rooms.Select(room => new {
+                                          room.Id,
+                                          room.PricePerNight,
+                                          room.Type,
+                                      }) };
+
+        // Serialize the dictionary into a JSON string, which will include Rooms as an array
+        return JsonSerializer.Serialize(accommodationData, _jsonOptions);
     }
 }
 }

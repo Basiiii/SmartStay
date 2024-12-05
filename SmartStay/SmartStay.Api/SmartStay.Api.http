@@ -1,0 +1,6 @@
+@SmartStay.Api_HostAddress = http://localhost:5003
+
+GET {{SmartStay.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
