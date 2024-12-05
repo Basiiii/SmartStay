@@ -47,8 +47,8 @@ public class Payment
     /// </para>
     /// </summary>
     static readonly JsonSerializerOptions _jsonOptions =
-        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                      Converters = { new JsonStringEnumConverter() } };
+        new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique ID of the payment. This ID is used to identify the payment.
@@ -230,6 +230,22 @@ public class Payment
         {
             _lastPaymentId = id; // Update the last assigned owner ID if the new ID is larger
         }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the current <see cref="Payment"/> instance.
+    /// </summary>
+    /// <returns>A new <see cref="Payment"/> instance with identical data to the current instance.</returns>
+    public Payment Clone()
+    {
+        // Create a new instance of Payment and deep copy the fields
+        return new Payment(_id,            // Immutable, directly copy
+                           _reservationId, // Value type, directly copy
+                           _amount,        // Value type, directly copy
+                           _date,          // Value type (DateTime), directly copy
+                           _method,        // Enum type, directly copy
+                           _status         // Enum type, directly copy
+        );
     }
 
     /// <summary>

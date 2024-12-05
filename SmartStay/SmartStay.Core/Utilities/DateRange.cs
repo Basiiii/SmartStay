@@ -167,5 +167,15 @@ public class DateRange : IComparable<DateRange>
     {
         return left.CompareTo(right) >= 0;
     }
+
+    /// <summary>
+    /// Creates a deep copy of the current <see cref="DateRange"/> instance.
+    /// </summary>
+    /// <returns>A new <see cref="DateRange"/> instance with identical data to the current instance.</returns>
+    public DateRange Clone()
+    {
+        // Use the constructor to initialize the new DateRange
+        return new DateRange(Start, End);
+    }
 }
 }

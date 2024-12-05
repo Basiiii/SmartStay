@@ -18,6 +18,7 @@ namespace SmartStay.Core.Tests.Models
 using Xunit;
 using SmartStay.Core.Models;
 using SmartStay.Validation;
+using SmartStay.Common.Enums;
 
 /// <summary>
 /// Contains unit tests for the <see cref="Owner"/> class.
@@ -158,14 +159,26 @@ public class OwnerTests
     {
         // Arrange
         var owner = new Owner("Alice", "Johnson", "alice.johnson@example.com");
-        var accommodation = new Accommodation { Name = "Hotel Paradise" };
+        var accommodation = new Accommodation(ownerId: owner.Id,               // Use the owner's ID
+                                              type: AccommodationType.Hotel,   // Specify a valid type
+                                              name: "Hotel Paradise",        // Provide the name
+                                              address: "123 Paradise Street" // Provide the address
+        );
 
         // Act
         var result = owner.AddAccommodation(accommodation);
 
         // Assert
         Assert.True(result);
-        Assert.Contains(accommodation, owner.AccommodationsOwned);
+
+        // Assert that the accommodation was added by checking multiple properties
+        var addedAccommodation = owner.AccommodationsOwned.Find(a => a.Name == accommodation.Name);
+
+        Assert.NotNull(addedAccommodation); // Ensure an accommodation with matching name was added
+        Assert.Equal(accommodation.Name, addedAccommodation.Name);       // Verify Name
+        Assert.Equal(accommodation.Address, addedAccommodation.Address); // Verify Address
+        Assert.Equal(accommodation.OwnerId, addedAccommodation.OwnerId); // Verify OwnerId
+        Assert.Equal(accommodation.Type, addedAccommodation.Type);       // Verify Type
     }
 
     /// <summary>
@@ -197,7 +210,7 @@ public class OwnerTests
     {
         // Arrange
         Owner.LastAssignedId = 0; // Reset for testing
-        var owner1 = new Owner("Alice", "Johnson", "alice.johnson@example.com");
+        _ = new Owner("Alice", "Johnson", "alice.johnson@example.com");
         var owner2 = new Owner("Bob", "Smith", "bob.smith@example.com");
 
         // Act

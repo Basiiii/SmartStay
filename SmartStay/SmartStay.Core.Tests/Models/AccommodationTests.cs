@@ -135,7 +135,9 @@ public class AccommodationTests
     public void OwnerId_SetAndGet_CorrectlySetsOwnerId()
     {
         // Arrange
+#pragma warning disable IDE0017 // Simplify object initialization
         var accommodation = new Accommodation(1, AccommodationType.Hotel, "Sunset Hotel", "123 Beach Ave");
+#pragma warning restore IDE0017 // Simplify object initialization
 
         // Act
         accommodation.OwnerId = 2;

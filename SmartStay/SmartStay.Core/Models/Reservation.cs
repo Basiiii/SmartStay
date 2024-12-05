@@ -48,8 +48,8 @@ public class Reservation
     /// </para>
     /// </summary>
     static readonly JsonSerializerOptions _jsonOptions =
-        new JsonSerializerOptions() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                      Converters = { new JsonStringEnumConverter() } };
+        new() { WriteIndented = true, Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                Converters = { new JsonStringEnumConverter() } };
 
     /// <summary>
     /// The unique ID of the reservation. This ID is used to identify the reservation.
@@ -116,7 +116,7 @@ public class Reservation
     /// A list of payments made for the reservation.
     /// </summary>
     [ProtoMember(11)]
-    List<Payment> _payments = new(); // List of payments made for the reservation
+    readonly List<Payment> _payments = []; // List of payments made for the reservation
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Reservation"/> class.
@@ -294,9 +294,17 @@ public class Reservation
     }
 
     /// <summary>
-    /// Gets the list of payments made towards the reservation.
+    /// Gets a deep copy of the list of payments made towards the reservation.
     /// </summary>
-    public List<Payment> Payments => _payments;
+    /// <remarks>
+    /// This property creates and returns a deep copy of the underlying payments collection.
+    /// Modifications to the returned list or its elements will not affect the original data.
+    /// <para>
+    /// **Performance Note**: Creating a deep copy can incur a performance cost, especially for
+    /// large collections. Use this property sparingly if performance is critical.
+    /// </para>
+    /// </remarks>
+    public List<Payment> Payments => GetPaymentsCopy();
 
     /// <summary>
     /// Marks the reservation as checked in and updates the status to CheckedIn.
@@ -406,6 +414,16 @@ public class Reservation
         {
             _lastReservationId = id; // Update the last assigned owner ID if the new ID is larger
         }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of the payments list.
+    /// </summary>
+    /// <returns>A deep copy of the list of payments.</returns>
+    private List<Payment> GetPaymentsCopy()
+    {
+        // Deep copy each payment
+        return _payments.Select(payment => payment.Clone()).ToList();
     }
 
     /// <summary>
