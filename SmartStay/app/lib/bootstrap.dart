@@ -7,9 +7,12 @@ import 'package:smartstay_app/core/utils/logger/logger_utils.dart';
 import 'package:smartstay_app/core/utils/package_info/package_info_utils.dart';
 import 'package:smartstay_app/locator.dart';
 
-Future<void> bootstrap({required FutureOr<Widget> Function() builder, required AppEnvironment environment}) async {
+Future<void> bootstrap(
+    {required FutureOr<Widget> Function() builder,
+    required AppEnvironment environment}) async {
   FlutterError.onError = (details) {
-    LoggerUtils.instance.logFatalError(details.exceptionAsString(), details.stack);
+    LoggerUtils.instance
+        .logFatalError(details.exceptionAsString(), details.stack);
   };
   await runZonedGuarded<Future<void>>(
     () async {

@@ -1,20 +1,122 @@
-import 'dart:math';
-
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:smartstay_app/app/constants/string_constants.dart';
 import 'package:smartstay_app/app/router/app_router.gr.dart';
+import 'package:smartstay_app/core/clients/network/network_client.dart';
 
 @RoutePage()
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignupViewState extends State<SignupView> {
   bool isHovered = false;
   bool isPasswordVisible = false;
+
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+
+  final NetworkClient _networkClient = NetworkClient(
+    dio: Dio(),
+    baseUrl: StringConstants.apiBaseURL,
+  );
+
+  Future<Map<String, dynamic>?> createBasicClient({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) async {
+    try {
+      // Make a POST request to the /basic endpoint
+      final response = await _networkClient.post<Map<String, dynamic>>(
+        '/client/basic',
+        data: {
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+        },
+      );
+
+      // Check if the response indicates success
+      if (response.statusCode == 201) {
+        // Return the newly created client data
+        return response.data;
+      } else {
+        // Handle unexpected status codes
+        _showErrorMessage('Unexpected status code: ${response.statusCode}');
+        return null;
+      }
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.statusCode == 400) {
+        // Handle 400 Bad Request
+        final errorMessage =
+            e.response?.data['message'] ?? 'Unknown error occurred';
+        _showErrorMessage('Client creation failed: $errorMessage');
+        return null;
+      } else {
+        // Handle other Dio errors (e.g., network issues)
+        _showErrorMessage('Network error: ${e.message}');
+        return null;
+      }
+    } catch (e) {
+      // Handle other exceptions
+      _showErrorMessage('Unexpected error: $e');
+      return null;
+    }
+  }
+
+  Future<bool> _handleCreateClient() async {
+    // Get values from controllers
+    final firstName = _firstNameController.text;
+    final lastName = _lastNameController.text;
+    final email = _emailController.text.trim();
+
+    // Validate input (basic checks)
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
+      _showErrorMessage('Please fill in all the fields.');
+      return false;
+    }
+
+    // Call the function to create the client
+    final result = await createBasicClient(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+    );
+
+    if (result != null) {
+      // Successfully created the client
+      if (kDebugMode) {
+        print('Client created successfully: $result');
+      }
+      return true;
+    } else {
+      // Failed to create the client, error will be shown in the _showErrorMessage
+      return false;
+    }
+  }
+
+  void _showErrorMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +147,7 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   // Title
                   const Text(
-                    'Log in',
+                    'Log In',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -54,7 +156,7 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 8),
                   // Subtitle
                   const Text(
-                    'Login to your SmartStay account and book your next getaway',
+                    'Log back into your SmartStay account!',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
@@ -62,9 +164,11 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   const SizedBox(height: 32),
                   // Form fields
-                  const TextField(
-                    decoration: InputDecoration(
-                      labelText: "Email address",
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email address',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(12),
@@ -96,14 +200,18 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 32),
                   Row(
                     children: [
-                      // First button - Log In
+                      // First button - Log In as Client
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Add log-in logic here
+                          onPressed: () async {
+                            final clientCreated = await _handleCreateClient();
+                            if (clientCreated && context.mounted) {
+                              await context.router.replace(const HomeRoute());
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context)
@@ -172,11 +280,11 @@ class _LoginViewState extends State<LoginView> {
                         },
                         child: GestureDetector(
                           onTap: () {
-                            context.router.replace(const SignupRoute());
+                            context.router.replace(const LoginRoute());
                           },
                           child: Text.rich(
                             TextSpan(
-                              text: 'Sign Up',
+                              text: 'Log In',
                               style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
