@@ -15,7 +15,7 @@ final class DarkTheme extends BaseTheme {
       onPrimary: Color(0xff120e14),
       primaryContainer: Color(0xff6200ee),
       onPrimaryContainer: Color(0xffefdfff),
-      secondary: Color(0xff03dac6),
+      secondary: Color(0xff03c4b1),
       onSecondary: Color(0xff041413),
       secondaryContainer: Color(0xff003e3e),
       onSecondaryContainer: Color(0xffdfe9e9),

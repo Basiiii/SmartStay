@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:smartstay_app/app/router/app_router.gr.dart';
 
 @RoutePage()
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignupViewState extends State<SignupView> {
   bool isHovered = false;
   bool isPasswordVisible = false;
 
@@ -45,7 +45,7 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   // Title
                   const Text(
-                    'Log in',
+                    'Sign Up',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -54,7 +54,7 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(height: 8),
                   // Subtitle
                   const Text(
-                    'Login to your SmartStay account and book your next getaway',
+                    'Sign up to your SmartStay account and book your next getaway',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
@@ -62,6 +62,28 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   const SizedBox(height: 32),
                   // Form fields
+                  const TextField(
+                    decoration: InputDecoration(
+                      labelText: "First Name",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const TextField(
+                    decoration: InputDecoration(
+                      labelText: "Last Name",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   const TextField(
                     decoration: InputDecoration(
                       labelText: "Email address",
@@ -96,6 +118,13 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                      height: 8), // Space between the field and helper text
+                  const Text(
+                    "Use 8 or more characters with a mix of letters, numbers & symbols",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+
                   const SizedBox(height: 32),
                   Row(
                     children: [
@@ -172,11 +201,11 @@ class _LoginViewState extends State<LoginView> {
                         },
                         child: GestureDetector(
                           onTap: () {
-                            context.router.replace(const SignupRoute());
+                            context.router.replace(const LoginRoute());
                           },
                           child: Text.rich(
                             TextSpan(
-                              text: 'Sign Up',
+                              text: 'Log In',
                               style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
