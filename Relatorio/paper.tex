@@ -480,10 +480,10 @@ O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamen
 \subsection{Estrutura de Dados e Persistência}  
 Para garantir um desempenho optimizado, o sistema utiliza dicionários como estruturas de dados principais, baseados em tabelas de hash, que proporcionam um acesso rápido e eficiente às informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção.  
 
-Adicionalmente, a persistência de dados é gerida em formato JSON, o que facilita a integração com outros sistemas e a manipulação dos dados de forma legível e estruturada. No entanto, para operações que exigem maior eficiência em termos de tempo de leitura/escrita, como guardar ou carregar rapidamente os dados sem necessidade de exportação ou importação, utilizamos o \textbf{protobuf-net} para serializar e desserializar os dados em formato binário. Esta abordagem combina a flexibilidade do JSON com a velocidade do formato binário, garantindo um equilíbrio entre interoperabilidade e desempenho.  
+Adicionalmente, a persistência de dados é gerida em formato JSON, o que facilita a integração com outros sistemas e a manipulação dos dados de forma legível e estruturada. No entanto, para operações que exigem maior eficiência em termos de tempo de leitura/escrita, como guardar ou carregar rapidamente os dados sem necessidade de exportação ou importação, utilizei o \textbf{protobuf-net} para serializar e desserializar os dados em formato binário. Esta abordagem combina a flexibilidade do JSON com a velocidade do formato binário, garantindo um equilíbrio entre interoperabilidade e desempenho.  
 
 \subsection{Boas Práticas de Programação}
-Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
+Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi criada com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
 
 \subsection{Objetivos e Organização do Documento}
 Este documento descreve o trabalho prático da unidade curricular de Programação Orientada a Objetos, parte integrante da Licenciatura em Engenharia de Sistemas Informáticos no Instituto Politécnico do Cávado e do Ave. O enunciado deste trabalho prático pode ser encontrado no anexo titulado ``Trabalho\_POO\_ESI\_2024\_2025``. O código fonte está disponível no Github e pode ser consultado \href{https://github.com/Basiiii/SmartStay}{aqui}.
@@ -507,6 +507,7 @@ A adoção de uma convenção de nomeação clara melhora a clareza do código. 
 	\item \textbf{Constantes}: \texttt{CONSTANT\_NAME}
 	\item \textbf{Parâmetros}: \texttt{parameterName}
 	\item \textbf{Enums}: \texttt{EnumName}
+	\item \textbf{Métodos de Teste}: Seguem o padrão \texttt{MethodName\_Condition\_ExpectedOutcome}
 \end{itemize}
 
 Evita-se o uso de abreviações excessivas e nomes confusos, promovendo a clareza no código.
@@ -585,32 +586,6 @@ public static int LastAssignedId
 
 No exemplo acima, as expressões lambda proporcionam uma forma compacta e clara de definir os métodos de acesso para propriedades.
 
-Outro uso comum de funções lambda é na transformação de colecções:
-
-\vspace*{15pt}
-\begin{lstlisting}[ 
-	language=csh, 
-	caption={Transformação de Colecções com Funções Lambda}, 
-	label={lst:lambdaTransformation}]
-var accommodationData = new 
-{ 
-	Id = _id, 
-	Type = _type.ToString(), 
-	Name = _name, 
-	Address = _address,
-	Rooms = _rooms.Select(room => new 
-	{
-		room.Id,
-		room.PricePerNight,
-		room.Type,
-	}) 
-};
-\end{lstlisting}
-
-Neste caso, as funções lambda são utilizadas em combinação com o método \texttt{Select} para transformar uma lista de quartos, criando um novo objecto para cada elemento com os atributos seleccionados.
-
-Estas utilizações ilustram como as funções lambda podem tornar o código mais legível e expressivo, reduzindo a necessidade de estruturas explícitas de loops.
-
 \newpage
 \section{Diagrama de Classes}
 \label{sec:classes}
@@ -620,34 +595,32 @@ O diagrama de classes descreve a estrutura lógica do sistema de gestão de rese
 
 \subsection{Classes Principais}
 
-No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail e morada. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para organizar e armazenar várias instâncias da classe \textit{Client}. Esta coleção é implementada como um dicionário, permitindo acesso rápido e eficiente aos dados.
+No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail, telefone e endereço. A classe \textit{Clients} funciona como uma coleção que organiza várias instâncias de \textit{Client} utilizando um dicionário, oferecendo acesso eficiente e métodos para manipulação como \texttt{Add()} e \texttt{Remove()}.
 
-De forma semelhante, a classe \textit{Owner} (proprietário) guarda informações relacionadas com os proprietários das propriedades disponíveis no sistema. A classe \textit{Owners} funciona como uma coleção que organiza e gere as instâncias de \textit{Owner}, também utilizando um dicionário para facilitar a consulta e manipulação.
+De forma semelhante, a classe \textit{Owner} (proprietário) guarda dados sobre os proprietários, incluindo informações pessoais e as acomodações associadas. A classe \textit{Owners} organiza múltiplos \textit{Owner} utilizando um dicionário, facilitando operações como adição, remoção e pesquisa.
 
-A classe \textit{Accommodation} (alojamento) representa as propriedades ou unidades disponíveis para reserva, com dados como o tipo de alojamento, a disponibilidade e o preço por noite. Cada instância de \textit{Accommodation} contém uma lista de quartos (\textit{Room}), representados pela classe \textit{Room}, que armazena detalhes específicos de cada quarto, como a sua capacidade ou características. Para gerir vários alojamentos, existe a classe \textit{Accommodations}, que é uma coleção de \textit{Accommodation} e utiliza um dicionário para manipulação eficiente.
+A classe \textit{Accommodation} (alojamento) representa as unidades disponíveis para reserva. Cada alojamento inclui detalhes como o tipo de alojamento, o nome e a lista de quartos associados (\textit{Rooms}). A classe \textit{Room} fornece detalhes específicos sobre os quartos, como tipo, preço por noite e disponibilidade, além de funcionalidades para calcular custos e verificar disponibilidade. Para gerir vários alojamentos, a classe \textit{Accommodations} organiza instâncias de \textit{Accommodation} utilizando um dicionário, com métodos como \texttt{FindRoomById()} e \texttt{RemoveRoom()}.
 
-A classe \textit{Reservation} (reserva) estabelece a ligação entre clientes e alojamentos, registando os detalhes da estadia, incluindo datas de check-in e check-out, o custo total e o estado do pagamento. Adicionalmente, cada reserva contém uma lista de pagamentos (\textit{Payment}), geridos pela classe \textit{Payment}, que regista os valores pagos, datas e métodos de pagamento. Tal como as outras coleções, a classe \textit{Reservations} guarda várias reservas utilizando um dicionário.
+A classe \textit{Reservation} (reserva) liga clientes a acomodações, registrando detalhes como datas de check-in e check-out, tipo de alojamento, custo total e estado da reserva. Ela também mantém uma lista de pagamentos (\textit{Payment}) associados, permitindo verificar se os pagamentos estão atualizados. A classe \textit{Reservations} armazena várias reservas em um dicionário e oferece funcionalidades para adicionar, cancelar ou pesquisar reservas.
 
-Para garantir uma gestão consistente e extensível, o sistema define uma interface comum, \textit{ManageableEntity}, que fornece funcionalidades partilhadas pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Accommodations} e \textit{Reservations}). Esta interface inclui métodos como \textit{Add}, \textit{Remove}, \textit{Import}, \textit{Export}, \textit{Save} e \textit{Load}, permitindo operações uniformes e reutilizáveis.
+A classe \textit{Payment} (pagamento) é responsável por registar informações detalhadas sobre transações, incluindo o montante pago, método de pagamento e data.
 
-Por fim, o sistema integra a classe \textit{BookingManager}, uma classe face que centraliza e simplifica operações comuns do sistema. Esta classe fornece métodos como por exemplo, \textit{CreateBasicClient} (criar um cliente básico), \textit{SaveAll} (guardar todos os dados do sistema) e \textit{LoadAll} (carregar todos os dados do sistema), promovendo uma interface unificada e de fácil utilização para as operações mais frequentes.
+\subsection{Processamento de Pagamentos} A classe \textit{Payment} lida com detalhes individuais das transações financeiras associadas a reservas. A classe \textit{Reservation} mantém uma lista de pagamentos e fornece métodos como \texttt{MakePayment()} para processar pagamentos e verificar o estado financeiro.
 
-\subsection{Processamento de Pagamentos}
-A classe \textit{Payment} (pagamento) tem como objetivo guardar informações detalhadas sobre cada transação associada a uma reserva, incluindo o montante pago, a data do pagamento e o método utilizado. A classe \textit{Reservation} mantém uma coleção de instâncias da classe \textit{Payment}, permitindo registar todos os pagamentos realizados para uma determinada reserva.
+\subsection{BookingManager e a Interface ManageableEntity} A classe \textit{BookingManager} atua como o controlador central/face do sistema, sendo responsável por gerir os clientes, proprietários, reservas e alojamentos. Ela utiliza instâncias das classes \textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}, centralizando as operações.
 
-\subsection{BookingManager e a Interface ManageableEntity}
-A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para controlar o sistema, gerir alojamentos e processar pagamentos.
+Para uniformizar as operações de gestão, o sistema utiliza a interface \textit{ManageableEntity}, implementada pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}). Esta interface define métodos comuns, como \textit{Add()}, \textit{Remove()}, \textit{Export()} e \textit{Load()}.
 
-O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. 
+O \textit{BookingManager} centraliza operações comuns, como \texttt{CreateBasicClient()}, \texttt{FindClientById()} e \texttt{SaveAll()}, fornecendo uma interface unificada e simples para os utilizadores.
 
-\subsection{Padrão de Face (Facade Pattern)}
-O \textit{BookingManager} atua como a face do sistema, permitindo simplificar a interação ao consolidar várias chamadas de funções numa única operação. Por exemplo, em vez de chamar funções separadas para criar um objeto \textit{Client} e adicioná-lo ao dicionário de \textit{clients}, a função única \texttt{CreateClient} realiza ambas as operações de forma transparente. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que fornece uma interface única e centralizada para interagir com o sistema, abstraindo a complexidade interna e promovendo uma maior simplicidade de uso.
+\subsection{Padrão de Face (Facade Pattern)} 
+O \textit{BookingManager} implementa o \textit{Padrão Facade} \cite{facadepattern}, funcionando como um ponto de acesso único que simplifica a interação com o sistema. Em vez de chamar métodos individuais nas classes de coleção, o \textit{BookingManager} oferece métodos como \texttt{CreateCompleteOwner()}, \texttt{UpdateReservation()} e \texttt{CancelReservation()}, abstraindo a complexidade interna.
 
-Ao centralizar estas operações, o \textit{Facade} melhora a modularidade e extensibilidade do sistema, permitindo que alterações internas sejam realizadas sem impacto na interface externa. Assim, o \textit{BookingManager} fornece um ponto de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
+Este padrão promove uma maior modularidade e escalabilidade do sistema, permitindo a introdução de novas funcionalidades sem impactar a interface externa.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{Images/POO_Class_Diagram.png}
+	\includegraphics[width=0.97\textwidth]{Images/POO_Class_Diagram.png}
 	\caption{Diagrama de Classes do Sistema de Gestão de Alojamentos Turísticos}
 	\label{fig:diagrama_classes}
 \end{figure}
@@ -662,7 +635,6 @@ A arquitetura do sistema foi estruturada de acordo com um layout comum e amplame
 Para manter uma estrutura organizada e intuitiva, os ficheiros do sistema foram nomeados de acordo com as classes que eles contêm. Cada classe tem um ficheiro correspondente com o mesmo nome, garantindo uma correspondência direta entre a funcionalidade e o ficheiro onde ela está implementada. Esta abordagem facilita a localização de classes específicas e melhora a navegabilidade do projeto, uma vez que o nome de cada ficheiro reflete o conteúdo e a responsabilidade do mesmo. Por exemplo, a classe \textit{Client} está localizada no ficheiro \texttt{Client.cs}, enquanto a classe \textit{BookingManager} pode ser encontrada em \texttt{BookingManager.cs}.
 
 \subsection{Conformidade com a CLS}
-
 A \textit{Common Language Specification (CLS)} define um conjunto de regras e padrões para garantir a interoperabilidade entre as diferentes linguagens que compõem o ecossistema .NET. Ao desenvolver o sistema, foi dada atenção à conformidade com a CLS para assegurar que o código seja acessível e utilizável por outras linguagens compatíveis com o .NET.
 
 Dentro deste contexto, o tipo \texttt{decimal} foi escolhido para operações financeiras e monetárias devido à sua alta precisão e, também, por ser um tipo que segue as normas da CLS. Esta conformidade permite que o sistema mantenha uma representação exata de valores monetários e seja facilmente reutilizável em outros ambientes e linguagens que suportem .NET. 
