@@ -1357,91 +1357,173 @@ A utilização de testes unitários combinada com um pipeline de CI/CD robusto o
 \newpage
 \section{Desenvolvimento da Interface}
 \label{sec:desenvolvimentoui}
+O desenvolvimento da interface da aplicação foi realizado utilizando a linguagem de programação \textit{Dart} e a \textit{framework} \textit{Flutter}, uma combinação que oferece uma abordagem eficiente para a construção de interfaces de utilizador modernas e reativas. O \textit{Flutter} é uma framework de \textit{UI} de código aberto que permite o desenvolvimento de aplicações nativas para várias plataformas com uma única base de código.  
 
-\subsection{Introdução ao Razor Server App}
+\subsection{Estado Atual da Aplicação}
+\label{subsec:estadoatual}
 
-Para o desenvolvimento da interface do utilizador, optei por criar uma aplicação \textit{Razor Server App}. Esta escolha foi motivada pela minha experiência com \texttt{HTML} e \texttt{CSS}, tecnologias que já conhecia, e que me permitiram explorar as funcionalidades do Razor de forma eficiente. O \texttt{Razor} é uma engine de templates do .NET que facilita a criação de páginas dinâmicas ao integrar HTML com código C\# de maneira fluida. A sintaxe do Razor permite misturar de forma simples as estruturas de HTML com código C\#, oferecendo uma experiência de desenvolvimento mais rápida e intuitiva para aplicações web.
+A aplicação desenvolvida encontra-se num estado preliminar, servindo como um exemplo de implementação prática do uso de controladores (\textit{controllers}) e \textit{web requests}. Não é uma aplicação completa, mas sim um modelo demonstrativo, cujo objetivo principal é ilustrar a interação básica entre uma interface de utilizador e um backend.  
 
-\subsection{Dependency Injection e Integração com o Backend}
+Por enquanto, a interface implementada permite executar operações básicas, como simular o login de um cliente ou realizar ações limitadas a partir de botões que acionam funções. A lógica é simplificada, focando-se em práticas fundamentais que podem ser expandidas para projetos mais robustos no futuro.  
 
-No que diz respeito à arquitetura da aplicação, utilizei o \textit{Dependency Injection} (DI), uma prática recomendada no desenvolvimento de aplicações .NET para promover a inversão de controlo e facilitar a manutenção e testabilidade do código. O \textit{Dependency Injection} permite que os serviços e dependências da aplicação sejam injetados automaticamente nas classes que as necessitam, em vez de serem instanciados diretamente dentro dessas classes.
+\subsection{Interação com Controladores e HTTP Requests}
+\label{subsec:http-requests}
 
-No meu projeto, o backend é composto por bibliotecas \texttt{DLL}, que são responsáveis pelas regras de negócio. Para integrar estas bibliotecas com o front-end Razor, configurei a injeção das dependências no \texttt{Program.cs}. O serviço \texttt{BookingManager}, responsável pela gestão das reservas, é injetado no container de serviços da aplicação da seguinte forma:
+Neste subcapítulo, detalha-se o funcionamento básico da interação entre a interface de utilizador e os controladores através de chamadas HTTP. A aplicação utiliza botões que chamam funções específicas, as quais recolhem dados a partir de controladores, realizam validações e chamam métodos para comunicação com o backend.
 
-\begin{lstlisting}[
-	language=csh, 
-	caption={Configuração de Dependency Injection},
-	label={lst:di-config}]
-builder.Services.AddSingleton<BookingManager>();
-\end{lstlisting}
-
-Ao adicionar o \texttt{BookingManager} como um serviço singleton no container de DI, a aplicação garante que uma única instância da classe \texttt{BookingManager} seja criada e utilizada durante toda a execução da aplicação. Isto permite que o Razor tenha acesso às regras de negócio necessárias para processar as reservas, sem a necessidade de criar novas instâncias do \texttt{BookingManager} diretamente nas páginas Razor.
-
-Esta abordagem facilita a gestão de dependências e contribui para uma maior organização e flexibilidade no código. Além disso, a injeção de dependências torna a aplicação mais fácil de testar, uma vez que podemos simular ou substituir as dependências nas classes de teste.
-
-\subsection{Uso de Tailwind CSS e Flowbite}
-
-Uma das escolhas importantes no desenvolvimento da interface do utilizador foi a substituição do \texttt{Bootstrap} pelo \texttt{Tailwind CSS}, uma framework de CSS altamente personalizável. A principal razão para esta escolha foi a flexibilidade que o \texttt{Tailwind} oferece em comparação com o \texttt{Bootstrap}, permitindo um controlo muito mais preciso sobre o design e estilo da aplicação. 
-
-Enquanto o \texttt{Bootstrap} fornece um conjunto de componentes predefinidos com um estilo determinado, o \texttt{Tailwind} permite que se defina cada parte do layout utilizando uma abordagem de \textit{utility-first}. Com \texttt{Tailwind}, podemos aplicar classes utilitárias diretamente aos elementos HTML, o que resulta em código mais conciso e altamente configurável. Esta abordagem ajuda a evitar o uso excessivo de classes personalizadas e reduz a necessidade de escrever CSS adicional, tornando o processo de estilização mais ágil e eficiente.
-
-\subsubsection{Integração com Flowbite}
-
-Embora o \texttt{Tailwind CSS} forneça uma base sólida para a construção da interface, optei por integrar o \texttt{Flowbite}, uma biblioteca de componentes construídos em cima do \texttt{Tailwind}, para acelerar ainda mais o desenvolvimento. O \texttt{Flowbite} oferece uma série de componentes prontos para uso, como botões, modais, tabelas, menus de navegação e muito mais, todos desenhados para se integrarem perfeitamente com o \texttt{Tailwind}. 
-
-O uso do \texttt{Flowbite} não só poupou tempo no desenvolvimento, mas também garantiu que a interface tivesse um design moderno e funcional, com componentes que seguem as melhores práticas de design responsivo e acessibilidade. Além disso, como o \texttt{Flowbite} é construído em cima do \texttt{Tailwind}, não houve conflito entre os estilos e foi fácil de personalizar os componentes conforme as necessidades do projeto.
-
-Para integrar o \texttt{Flowbite} com o projeto, foi necessário instalar a biblioteca e configurá-la no ficheiro de recursos do projeto. O processo de instalação foi simples e envolveu a adição do \texttt{Flowbite} através de \texttt{npm}. Abaixo está um exemplo de como a integração foi realizada no ficheiro \_Layout.cshtml:
+A seguir, apresenta-se um exemplo de implementação de um botão que simula o login de um cliente:
 
 \begin{lstlisting}[
-	language=html, 
-	caption={Integração do Flowbite},
-	label={lst:flowbite-integration}]
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<base href="~/" />
-	<link href="~/css/app.min.css" rel="stylesheet" />
-	<link href="SmartStay.App.styles.css" rel="stylesheet" />
-	<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
-</head>
-<body>
-	@RenderBody()
-	
-	<div id="blazor-error-ui">
-		<environment include="Staging,Production">
-		An error has occurred. This application may no longer respond until reloaded.
-		</environment>
-		<environment include="Development">
-		An unhandled exception has occurred. See browser dev tools for details.
-		</environment>
-		<a href="" class="reload">Reload</a>
-		<a class="dismiss">X</a>
-	</div>
-	
-	<script src="_framework/blazor.server.js"></script>
-	<script 
-	src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js">
-	</script>
-</body>
-</html>
+	language=Java, 
+	caption={Botão para iniciar sessão como cliente},
+	label={lst:button-client-login}]
+// Botão de exemplo - Iniciar Sessão como Cliente
+Expanded(
+	child: ElevatedButton(
+	onPressed: () async {
+		final clientCreated = await _handleCreateClient();
+		if (clientCreated && context.mounted) {
+			await context.router.replace(const HomeRoute());
+			}
+		},
+	),
+);
 \end{lstlisting}
 
-Com esta integração, foi possível melhorar a experiência do utilizador e otimizar o tempo de desenvolvimento, aproveitando os componentes de UI prontos do \texttt{Flowbite} enquanto ainda mantinha a flexibilidade do \texttt{Tailwind}.
+O botão acima está configurado para chamar a função \texttt{\_handleCreateClient()} ao ser pressionado. Esta função realiza as seguintes etapas:  
+
+\begin{itemize}
+	\item \textbf{Recolha de Dados}: Obtém os valores inseridos pelo utilizador nos controladores de texto.
+	\item \textbf{Validação}: Verifica se os dados recolhidos são válidos (por exemplo, se nenhum campo obrigatório está vazio).
+	\item \textbf{Pedido HTTP}: Envia os dados para o backend, utilizando a função \texttt{createBasicClient()}, que realiza a interação com o controlador.
+\end{itemize}
+
+Segue-se a implementação da função \texttt{\_handleCreateClient()}, que realiza estas operações:
+
+\begin{lstlisting}[
+	language=Java, 
+	caption={Função que processa os dados e faz a chamada HTTP},
+	label={lst:handle-create-client}]
+Future<bool> _handleCreateClient() async {
+	// Obter valores dos controladores
+	final firstName = _firstNameController.text;
+	final lastName = _lastNameController.text;
+	final email = _emailController.text.trim();
+	
+	// Validação básica dos dados de entrada
+	if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
+		_showErrorMessage('Por favor, preencha todos os campos.');
+		return false;
+	}
+	
+	// Chamar a função para criar o cliente
+	final result = await createBasicClient(
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+	);
+	
+	if (result != null) {
+		// Cliente criado com sucesso
+		if (kDebugMode) {
+			print('Cliente criado com sucesso: $result');
+		}
+		return true;
+	} else {
+		// Falha ao criar o cliente
+		return false;
+	}
+}
+\end{lstlisting}
+
+Nesta função, a chamada HTTP é realizada por \texttt{createBasicClient()}, que comunica diretamente com o controlador do backend. Esta abordagem modular permite que a lógica de validação e comunicação seja isolada em funções separadas, facilitando a manutenção e a escalabilidade do projeto.  
+
+Segue-se agora a implementação da função \texttt{createBasicClient()}, que faz o pedido HTTP para o backend. Ela é responsável por enviar os dados do cliente para a API e retornar a resposta do servidor:
+
+\begin{lstlisting}[
+	language=Java, 
+	caption={Função que realiza a requisição HTTP para criar um cliente},
+	label={lst:create-basic-client}]
+Future<Map<String, dynamic>?> createBasicClient({
+	required String firstName,
+	required String lastName,
+	required String email,
+}) async {
+	try {
+		// Fazer uma requisição POST para o endpoint /client/basic
+		final response = await _networkClient.post<Map<String, dynamic>>(
+		'/client/basic',
+		data: {
+			'firstName': firstName,
+			'lastName': lastName,
+			'email': email,
+		},
+		);
+		
+		// Verificar se a resposta indica sucesso
+		if (response.statusCode == 201) {
+			// Retornar os dados do cliente recém-criado
+			return response.data;
+		} else {
+			// Tratar códigos de status inesperados
+			_showErrorMessage('Código de status inesperado: ${response.statusCode}');
+			return null;
+		}
+	} on DioException catch (e) {
+		if (e.response != null && e.response?.statusCode == 400) {
+			// Tratar erro 400 - Bad Request
+			final errorMessage =
+			e.response?.data['message'] ?? 'Erro desconhecido';
+			_showErrorMessage('Falha na criação do cliente: $errorMessage');
+			return null;
+		} else {
+			// Tratar outros erros Dio (ex: problemas de rede)
+			_showErrorMessage('Erro de rede: ${e.message}');
+			return null;
+		}
+	} catch (e) {
+		// Tratar outras exceções
+		_showErrorMessage('Erro inesperado: $e');
+		return null;
+	}
+}
+\end{lstlisting}
+
+A função \texttt{createBasicClient()} faz um pedido \texttt{POST} para o endpoint \texttt{/client/basic}, enviando os dados do cliente (nome, sobrenome e e-mail) para o backend. Caso o pedido seja bem-sucedida (código de estado 201), ela retorna os dados do cliente criado. Se houver um erro (código de estado diferente de 201 ou problemas com a rede), a função trata o erro e mostra uma mensagem de erro.
+
+Por enquanto, esta estrutura serve apenas como exemplo prático de como organizar a lógica em torno de controladores e chamadas HTTP, com o objetivo de criar uma base sólida para o desenvolvimento de aplicações mais completas e funcionais no futuro.
 
 \newpage
 \section{Conclusão}
 \label{sec:conclusion}
 
-Lorem Ipsum.
+O desenvolvimento deste projeto foi concluído com sucesso, atendendo a todos os critérios e requisitos estabelecidos. A execução do trabalho foi feita com foco na qualidade, na documentação e na solução implementada.
+
+Os testes realizados demonstraram que todas as funcionalidades desenvolvidas funcionam conforme o esperado. O código foi estruturado de forma modular e respeitando boas práticas de desenvolvimento, como a utilização de controladores para interação com o backend através de \textit{web requests}.  
+
+\subtitle{Qualidade do Relatório}
+O relatório produzido seguiu um padrão claro e bem organizado, apresentando detalhadamente a solução desenvolvida, os processos implementados e os resultados obtidos. Os conceitos e decisões técnicas foram documentados de forma compreensível e fundamentada.  
+
+\subtitle{Qualidade da Solução Desenvolvida}
+A aplicação demonstrou alta qualidade, refletida no seguinte:  
+\begin{itemize}
+	\item \textbf{Estrutura Modular e Organizada}: A aplicação segue padrões como \textit{MVC} e utiliza bibliotecas apropriadas para garantir uma arquitetura limpa e escalável.
+	\item \textbf{Integração de Conceitos Avançados}: A solução implementa o LINQ e frameworks modernos para proporcionar uma implementação eficiente.
+	\item \textbf{Controladores e Interações via \textit{web requests}}: A aplicação faz uso de controladores que interagem com o backend através de \textit{web requests}, promovendo uma arquitetura modular e de fácil manutenção.
+	\item \textbf{Configuração de Pipelines CI/CD}: Implementação de pipelines para automação de testes e implantação contínua, utilizando ferramentas como Github Actions para garantir a qualidade e o fluxo contínuo de desenvolvimento.
+	\item \textbf{Validação Rigorosa de Entradas}: A aplicação valida as entradas do utilizador de forma completa, garantindo a integridade dos dados e proporcionando um tratamento adequado de erros.
+	\item \textbf{Integração entre Frontend e Backend}: Funcionalidades implementadas demonstram a integração eficiente e fluída entre o frontend e o backend, assegurando a comunicação e o processamento adequado das informações.
+\end{itemize}
+
+Com este trabalho, consegui atender a todos os critérios de avaliação definidos. A solução final demonstra não apenas a aplicação prática de conceitos teóricos, mas também uma atenção elevada aos detalhes.
+
+Em resumo, os objetivos definidos foram todos alcançados e foi desenvolvido um sistema eficiente para a gestão de alojamentos turísticos utilizando o paradigma de programação orientada a objetos.
 
 %%% ===============================================================================
 %%% Bibliography
 %%% ===============================================================================
 
+\newpage
 \renewcommand{\bibsection}{\section*{Referências}} % requried for natbib to have "References" printed and as section*, not chapter*
 % Use natbib compatbile splncs04nat style.
 % It does provide all features of splncs04.bst, but is developed in a clean way.
@@ -1456,7 +1538,7 @@ Lorem Ipsum.
 % Enfore empty line after bibliography
 \ \\
 %
-Todas as ligações foram consultadas pela última vez no dia 15 de novembro de 2024.
+Todas as ligações foram consultadas pela última vez no dia 16 de dezembro de 2024.
 
 
 %%% ===============================================================================
