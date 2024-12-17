@@ -1,41 +1,80 @@
-# Leia-me
+# **Smart Stay**
 
-## Documentação
+## **Descrição do Projeto**
 
-A documentação pode ser encontrada na pasta **``Documentation``**.
+O **Smart Stay** é uma aplicação desenvolvida para a **gestão de alojamentos turísticos**, permitindo uma administração eficiente de registos, reservas e operações relacionadas com clientes e propriedades. Implementado em **C#** com base no paradigma de **Programação Orientada a Objetos**, o projeto destaca-se pela sua estrutura modular e escalável.
 
-O enunciado do trabalho é chamado **`Trabalho_POO_ESI_2024_2025.pdf`**.
-
-O ficheiro PDF chamado **`Relatorio.pdf`** contém o relatório principal do projeto.
-
-A documentação do programa encontra-se no ficheiro PDF **`Documentacao_Backend.pdf`**.
-
-A documentação relativa aos testes está no ficheiro PDF **`Documentacao_Testes.pdf`**.
-
-A documentação do API de *controllers* pode ser encontrada em formato de website ao correr o projeto chamado **``SmartStay.API``** .
-
-## Código Fonte
-
-O código fonte do programa encontra-se na pasta **`SmartStay`**.
-
-O programa frontend está na pasta **`app`**, dentro da pasta **`SmartStay`**.
-
-## Solução
-
-A solução completa pode ser aberta a partir do ficheiro **`SmartStay.sln`**, localizado dentro da pasta **`SmartStay`**.
-
-## Diagramas de Classes
-
-O ficheiro **`POO_Full_Class_Diagram.vpp.`** é o diagrama de classes completo, criado com o Visual Paradigm e gerado automaticamente.
-
-O ficheiro **`POO_Simple_Class_Diagram.vpp`** é o diagrama de classes simplificado, criado com o Visual Paradigm.
-
-As imagens dos diagramas de classes podem ser encontradas na pasta **`Images`** com os nomes **`ClassDiagramComplete.png`** e **`ClassDiagramSimplified.png`**.
-
-## GitHub
-
-O repositório Git está disponível [aqui](https://github.com/Basiiii/SmartStay).
+### Principais Funcionalidades:
+- Registo e consulta de clientes.
+- Gestão de reservas com suporte a *check-in* e *check-out*.
+- Controlo de pagamentos e organização eficiente de dados.
+- Utilização de **dicionários** para acesso rápido (O(1)) a registos.
+- Persistência de dados em formatos **JSON** e **binário**.
 
 ---
 
-Toda a informação detalhada encontra-se nos ficheiros PDF indicados acima.
+## **Documentação**
+
+Toda a documentação relevante está organizada da seguinte forma:
+
+1. **Enunciado do Trabalho**  
+   Localização: **`Documentation/Trabalho_POO_ESI_2024_2025.pdf`**
+
+2. **Relatório do Projeto**  
+   Localização: **`Documentation/Relatorio.pdf`**  
+
+3. **Documentação Técnica (Backend)**  
+   Localização: **`Documentation/Documentacao_Backend.pdf`**
+
+4. **Documentação dos Testes**  
+   Localização: **`Documentation/Documentacao_Testes.pdf`**
+
+5. **API Controllers (Swagger UI)**  
+   - A documentação dos *controllers* pode ser acedida ao correr o projeto **`SmartStay.API`**.
+
+---
+
+## **Código Fonte**
+
+A estrutura do código encontra-se organizada da seguinte forma:
+
+- **Pasta Principal do Projeto:**  
+  Localização: **`SmartStay/`**
+
+- **Frontend (Interface de Utilizador):**  
+  Localização: **`SmartStay/app/`**  
+
+---
+
+## **Solução Completa**
+
+Para abrir a solução completa, utilize o ficheiro **`SmartStay.sln`**, localizado na pasta **`SmartStay/`**.
+
+---
+
+## **Diagramas de Classes**
+
+Os diagramas de classes estão disponíveis em dois formatos:
+
+1. **Diagramas Gerados pelo Visual Paradigm**  
+   - **Diagrama Completo:**  
+     Ficheiro: **`POO_Full_Class_Diagram.vpp`**  
+   - **Diagrama Simplificado:**  
+     Ficheiro: **`POO_Simple_Class_Diagram.vpp`**  
+
+2. **Imagens dos Diagramas**  
+   - Diagrama Completo: **`Images/ClassDiagramComplete.png`**  
+   - Diagrama Simplificado: **`Images/ClassDiagramSimplified.png`**
+
+---
+
+## **Repositório GitHub**
+
+O código fonte e os recursos do projeto podem ser encontrados no repositório GitHub:  
+🔗 [Aceda aqui ao projeto SmartStay](https://github.com/Basiiii/SmartStay)
+
+---
+
+## **Notas Finais**
+
+Para mais informações detalhadas, consulte os ficheiros PDF listados acima.
