@@ -244,11 +244,17 @@ public class Accommodations : IManageableEntity<Accommodation>
                 // Deserialize the accommodations object from the file
                 var accommodations = Serializer.Deserialize<Accommodations>(fileStream);
 
-                // Copy the data from the deserialized object to the current instance
+                // Clear the current dictionary
                 _accommodationDictionary.Clear();
+
+                // Reset LastAssignedId to ensure consistency
+                Accommodation.LastAssignedId = 0;
+
+                // Iterate over the deserialized data and copy it
                 foreach (var accommodation in accommodations._accommodationDictionary)
                 {
                     _accommodationDictionary[accommodation.Key] = accommodation.Value;
+                    Accommodation.LastAssignedId = Math.Max(Accommodation.LastAssignedId, accommodation.Value.Id);
                 }
             }
         }

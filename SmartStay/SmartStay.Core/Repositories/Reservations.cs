@@ -244,11 +244,19 @@ public class Reservations : IManageableEntity<Reservation>
                 // Deserialize the reservations object from the file
                 var reservations = Serializer.Deserialize<Reservations>(fileStream);
 
-                // Copy the data from the deserialized object to the current instance
+                // Clear the current dictionary
                 _reservationDictionary.Clear();
+
+                // Reset LastAssignedId to ensure consistency
+                Reservation.LastAssignedId = 0;
+
+                // Iterate over the deserialized data and copy it
                 foreach (var reservation in reservations._reservationDictionary)
                 {
                     _reservationDictionary[reservation.Key] = reservation.Value;
+
+                    // Update LastAssignedId to the maximum ID found so far
+                    Reservation.LastAssignedId = Math.Max(Reservation.LastAssignedId, reservation.Value.Id);
                 }
             }
         }

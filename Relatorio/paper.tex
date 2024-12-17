@@ -507,7 +507,7 @@ A adoção de uma convenção de nomeação clara melhora a clareza do código. 
 	\item \textbf{Constantes}: \texttt{CONSTANT\_NAME}
 	\item \textbf{Parâmetros}: \texttt{parameterName}
 	\item \textbf{Enums}: \texttt{EnumName}
-	\item \textbf{Métodos de Teste}: Seguem o padrão \texttt{MethodName\_Condition\_ExpectedOutcome}
+	\item \textbf{Métodos de Teste}: \texttt{MethodName\_Condition\_ExpectedOutcome}
 \end{itemize}
 
 Evita-se o uso de abreviações excessivas e nomes confusos, promovendo a clareza no código.
@@ -609,7 +609,7 @@ A classe \textit{Payment} (pagamento) é responsável por registar informações
 
 \subsection{BookingManager e a Interface ManageableEntity} A classe \textit{BookingManager} atua como o controlador central/face do sistema, sendo responsável por gerir os clientes, proprietários, reservas e alojamentos. Ela utiliza instâncias das classes \textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}, centralizando as operações.
 
-Para uniformizar as operações de gestão, o sistema utiliza a interface \textit{ManageableEntity}, implementada pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}). Esta interface define métodos comuns, como \textit{Add()}, \textit{Remove()}, \textit{Export()} e \textit{Load()}.
+Para uniformizar as operações de gestão, o sistema utiliza a interface \textit{ManageableEntity}, implementada pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}). Esta interface define métodos comuns, como \texttt{Add()}, \texttt{Remove()}, \texttt{Export()} e \texttt{Load()}.
 
 O \textit{BookingManager} centraliza operações comuns, como \texttt{CreateBasicClient()}, \texttt{FindClientById()} e \texttt{SaveAll()}, fornecendo uma interface unificada e simples para os utilizadores.
 
@@ -1031,11 +1031,11 @@ Com estas práticas, o sistema assegura um tratamento de logs robusto, contribui
 \section{Persistência de Dados com Ficheiros}
 \label{sec:persistenciadados}
 
-A persistência de dados desempenha um papel crucial em qualquer sistema de gestão. Neste projeto, foi adotada a utilização de ficheiros JSON para a importação e exportação de dados, complementada por ficheiros binários baseados em \texttt{Protocol Buffers} (Protobuf). O formato JSON foi selecionado para a importação e exportação devido à sua popularidade e facilidade de utilização, especialmente em aplicações web, móveis e \textit{desktop}. Além disso, a sua legibilidade elevada torna-o ideal para a manipulação e \textit{debugging} de dados de forma simples e eficiente. Por outro lado, o formato binário com Protobuf foi escolhido para guardar e carregar dados, garantindo eficiência e desempenho superiores em termos de armazenamento e velocidade de processamento.
+A persistência de dados desempenha um papel crucial em qualquer sistema de gestão. Neste projeto, foi adotada a utilização de ficheiros JSON para a importação e exportação de dados, complementada por ficheiros binários baseados em \texttt{Protocol Buffers} (Protobuf). O formato JSON foi escolhido para a importação e exportação devido à sua popularidade e facilidade de utilização, especialmente em aplicações web, móveis e \textit{desktop}. Além disso, a sua fácil leitura torna-o ideal para a manipulação e \textit{debugging} de dados de forma simples e eficiente. Por outro lado, o formato binário com Protobuf foi escolhido para guardar e carregar dados, garantindo eficiência e desempenho superiores em termos de armazenamento e velocidade de processamento.
 
 Para a persistência binária, foi escolhido o \texttt{Protobuf}, em vez dos métodos tradicionais binários como o \texttt{BinaryFormatter}, que é obsoleto e apresenta vulnerabilidades de segurança. O \texttt{BinaryFormatter} tem riscos significativos na desserialização de dados, o que pode resultar em falhas de segurança, como execução remota de código. O \texttt{Protobuf}, por outro lado, oferece uma solução mais segura, eficiente e compacta para armazenar dados de forma binária. Além disso, é compatível com diversas linguagens e plataformas, o que facilita a integração com outros sistemas.
 
-Portanto, enquanto o JSON é utilizado para a leitura e manipulação de dados de forma mais acessível, o \texttt{Protobuf} é usado para a gravação e carregamento eficiente de dados binários, garantindo melhor desempenho e menor tamanho de ficheiro. Este equilíbrio entre formatos textuais e binários permite que o sistema aproveite o melhor de ambos os mundos: a simplicidade e flexibilidade do JSON para operações de importação/exportação e a eficiência do \texttt{Protobuf} para persistência binária.
+Portanto, enquanto o JSON é utilizado para a leitura e manipulação de dados de forma mais acessível, o \texttt{Protobuf} é usado para a gravação e carregamento eficiente de dados binários, garantindo melhor desempenho e menor tamanho de ficheiro. Este equilíbrio entre formatos textuais e binários permite que o sistema aproveite o melhor dos dois mundos: a simplicidade e flexibilidade do JSON para operações de importação/exportação e a eficiência do \texttt{Protobuf} para persistência binária.
 
 \subsection{Importação e Exportação de Dados em JSON}
 
@@ -1128,7 +1128,7 @@ Protobuf é um formato binário de serialização de dados desenvolvido pela Goo
 
 O uso do Protobuf para persistência de dados oferece várias vantagens:
 \begin{itemize}
-	\item \textbf{Eficiência de Espaço}: Como o Protobuf é um formato binário, ele é muito mais compacto em comparação ao JSON, o que resulta em menos espaço de armazenamento.
+	\item \textbf{Eficiência de Espaço}: Como o Protobuf é um formato binário, é muito mais compacto em comparação ao JSON, o que resulta em menos espaço de armazenamento.
 	\item \textbf{Desempenho Superior}: O Protobuf oferece tempos de leitura e escrita mais rápidos devido à sua natureza binária, tornando-o adequado para sistemas com alto tráfego de dados.
 \end{itemize}
 

@@ -241,11 +241,19 @@ public class Owners : IManageableEntity<Owner>
                 // Deserialize the owners object from the file
                 var owners = Serializer.Deserialize<Owners>(fileStream);
 
-                // Copy the data from the deserialized object to the current instance
+                // Clear the current dictionary
                 _ownerDictionary.Clear();
+
+                // Reset LastAssignedId to ensure consistency
+                Owner.LastAssignedId = 0;
+
+                // Iterate over the deserialized data and copy it
                 foreach (var owner in owners._ownerDictionary)
                 {
                     _ownerDictionary[owner.Key] = owner.Value;
+
+                    // Update LastAssignedId to the maximum ID found so far
+                    Owner.LastAssignedId = Math.Max(Owner.LastAssignedId, owner.Value.Id);
                 }
             }
         }

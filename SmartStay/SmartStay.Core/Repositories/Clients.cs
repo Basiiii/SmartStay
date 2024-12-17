@@ -233,11 +233,19 @@ public class Clients : IManageableEntity<Client>
                 // Deserialize the clients object from the file
                 var clients = Serializer.Deserialize<Clients>(fileStream);
 
-                // Copy the data from the deserialized object to the current instance
+                // Clear the current dictionary
                 _clientDictionary.Clear();
+
+                // Reset LastAssignedId to ensure consistency
+                Client.LastAssignedId = 0;
+
+                // Iterate over the deserialized data and copy it
                 foreach (var client in clients._clientDictionary)
                 {
                     _clientDictionary[client.Key] = client.Value;
+
+                    // Update LastAssignedId to the maximum ID found so far
+                    Client.LastAssignedId = Math.Max(Client.LastAssignedId, client.Value.Id);
                 }
             }
         }
