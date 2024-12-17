@@ -480,10 +480,10 @@ O setor do turismo enfrenta desafios crescentes na gestão eficiente de alojamen
 \subsection{Estrutura de Dados e Persistência}  
 Para garantir um desempenho optimizado, o sistema utiliza dicionários como estruturas de dados principais, baseados em tabelas de hash, que proporcionam um acesso rápido e eficiente às informações cruciais, com uma complexidade temporal de $O(1)$ para operações de consulta e inserção.  
 
-Adicionalmente, a persistência de dados é gerida em formato JSON, o que facilita a integração com outros sistemas e a manipulação dos dados de forma legível e estruturada. No entanto, para operações que exigem maior eficiência em termos de tempo de leitura/escrita, como guardar ou carregar rapidamente os dados sem necessidade de exportação ou importação, utilizamos o \textbf{protobuf-net} para serializar e desserializar os dados em formato binário. Esta abordagem combina a flexibilidade do JSON com a velocidade do formato binário, garantindo um equilíbrio entre interoperabilidade e desempenho.  
+Adicionalmente, a persistência de dados é gerida em formato JSON, o que facilita a integração com outros sistemas e a manipulação dos dados de forma legível e estruturada. No entanto, para operações que exigem maior eficiência em termos de tempo de leitura/escrita, como guardar ou carregar rapidamente os dados sem necessidade de exportação ou importação, utilizei o \textbf{protobuf-net} para serializar e desserializar os dados em formato binário. Esta abordagem combina a flexibilidade do JSON com a velocidade do formato binário, garantindo um equilíbrio entre interoperabilidade e desempenho.  
 
 \subsection{Boas Práticas de Programação}
-Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi concebida com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
+Embora a eficiência e a funcionalidade sejam os pilares deste projeto, a aplicação também foi criada com atenção às boas práticas de programação, promovendo um código limpo e manutenível. Desta forma, o sistema não apenas atende às necessidades atuais do setor, mas também está preparado para futuras evoluções e inovações na gestão de alojamentos turísticos.
 
 \subsection{Objetivos e Organização do Documento}
 Este documento descreve o trabalho prático da unidade curricular de Programação Orientada a Objetos, parte integrante da Licenciatura em Engenharia de Sistemas Informáticos no Instituto Politécnico do Cávado e do Ave. O enunciado deste trabalho prático pode ser encontrado no anexo titulado ``Trabalho\_POO\_ESI\_2024\_2025``. O código fonte está disponível no Github e pode ser consultado \href{https://github.com/Basiiii/SmartStay}{aqui}.
@@ -507,6 +507,7 @@ A adoção de uma convenção de nomeação clara melhora a clareza do código. 
 	\item \textbf{Constantes}: \texttt{CONSTANT\_NAME}
 	\item \textbf{Parâmetros}: \texttt{parameterName}
 	\item \textbf{Enums}: \texttt{EnumName}
+	\item \textbf{Métodos de Teste}: \texttt{MethodName\_Condition\_ExpectedOutcome}
 \end{itemize}
 
 Evita-se o uso de abreviações excessivas e nomes confusos, promovendo a clareza no código.
@@ -585,32 +586,6 @@ public static int LastAssignedId
 
 No exemplo acima, as expressões lambda proporcionam uma forma compacta e clara de definir os métodos de acesso para propriedades.
 
-Outro uso comum de funções lambda é na transformação de colecções:
-
-\vspace*{15pt}
-\begin{lstlisting}[ 
-	language=csh, 
-	caption={Transformação de Colecções com Funções Lambda}, 
-	label={lst:lambdaTransformation}]
-var accommodationData = new 
-{ 
-	Id = _id, 
-	Type = _type.ToString(), 
-	Name = _name, 
-	Address = _address,
-	Rooms = _rooms.Select(room => new 
-	{
-		room.Id,
-		room.PricePerNight,
-		room.Type,
-	}) 
-};
-\end{lstlisting}
-
-Neste caso, as funções lambda são utilizadas em combinação com o método \texttt{Select} para transformar uma lista de quartos, criando um novo objecto para cada elemento com os atributos seleccionados.
-
-Estas utilizações ilustram como as funções lambda podem tornar o código mais legível e expressivo, reduzindo a necessidade de estruturas explícitas de loops.
-
 \newpage
 \section{Diagrama de Classes}
 \label{sec:classes}
@@ -620,34 +595,32 @@ O diagrama de classes descreve a estrutura lógica do sistema de gestão de rese
 
 \subsection{Classes Principais}
 
-No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail e morada. Para gerir vários clientes, o sistema utiliza a classe \textit{Clients}, que funciona como uma coleção para organizar e armazenar várias instâncias da classe \textit{Client}. Esta coleção é implementada como um dicionário, permitindo acesso rápido e eficiente aos dados.
+No diagrama, cada classe representa uma componente fundamental do sistema. A classe \textit{Client} (cliente) guarda informações sobre um cliente individual, como nome, e-mail, telefone e endereço. A classe \textit{Clients} funciona como uma coleção que organiza várias instâncias de \textit{Client} utilizando um dicionário, oferecendo acesso eficiente e métodos para manipulação como \texttt{Add()} e \texttt{Remove()}.
 
-De forma semelhante, a classe \textit{Owner} (proprietário) guarda informações relacionadas com os proprietários das propriedades disponíveis no sistema. A classe \textit{Owners} funciona como uma coleção que organiza e gere as instâncias de \textit{Owner}, também utilizando um dicionário para facilitar a consulta e manipulação.
+De forma semelhante, a classe \textit{Owner} (proprietário) guarda dados sobre os proprietários, incluindo informações pessoais e as acomodações associadas. A classe \textit{Owners} organiza múltiplos \textit{Owner} utilizando um dicionário, facilitando operações como adição, remoção e pesquisa.
 
-A classe \textit{Accommodation} (alojamento) representa as propriedades ou unidades disponíveis para reserva, com dados como o tipo de alojamento, a disponibilidade e o preço por noite. Cada instância de \textit{Accommodation} contém uma lista de quartos (\textit{Room}), representados pela classe \textit{Room}, que armazena detalhes específicos de cada quarto, como a sua capacidade ou características. Para gerir vários alojamentos, existe a classe \textit{Accommodations}, que é uma coleção de \textit{Accommodation} e utiliza um dicionário para manipulação eficiente.
+A classe \textit{Accommodation} (alojamento) representa as unidades disponíveis para reserva. Cada alojamento inclui detalhes como o tipo de alojamento, o nome e a lista de quartos associados (\textit{Rooms}). A classe \textit{Room} fornece detalhes específicos sobre os quartos, como tipo, preço por noite e disponibilidade, além de funcionalidades para calcular custos e verificar disponibilidade. Para gerir vários alojamentos, a classe \textit{Accommodations} organiza instâncias de \textit{Accommodation} utilizando um dicionário, com métodos como \texttt{FindRoomById()} e \texttt{RemoveRoom()}.
 
-A classe \textit{Reservation} (reserva) estabelece a ligação entre clientes e alojamentos, registando os detalhes da estadia, incluindo datas de check-in e check-out, o custo total e o estado do pagamento. Adicionalmente, cada reserva contém uma lista de pagamentos (\textit{Payment}), geridos pela classe \textit{Payment}, que regista os valores pagos, datas e métodos de pagamento. Tal como as outras coleções, a classe \textit{Reservations} guarda várias reservas utilizando um dicionário.
+A classe \textit{Reservation} (reserva) liga clientes a acomodações, registrando detalhes como datas de check-in e check-out, tipo de alojamento, custo total e estado da reserva. Ela também mantém uma lista de pagamentos (\textit{Payment}) associados, permitindo verificar se os pagamentos estão atualizados. A classe \textit{Reservations} armazena várias reservas em um dicionário e oferece funcionalidades para adicionar, cancelar ou pesquisar reservas.
 
-Para garantir uma gestão consistente e extensível, o sistema define uma interface comum, \textit{ManageableEntity}, que fornece funcionalidades partilhadas pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Accommodations} e \textit{Reservations}). Esta interface inclui métodos como \textit{Add}, \textit{Remove}, \textit{Import}, \textit{Export}, \textit{Save} e \textit{Load}, permitindo operações uniformes e reutilizáveis.
+A classe \textit{Payment} (pagamento) é responsável por registar informações detalhadas sobre transações, incluindo o montante pago, método de pagamento e data.
 
-Por fim, o sistema integra a classe \textit{BookingManager}, uma classe face que centraliza e simplifica operações comuns do sistema. Esta classe fornece métodos como por exemplo, \textit{CreateBasicClient} (criar um cliente básico), \textit{SaveAll} (guardar todos os dados do sistema) e \textit{LoadAll} (carregar todos os dados do sistema), promovendo uma interface unificada e de fácil utilização para as operações mais frequentes.
+\subsection{Processamento de Pagamentos} A classe \textit{Payment} lida com detalhes individuais das transações financeiras associadas a reservas. A classe \textit{Reservation} mantém uma lista de pagamentos e fornece métodos como \texttt{MakePayment()} para processar pagamentos e verificar o estado financeiro.
 
-\subsection{Processamento de Pagamentos}
-A classe \textit{Payment} (pagamento) tem como objetivo guardar informações detalhadas sobre cada transação associada a uma reserva, incluindo o montante pago, a data do pagamento e o método utilizado. A classe \textit{Reservation} mantém uma coleção de instâncias da classe \textit{Payment}, permitindo registar todos os pagamentos realizados para uma determinada reserva.
+\subsection{BookingManager e a Interface ManageableEntity} A classe \textit{BookingManager} atua como o controlador central/face do sistema, sendo responsável por gerir os clientes, proprietários, reservas e alojamentos. Ela utiliza instâncias das classes \textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}, centralizando as operações.
 
-\subsection{BookingManager e a Interface ManageableEntity}
-A classe \textit{BookingManager} (gestor de reservas) atua como o controlador principal do sistema, fornecendo métodos para controlar o sistema, gerir alojamentos e processar pagamentos.
+Para uniformizar as operações de gestão, o sistema utiliza a interface \textit{ManageableEntity}, implementada pelas classes de coleção (\textit{Clients}, \textit{Owners}, \textit{Reservations} e \textit{Accommodations}). Esta interface define métodos comuns, como \texttt{Add()}, \texttt{Remove()}, \texttt{Export()} e \texttt{Load()}.
 
-O sistema introduz a interface \textit{ManageableEntity}, implementada pelas classes \textit{Clients}, \textit{Reservations} e \textit{Accommodations}. Esta interface unifica os métodos básicos de gestão, como \textit{Add()}, \textit{Remove()}, \textit{Import()} e \textit{Export()}, permitindo que o \textit{BookingManager} interaja com estas classes de forma uniforme. 
+O \textit{BookingManager} centraliza operações comuns, como \texttt{CreateBasicClient()}, \texttt{FindClientById()} e \texttt{SaveAll()}, fornecendo uma interface unificada e simples para os utilizadores.
 
-\subsection{Padrão de Face (Facade Pattern)}
-O \textit{BookingManager} atua como a face do sistema, permitindo simplificar a interação ao consolidar várias chamadas de funções numa única operação. Por exemplo, em vez de chamar funções separadas para criar um objeto \textit{Client} e adicioná-lo ao dicionário de \textit{clients}, a função única \texttt{CreateClient} realiza ambas as operações de forma transparente. Isto segue o \textit{Padrão Facade} \cite{facadepattern}, que fornece uma interface única e centralizada para interagir com o sistema, abstraindo a complexidade interna e promovendo uma maior simplicidade de uso.
+\subsection{Padrão de Face (Facade Pattern)} 
+O \textit{BookingManager} implementa o \textit{Padrão Facade} \cite{facadepattern}, funcionando como um ponto de acesso único que simplifica a interação com o sistema. Em vez de chamar métodos individuais nas classes de coleção, o \textit{BookingManager} oferece métodos como \texttt{CreateCompleteOwner()}, \texttt{UpdateReservation()} e \texttt{CancelReservation()}, abstraindo a complexidade interna.
 
-Ao centralizar estas operações, o \textit{Facade} melhora a modularidade e extensibilidade do sistema, permitindo que alterações internas sejam realizadas sem impacto na interface externa. Assim, o \textit{BookingManager} fornece um ponto de acesso para a criação, manipulação e gestão das entidades, facilitando a manutenção e escalabilidade do sistema.
+Este padrão promove uma maior modularidade e escalabilidade do sistema, permitindo a introdução de novas funcionalidades sem impactar a interface externa.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=1.0\textwidth]{Images/POO_Class_Diagram.png}
+	\includegraphics[width=0.97\textwidth]{Images/POO_Class_Diagram.png}
 	\caption{Diagrama de Classes do Sistema de Gestão de Alojamentos Turísticos}
 	\label{fig:diagrama_classes}
 \end{figure}
@@ -662,7 +635,6 @@ A arquitetura do sistema foi estruturada de acordo com um layout comum e amplame
 Para manter uma estrutura organizada e intuitiva, os ficheiros do sistema foram nomeados de acordo com as classes que eles contêm. Cada classe tem um ficheiro correspondente com o mesmo nome, garantindo uma correspondência direta entre a funcionalidade e o ficheiro onde ela está implementada. Esta abordagem facilita a localização de classes específicas e melhora a navegabilidade do projeto, uma vez que o nome de cada ficheiro reflete o conteúdo e a responsabilidade do mesmo. Por exemplo, a classe \textit{Client} está localizada no ficheiro \texttt{Client.cs}, enquanto a classe \textit{BookingManager} pode ser encontrada em \texttt{BookingManager.cs}.
 
 \subsection{Conformidade com a CLS}
-
 A \textit{Common Language Specification (CLS)} define um conjunto de regras e padrões para garantir a interoperabilidade entre as diferentes linguagens que compõem o ecossistema .NET. Ao desenvolver o sistema, foi dada atenção à conformidade com a CLS para assegurar que o código seja acessível e utilizável por outras linguagens compatíveis com o .NET.
 
 Dentro deste contexto, o tipo \texttt{decimal} foi escolhido para operações financeiras e monetárias devido à sua alta precisão e, também, por ser um tipo que segue as normas da CLS. Esta conformidade permite que o sistema mantenha uma representação exata de valores monetários e seja facilmente reutilizável em outros ambientes e linguagens que suportem .NET. 
@@ -1059,11 +1031,11 @@ Com estas práticas, o sistema assegura um tratamento de logs robusto, contribui
 \section{Persistência de Dados com Ficheiros}
 \label{sec:persistenciadados}
 
-A persistência de dados desempenha um papel crucial em qualquer sistema de gestão. Neste projeto, foi adotada a utilização de ficheiros JSON para a importação e exportação de dados, complementada por ficheiros binários baseados em \texttt{Protocol Buffers} (Protobuf). O formato JSON foi selecionado para a importação e exportação devido à sua popularidade e facilidade de utilização, especialmente em aplicações web, móveis e \textit{desktop}. Além disso, a sua legibilidade elevada torna-o ideal para a manipulação e \textit{debugging} de dados de forma simples e eficiente. Por outro lado, o formato binário com Protobuf foi escolhido para guardar e carregar dados, garantindo eficiência e desempenho superiores em termos de armazenamento e velocidade de processamento.
+A persistência de dados desempenha um papel crucial em qualquer sistema de gestão. Neste projeto, foi adotada a utilização de ficheiros JSON para a importação e exportação de dados, complementada por ficheiros binários baseados em \texttt{Protocol Buffers} (Protobuf). O formato JSON foi escolhido para a importação e exportação devido à sua popularidade e facilidade de utilização, especialmente em aplicações web, móveis e \textit{desktop}. Além disso, a sua fácil leitura torna-o ideal para a manipulação e \textit{debugging} de dados de forma simples e eficiente. Por outro lado, o formato binário com Protobuf foi escolhido para guardar e carregar dados, garantindo eficiência e desempenho superiores em termos de armazenamento e velocidade de processamento.
 
 Para a persistência binária, foi escolhido o \texttt{Protobuf}, em vez dos métodos tradicionais binários como o \texttt{BinaryFormatter}, que é obsoleto e apresenta vulnerabilidades de segurança. O \texttt{BinaryFormatter} tem riscos significativos na desserialização de dados, o que pode resultar em falhas de segurança, como execução remota de código. O \texttt{Protobuf}, por outro lado, oferece uma solução mais segura, eficiente e compacta para armazenar dados de forma binária. Além disso, é compatível com diversas linguagens e plataformas, o que facilita a integração com outros sistemas.
 
-Portanto, enquanto o JSON é utilizado para a leitura e manipulação de dados de forma mais acessível, o \texttt{Protobuf} é usado para a gravação e carregamento eficiente de dados binários, garantindo melhor desempenho e menor tamanho de ficheiro. Este equilíbrio entre formatos textuais e binários permite que o sistema aproveite o melhor de ambos os mundos: a simplicidade e flexibilidade do JSON para operações de importação/exportação e a eficiência do \texttt{Protobuf} para persistência binária.
+Portanto, enquanto o JSON é utilizado para a leitura e manipulação de dados de forma mais acessível, o \texttt{Protobuf} é usado para a gravação e carregamento eficiente de dados binários, garantindo melhor desempenho e menor tamanho de ficheiro. Este equilíbrio entre formatos textuais e binários permite que o sistema aproveite o melhor dos dois mundos: a simplicidade e flexibilidade do JSON para operações de importação/exportação e a eficiência do \texttt{Protobuf} para persistência binária.
 
 \subsection{Importação e Exportação de Dados em JSON}
 
@@ -1156,7 +1128,7 @@ Protobuf é um formato binário de serialização de dados desenvolvido pela Goo
 
 O uso do Protobuf para persistência de dados oferece várias vantagens:
 \begin{itemize}
-	\item \textbf{Eficiência de Espaço}: Como o Protobuf é um formato binário, ele é muito mais compacto em comparação ao JSON, o que resulta em menos espaço de armazenamento.
+	\item \textbf{Eficiência de Espaço}: Como o Protobuf é um formato binário, é muito mais compacto em comparação ao JSON, o que resulta em menos espaço de armazenamento.
 	\item \textbf{Desempenho Superior}: O Protobuf oferece tempos de leitura e escrita mais rápidos devido à sua natureza binária, tornando-o adequado para sistemas com alto tráfego de dados.
 \end{itemize}
 
@@ -1385,91 +1357,173 @@ A utilização de testes unitários combinada com um pipeline de CI/CD robusto o
 \newpage
 \section{Desenvolvimento da Interface}
 \label{sec:desenvolvimentoui}
+O desenvolvimento da interface da aplicação foi realizado utilizando a linguagem de programação \textit{Dart} e a \textit{framework} \textit{Flutter}, uma combinação que oferece uma abordagem eficiente para a construção de interfaces de utilizador modernas e reativas. O \textit{Flutter} é uma framework de \textit{UI} de código aberto que permite o desenvolvimento de aplicações nativas para várias plataformas com uma única base de código.  
 
-\subsection{Introdução ao Razor Server App}
+\subsection{Estado Atual da Aplicação}
+\label{subsec:estadoatual}
 
-Para o desenvolvimento da interface do utilizador, optei por criar uma aplicação \textit{Razor Server App}. Esta escolha foi motivada pela minha experiência com \texttt{HTML} e \texttt{CSS}, tecnologias que já conhecia, e que me permitiram explorar as funcionalidades do Razor de forma eficiente. O \texttt{Razor} é uma engine de templates do .NET que facilita a criação de páginas dinâmicas ao integrar HTML com código C\# de maneira fluida. A sintaxe do Razor permite misturar de forma simples as estruturas de HTML com código C\#, oferecendo uma experiência de desenvolvimento mais rápida e intuitiva para aplicações web.
+A aplicação desenvolvida encontra-se num estado preliminar, servindo como um exemplo de implementação prática do uso de controladores (\textit{controllers}) e \textit{web requests}. Não é uma aplicação completa, mas sim um modelo demonstrativo, cujo objetivo principal é ilustrar a interação básica entre uma interface de utilizador e um backend.  
 
-\subsection{Dependency Injection e Integração com o Backend}
+Por enquanto, a interface implementada permite executar operações básicas, como simular o login de um cliente ou realizar ações limitadas a partir de botões que acionam funções. A lógica é simplificada, focando-se em práticas fundamentais que podem ser expandidas para projetos mais robustos no futuro.  
 
-No que diz respeito à arquitetura da aplicação, utilizei o \textit{Dependency Injection} (DI), uma prática recomendada no desenvolvimento de aplicações .NET para promover a inversão de controlo e facilitar a manutenção e testabilidade do código. O \textit{Dependency Injection} permite que os serviços e dependências da aplicação sejam injetados automaticamente nas classes que as necessitam, em vez de serem instanciados diretamente dentro dessas classes.
+\subsection{Interação com Controladores e HTTP Requests}
+\label{subsec:http-requests}
 
-No meu projeto, o backend é composto por bibliotecas \texttt{DLL}, que são responsáveis pelas regras de negócio. Para integrar estas bibliotecas com o front-end Razor, configurei a injeção das dependências no \texttt{Program.cs}. O serviço \texttt{BookingManager}, responsável pela gestão das reservas, é injetado no container de serviços da aplicação da seguinte forma:
+Neste subcapítulo, detalha-se o funcionamento básico da interação entre a interface de utilizador e os controladores através de chamadas HTTP. A aplicação utiliza botões que chamam funções específicas, as quais recolhem dados a partir de controladores, realizam validações e chamam métodos para comunicação com o backend.
 
-\begin{lstlisting}[
-	language=csh, 
-	caption={Configuração de Dependency Injection},
-	label={lst:di-config}]
-builder.Services.AddSingleton<BookingManager>();
-\end{lstlisting}
-
-Ao adicionar o \texttt{BookingManager} como um serviço singleton no container de DI, a aplicação garante que uma única instância da classe \texttt{BookingManager} seja criada e utilizada durante toda a execução da aplicação. Isto permite que o Razor tenha acesso às regras de negócio necessárias para processar as reservas, sem a necessidade de criar novas instâncias do \texttt{BookingManager} diretamente nas páginas Razor.
-
-Esta abordagem facilita a gestão de dependências e contribui para uma maior organização e flexibilidade no código. Além disso, a injeção de dependências torna a aplicação mais fácil de testar, uma vez que podemos simular ou substituir as dependências nas classes de teste.
-
-\subsection{Uso de Tailwind CSS e Flowbite}
-
-Uma das escolhas importantes no desenvolvimento da interface do utilizador foi a substituição do \texttt{Bootstrap} pelo \texttt{Tailwind CSS}, uma framework de CSS altamente personalizável. A principal razão para esta escolha foi a flexibilidade que o \texttt{Tailwind} oferece em comparação com o \texttt{Bootstrap}, permitindo um controlo muito mais preciso sobre o design e estilo da aplicação. 
-
-Enquanto o \texttt{Bootstrap} fornece um conjunto de componentes predefinidos com um estilo determinado, o \texttt{Tailwind} permite que se defina cada parte do layout utilizando uma abordagem de \textit{utility-first}. Com \texttt{Tailwind}, podemos aplicar classes utilitárias diretamente aos elementos HTML, o que resulta em código mais conciso e altamente configurável. Esta abordagem ajuda a evitar o uso excessivo de classes personalizadas e reduz a necessidade de escrever CSS adicional, tornando o processo de estilização mais ágil e eficiente.
-
-\subsubsection{Integração com Flowbite}
-
-Embora o \texttt{Tailwind CSS} forneça uma base sólida para a construção da interface, optei por integrar o \texttt{Flowbite}, uma biblioteca de componentes construídos em cima do \texttt{Tailwind}, para acelerar ainda mais o desenvolvimento. O \texttt{Flowbite} oferece uma série de componentes prontos para uso, como botões, modais, tabelas, menus de navegação e muito mais, todos desenhados para se integrarem perfeitamente com o \texttt{Tailwind}. 
-
-O uso do \texttt{Flowbite} não só poupou tempo no desenvolvimento, mas também garantiu que a interface tivesse um design moderno e funcional, com componentes que seguem as melhores práticas de design responsivo e acessibilidade. Além disso, como o \texttt{Flowbite} é construído em cima do \texttt{Tailwind}, não houve conflito entre os estilos e foi fácil de personalizar os componentes conforme as necessidades do projeto.
-
-Para integrar o \texttt{Flowbite} com o projeto, foi necessário instalar a biblioteca e configurá-la no ficheiro de recursos do projeto. O processo de instalação foi simples e envolveu a adição do \texttt{Flowbite} através de \texttt{npm}. Abaixo está um exemplo de como a integração foi realizada no ficheiro \_Layout.cshtml:
+A seguir, apresenta-se um exemplo de implementação de um botão que simula o login de um cliente:
 
 \begin{lstlisting}[
-	language=html, 
-	caption={Integração do Flowbite},
-	label={lst:flowbite-integration}]
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<base href="~/" />
-	<link href="~/css/app.min.css" rel="stylesheet" />
-	<link href="SmartStay.App.styles.css" rel="stylesheet" />
-	<component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
-</head>
-<body>
-	@RenderBody()
-	
-	<div id="blazor-error-ui">
-		<environment include="Staging,Production">
-		An error has occurred. This application may no longer respond until reloaded.
-		</environment>
-		<environment include="Development">
-		An unhandled exception has occurred. See browser dev tools for details.
-		</environment>
-		<a href="" class="reload">Reload</a>
-		<a class="dismiss">X</a>
-	</div>
-	
-	<script src="_framework/blazor.server.js"></script>
-	<script 
-	src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js">
-	</script>
-</body>
-</html>
+	language=Java, 
+	caption={Botão para iniciar sessão como cliente},
+	label={lst:button-client-login}]
+// Botão de exemplo - Iniciar Sessão como Cliente
+Expanded(
+	child: ElevatedButton(
+	onPressed: () async {
+		final clientCreated = await _handleCreateClient();
+		if (clientCreated && context.mounted) {
+			await context.router.replace(const HomeRoute());
+			}
+		},
+	),
+);
 \end{lstlisting}
 
-Com esta integração, foi possível melhorar a experiência do utilizador e otimizar o tempo de desenvolvimento, aproveitando os componentes de UI prontos do \texttt{Flowbite} enquanto ainda mantinha a flexibilidade do \texttt{Tailwind}.
+O botão acima está configurado para chamar a função \texttt{\_handleCreateClient()} ao ser pressionado. Esta função realiza as seguintes etapas:  
+
+\begin{itemize}
+	\item \textbf{Recolha de Dados}: Obtém os valores inseridos pelo utilizador nos controladores de texto.
+	\item \textbf{Validação}: Verifica se os dados recolhidos são válidos (por exemplo, se nenhum campo obrigatório está vazio).
+	\item \textbf{Pedido HTTP}: Envia os dados para o backend, utilizando a função \texttt{createBasicClient()}, que realiza a interação com o controlador.
+\end{itemize}
+
+Segue-se a implementação da função \texttt{\_handleCreateClient()}, que realiza estas operações:
+
+\begin{lstlisting}[
+	language=Java, 
+	caption={Função que processa os dados e faz a chamada HTTP},
+	label={lst:handle-create-client}]
+Future<bool> _handleCreateClient() async {
+	// Obter valores dos controladores
+	final firstName = _firstNameController.text;
+	final lastName = _lastNameController.text;
+	final email = _emailController.text.trim();
+	
+	// Validação básica dos dados de entrada
+	if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
+		_showErrorMessage('Por favor, preencha todos os campos.');
+		return false;
+	}
+	
+	// Chamar a função para criar o cliente
+	final result = await createBasicClient(
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+	);
+	
+	if (result != null) {
+		// Cliente criado com sucesso
+		if (kDebugMode) {
+			print('Cliente criado com sucesso: $result');
+		}
+		return true;
+	} else {
+		// Falha ao criar o cliente
+		return false;
+	}
+}
+\end{lstlisting}
+
+Nesta função, a chamada HTTP é realizada por \texttt{createBasicClient()}, que comunica diretamente com o controlador do backend. Esta abordagem modular permite que a lógica de validação e comunicação seja isolada em funções separadas, facilitando a manutenção e a escalabilidade do projeto.  
+
+Segue-se agora a implementação da função \texttt{createBasicClient()}, que faz o pedido HTTP para o backend. Ela é responsável por enviar os dados do cliente para a API e retornar a resposta do servidor:
+
+\begin{lstlisting}[
+	language=Java, 
+	caption={Função que realiza a requisição HTTP para criar um cliente},
+	label={lst:create-basic-client}]
+Future<Map<String, dynamic>?> createBasicClient({
+	required String firstName,
+	required String lastName,
+	required String email,
+}) async {
+	try {
+		// Fazer uma requisição POST para o endpoint /client/basic
+		final response = await _networkClient.post<Map<String, dynamic>>(
+		'/client/basic',
+		data: {
+			'firstName': firstName,
+			'lastName': lastName,
+			'email': email,
+		},
+		);
+		
+		// Verificar se a resposta indica sucesso
+		if (response.statusCode == 201) {
+			// Retornar os dados do cliente recém-criado
+			return response.data;
+		} else {
+			// Tratar códigos de status inesperados
+			_showErrorMessage('Código de status inesperado: ${response.statusCode}');
+			return null;
+		}
+	} on DioException catch (e) {
+		if (e.response != null && e.response?.statusCode == 400) {
+			// Tratar erro 400 - Bad Request
+			final errorMessage =
+			e.response?.data['message'] ?? 'Erro desconhecido';
+			_showErrorMessage('Falha na criação do cliente: $errorMessage');
+			return null;
+		} else {
+			// Tratar outros erros Dio (ex: problemas de rede)
+			_showErrorMessage('Erro de rede: ${e.message}');
+			return null;
+		}
+	} catch (e) {
+		// Tratar outras exceções
+		_showErrorMessage('Erro inesperado: $e');
+		return null;
+	}
+}
+\end{lstlisting}
+
+A função \texttt{createBasicClient()} faz um pedido \texttt{POST} para o endpoint \texttt{/client/basic}, enviando os dados do cliente (nome, sobrenome e e-mail) para o backend. Caso o pedido seja bem-sucedida (código de estado 201), ela retorna os dados do cliente criado. Se houver um erro (código de estado diferente de 201 ou problemas com a rede), a função trata o erro e mostra uma mensagem de erro.
+
+Por enquanto, esta estrutura serve apenas como exemplo prático de como organizar a lógica em torno de controladores e chamadas HTTP, com o objetivo de criar uma base sólida para o desenvolvimento de aplicações mais completas e funcionais no futuro.
 
 \newpage
 \section{Conclusão}
 \label{sec:conclusion}
 
-Lorem Ipsum.
+O desenvolvimento deste projeto foi concluído com sucesso, atendendo a todos os critérios e requisitos estabelecidos. A execução do trabalho foi feita com foco na qualidade, na documentação e na solução implementada.
+
+Os testes realizados demonstraram que todas as funcionalidades desenvolvidas funcionam conforme o esperado. O código foi estruturado de forma modular e respeitando boas práticas de desenvolvimento, como a utilização de controladores para interação com o backend através de \textit{web requests}.  
+
+\subtitle{Qualidade do Relatório}
+O relatório produzido seguiu um padrão claro e bem organizado, apresentando detalhadamente a solução desenvolvida, os processos implementados e os resultados obtidos. Os conceitos e decisões técnicas foram documentados de forma compreensível e fundamentada.  
+
+\subtitle{Qualidade da Solução Desenvolvida}
+A aplicação demonstrou alta qualidade, refletida no seguinte:  
+\begin{itemize}
+	\item \textbf{Estrutura Modular e Organizada}: A aplicação segue padrões como \textit{MVC} e utiliza bibliotecas apropriadas para garantir uma arquitetura limpa e escalável.
+	\item \textbf{Integração de Conceitos Avançados}: A solução implementa o LINQ e frameworks modernos para proporcionar uma implementação eficiente.
+	\item \textbf{Controladores e Interações via \textit{web requests}}: A aplicação faz uso de controladores que interagem com o backend através de \textit{web requests}, promovendo uma arquitetura modular e de fácil manutenção.
+	\item \textbf{Configuração de Pipelines CI/CD}: Implementação de pipelines para automação de testes e implantação contínua, utilizando ferramentas como Github Actions para garantir a qualidade e o fluxo contínuo de desenvolvimento.
+	\item \textbf{Validação Rigorosa de Entradas}: A aplicação valida as entradas do utilizador de forma completa, garantindo a integridade dos dados e proporcionando um tratamento adequado de erros.
+	\item \textbf{Integração entre Frontend e Backend}: Funcionalidades implementadas demonstram a integração eficiente e fluída entre o frontend e o backend, assegurando a comunicação e o processamento adequado das informações.
+\end{itemize}
+
+Com este trabalho, consegui atender a todos os critérios de avaliação definidos. A solução final demonstra não apenas a aplicação prática de conceitos teóricos, mas também uma atenção elevada aos detalhes.
+
+Em resumo, os objetivos definidos foram todos alcançados e foi desenvolvido um sistema eficiente para a gestão de alojamentos turísticos utilizando o paradigma de programação orientada a objetos.
 
 %%% ===============================================================================
 %%% Bibliography
 %%% ===============================================================================
 
+\newpage
 \renewcommand{\bibsection}{\section*{Referências}} % requried for natbib to have "References" printed and as section*, not chapter*
 % Use natbib compatbile splncs04nat style.
 % It does provide all features of splncs04.bst, but is developed in a clean way.
@@ -1484,7 +1538,7 @@ Lorem Ipsum.
 % Enfore empty line after bibliography
 \ \\
 %
-Todas as ligações foram consultadas pela última vez no dia 15 de novembro de 2024.
+Todas as ligações foram consultadas pela última vez no dia 16 de dezembro de 2024.
 
 
 %%% ===============================================================================

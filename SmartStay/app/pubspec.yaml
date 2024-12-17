@@ -1,0 +1,56 @@
+name: smartstay_app
+description: A new flutter project
+
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+
+  # Networking
+  dio: ^5.7.0
+  dio_smart_retry: ^6.0.0
+  pretty_dio_logger: ^1.4.0
+
+  # Routing
+  auto_route: ^9.2.2
+
+  # Utility
+  uuid: ^4.5.1
+  intl: ^0.19.0
+  logger: ^2.4.0
+  envied: ^0.5.4+1
+  package_info_plus: ^8.0.2
+  device_info_plus: ^10.1.2
+
+  # Dependency Injection
+  get_it: ^8.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Linter
+  very_good_analysis: ^6.0.0
+
+  # Code Generation
+  build_runner: ^2.4.13
+  envied_generator: ^0.5.4+1
+  auto_route_generator: ^9.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/icons/
+    - assets/images/
